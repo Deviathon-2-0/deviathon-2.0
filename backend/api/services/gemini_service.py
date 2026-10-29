@@ -318,3 +318,4 @@ def _get_fallback_questions(role, company, track, level, language):
             "evaluation_rubric": {"optimal_complexity": "Zero cascading cascading cascade"}
         }
     ]
+

@@ -37,3 +37,4 @@ urlpatterns = [
     path('dashboard/summary/', views.get_dashboard_summary, name='api_dashboard_summary'),
     path('profile/', views.user_profile_endpoint, name='api_profile'),
 ]
+

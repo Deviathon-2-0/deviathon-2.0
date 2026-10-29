@@ -540,3 +540,4 @@ class CandidateMatrixEngine {
 
 // Global attachment
 window.CandidateMatrixEngine = CandidateMatrixEngine;
+

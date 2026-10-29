@@ -27,8 +27,8 @@ from api.services.gemini_service import (
 )
 
 # Load static JSON datasets
-ROLES_FILE = settings.BASE_DIR / 'backend' / 'data' / 'roles.json'
-COMPANIES_FILE = settings.BASE_DIR / 'backend' / 'data' / 'companies.json'
+ROLES_FILE = settings.BASE_DIR / 'data' / 'roles.json' if (settings.BASE_DIR / 'data' / 'roles.json').exists() else settings.BASE_DIR / 'backend' / 'data' / 'roles.json'
+COMPANIES_FILE = settings.BASE_DIR / 'data' / 'companies.json' if (settings.BASE_DIR / 'data' / 'companies.json').exists() else settings.BASE_DIR / 'backend' / 'data' / 'companies.json'
 
 def _load_roles():
     if ROLES_FILE.exists():

@@ -148,3 +148,4 @@ def _simulate_execution(code, language, test_cases, start_time):
         "total_tests": len(test_cases) or 3,
         "test_results": []
     }
+

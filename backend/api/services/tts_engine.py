@@ -209,3 +209,4 @@ def synthesize_interviewer_speech(text, interviewer_name="Kabir"):
             "fallback_to_client": True,
             "error": str(e),
         }
+

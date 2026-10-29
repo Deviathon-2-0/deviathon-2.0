@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from ai_engine.glossary import find_possible_corrections
 from ai_engine.feedback import generate_feedback
 
