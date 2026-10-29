@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Analyzer & Skill Gap Audit | IMAIRA+</title>
+  <meta name="description" content="Audit engineering resumes, identify technical skill gaps, and generate role-specific interview questions." />
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="../js/tailwind-config.js"></script>
+
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased selection:bg-[#AA7000] selection:text-white flex h-screen overflow-hidden">
+
+  <!-- ========================================================================
+       SIDEBAR NAVIGATION
+       ======================================================================== -->
+  <aside id="app-sidebar" class="w-64 bg-white border-r border-[#E8DFD0] flex flex-col justify-between shrink-0 transition-transform -translate-x-full md:translate-x-0 fixed md:static z-40 h-full">
+    <div>
+      <div class="h-20 px-6 flex items-center justify-between border-b border-[#E8DFD0]">
+        <a href="../index.html" class="flex items-center gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
+        </a>
+        <button id="close-sidebar-btn" class="md:hidden text-[#7F766C] hover:text-[#2C1F0E]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <nav class="p-4 space-y-1.5">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="mock-interview.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">record_voice_over</span>
+          <span>Mock Interview</span>
+        </a>
+
+        <a href="assessment.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">quiz</span>
+          <span>Assessments</span>
+        </a>
+
+        <a href="history.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">history</span>
+          <span>History</span>
+        </a>
+
+        <a href="resume.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-sm transition-all shadow-sm">
+          <span class="material-symbols-outlined text-xl">description</span>
+          <span>Resume Analyzer</span>
+        </a>
+
+        <a href="prep-plan.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">checklist</span>
+          <span>Prep Plan</span>
+        </a>
+
+        <div class="pt-4 pb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">
+          Account
+        </div>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">settings</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-[#E8DFD0] space-y-3">
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
+            AM
+          </div>
+          <div>
+            <div class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
+            <div class="text-[11px] text-[#7F766C]">Staff Candidate</div>
+          </div>
+        </div>
+        <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
+          <span class="material-symbols-outlined text-lg">logout</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================
+       RESUME ANALYZER MAIN WORKSPACE
+       ======================================================================== -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Action Bar -->
+    <header class="h-20 bg-white border-b border-[#E8DFD0] px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
+      <div class="flex items-center gap-4">
+        <button id="mobile-sidebar-toggle" class="md:hidden text-[#2C1F0E] hover:text-[#AA7000] p-1">
+          <span class="material-symbols-outlined text-2xl">menu</span>
+        </button>
+        <div>
+          <h2 class="text-sm font-bold text-[#2C1F0E]">Resume Analyzer &amp; Skill Gap Audit</h2>
+          <span class="text-xs text-[#8C7B6B]">Extract technical footprint and curate targeted interview probes</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="window.print()" class="px-4 py-2 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-xs font-bold text-[#2C1F0E] flex items-center gap-1.5 transition-all">
+          <span class="material-symbols-outlined text-base">file_download</span>
+          <span>Export Audit</span>
+        </button>
+        <a href="mock-interview.html" class="px-5 py-2 rounded-full bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-pill">
+          <span class="material-symbols-outlined text-base">play_arrow</span>
+          <span>Practice Generated Questions</span>
+        </a>
+      </div>
+    </header>
+    <!-- Page Breadcrumb Nav -->
+    <div class="px-6 py-3 border-b border-[#E8DFD0] bg-[#FAF6EE] flex items-center gap-2 text-xs font-semibold text-[#8C7B6B]">
+      <a href="../index.html" class="hover:text-[#AA7000] transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">home</span>
+        <span>Home</span>
+      </a>
+      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
+      <a href="dashboard.html" class="hover:text-[#AA7000] transition-colors">Dashboard</a>
+      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
+      <span class="text-[#2C1F0E]">Resume Analyzer</span>
+      <div class="ml-auto">
+        <a href="javascript:history.back()" class="flex items-center gap-1 text-[#8C7B6B] hover:text-[#AA7000] transition-colors">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Back</span>
+        </a>
+      </div>
+    </div>
+
+
+    <main class="p-6 sm:p-8 space-y-8 max-w-6xl mx-auto w-full">
+      
+      <!-- UPLOAD ZONE -->
+      <div class="bg-white border-2 border-dashed border-[#E8DFD0] hover:border-[#AA7000]/60 rounded-3xl p-8 sm:p-12 text-center transition-all cursor-pointer group shadow-soft">
+        <div class="w-16 h-16 rounded-2xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-3xl">upload_file</span>
+        </div>
+        <h3 class="text-base font-bold text-[#2C1F0E] mb-1">
+          Drop your engineering resume here, or <span class="text-[#AA7000] underline">browse files</span>
+        </h3>
+        <p class="text-xs text-[#8C7B6B] max-w-sm mx-auto mb-4">
+          Supports PDF, DOCX, or plain text resumes (Up to 15MB). Instant parsing with semantic skill tagging.
+        </p>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF6EE] border border-[#E8DFD0] text-[11px] text-[#8C7B6B] font-semibold">
+          <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+          <span>Current active file: <strong>Alex_Morgan_Staff_Architect_CV.pdf</strong></span>
+        </div>
+      </div>
+
+      <!-- SKILL GAP ANALYSIS SECTION -->
+      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8DFD0] mb-6">
+          <div>
+            <h3 class="text-lg font-bold text-[#2C1F0E]">Technical Competency &amp; Skill Gap Audit</h3>
+            <p class="text-xs text-[#8C7B6B] mt-0.5">Benchmark against Staff Backend &amp; Distributed Systems requirements.</p>
+          </div>
+          <span class="px-3.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] text-xs font-bold border border-[#E8C97A] self-start sm:self-auto">
+            Role Match: 87% Strong Alignment
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Column 1: Strong Skills -->
+          <div class="p-5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+                <h4 class="text-xs font-bold text-[#2C1F0E] uppercase tracking-wider">Strong Competencies</h4>
+              </div>
+              <p class="text-[11px] text-[#8C7B6B] mb-4">Verified by project impact, metrics, and past interview answers.</p>
+              
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2.5 py-1 rounded-full bg-[#E8F8F2] text-[#065F46] text-xs font-semibold border border-[#10B981]/30">
+                  Apache Kafka (Partitioning)
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-[#E8F8F2] text-[#065F46] text-xs font-semibold border border-[#10B981]/30">
+                  Go Concurrency
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-[#E8F8F2] text-[#065F46] text-xs font-semibold border border-[#10B981]/30">
+                  PostgreSQL WAL Tuning
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-[#E8F8F2] text-[#065F46] text-xs font-semibold border border-[#10B981]/30">
+                  Distributed Caching (Redis)
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-[#E8F8F2] text-[#065F46] text-xs font-semibold border border-[#10B981]/30">
+                  Kubernetes Multi-Cluster
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Developing Skills -->
+          <div class="p-5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#F5A623]"></span>
+                <h4 class="text-xs font-bold text-[#2C1F0E] uppercase tracking-wider">Developing Competencies</h4>
+              </div>
+              <p class="text-[11px] text-[#8C7B6B] mb-4">Present in resume but lacking explicit architectural failure recovery evidence.</p>
+              
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-semibold border border-[#F5A623]/30">
+                  Raft Consensus Pre-Vote
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-semibold border border-[#F5A623]/30">
+                  Envoy Service Mesh Filters
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-semibold border border-[#F5A623]/30">
+                  eBPF Network Observability
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-semibold border border-[#F5A623]/30">
+                  2-Phase Commit Sharding
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3: Missing Skills -->
+          <div class="p-5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <h4 class="text-xs font-bold text-[#2C1F0E] uppercase tracking-wider">High-Risk Gaps</h4>
+              </div>
+              <p class="text-[11px] text-[#8C7B6B] mb-4">Required for Staff loops but omitted from resume text and project descriptions.</p>
+              
+              <div class="flex flex-wrap gap-2">
+                <span class="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold border border-rose-200">
+                  Chaos Engineering Drills
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold border border-rose-200">
+                  Zero-Trust SPIFFE/SPIRE
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold border border-rose-200">
+                  Formal Verification (TLA+)
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GENERATED INTERVIEW QUESTIONS LIST -->
+      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8DFD0] mb-6">
+          <div>
+            <h3 class="text-lg font-bold text-[#2C1F0E]">Custom Generated Questions</h3>
+            <p class="text-xs text-[#8C7B6B] mt-0.5">Synthesized by AI from your past experience at scale.</p>
+          </div>
+          <button onclick="alert('Questions sent to active practice queue!')" class="px-4 py-2 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white text-xs font-bold transition-all">
+            Add All to Practice Queue
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Question Item 1 -->
+          <div class="p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] hover:border-[#AA7000]/40 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-[#AA7000]">Based on: Kafka Pipeline Architecture (2024-2026)</span>
+              <span class="text-[11px] text-[#7F766C] font-mono">Staff Level</span>
+            </div>
+            <h4 class="text-sm font-bold text-[#2C1F0E] mb-2">
+              "In your resume you noted processing 450,000 events/sec via Kafka. How did you handle consumer group rebalancing storms during deployment rollouts without introducing downstream processing latency spikes?"
+            </h4>
+            <div class="flex items-center gap-3 text-xs text-[#8C7B6B]">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-[#AA7000]">psychology</span> Probes: Cooperative sticky rebalancing</span>
+              <a href="mock-interview.html" class="text-[#AA7000] font-bold hover:underline ml-auto flex items-center gap-1">
+                <span>Practise Question</span>
+                <span class="material-symbols-outlined text-xs">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Question Item 2 -->
+          <div class="p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] hover:border-[#AA7000]/40 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-[#AA7000]">Based on: PostgreSQL WAL &amp; Sharding</span>
+              <span class="text-[11px] text-[#7F766C] font-mono">Principal Level</span>
+            </div>
+            <h4 class="text-sm font-bold text-[#2C1F0E] mb-2">
+              "When migrating the monolith database to horizontally partitioned shards, how did you maintain transactional consistency for cross-shard ledger operations while avoiding 2PC lock contention?"
+            </h4>
+            <div class="flex items-center gap-3 text-xs text-[#8C7B6B]">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-[#AA7000]">psychology</span> Probes: Saga pattern &amp; outbox CDC</span>
+              <a href="mock-interview.html" class="text-[#AA7000] font-bold hover:underline ml-auto flex items-center gap-1">
+                <span>Practise Question</span>
+                <span class="material-symbols-outlined text-xs">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Question Item 3 -->
+          <div class="p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] hover:border-[#AA7000]/40 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-[#AA7000]">Based on: Developing Gap (Raft Consensus)</span>
+              <span class="text-[11px] text-[#7F766C] font-mono">Staff Level</span>
+            </div>
+            <h4 class="text-sm font-bold text-[#2C1F0E] mb-2">
+              "Describe the mechanics of Raft leader election during asymmetric network partitions and explain why a pre-vote phase is essential to prevent disruptive terms."
+            </h4>
+            <div class="flex items-center gap-3 text-xs text-[#8C7B6B]">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-[#AA7000]">psychology</span> Probes: Split-brain prevention</span>
+              <a href="mock-interview.html" class="text-[#AA7000] font-bold hover:underline ml-auto flex items-center gap-1">
+                <span>Practise Question</span>
+                <span class="material-symbols-outlined text-xs">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+    const appSidebar = document.getElementById('app-sidebar');
+
+    if (mobileSidebarToggle && appSidebar) {
+      mobileSidebarToggle.addEventListener('click', () => {
+        appSidebar.classList.remove('-translate-x-full');
+      });
+    }
+
+    if (closeSidebarBtn && appSidebar) {
+      closeSidebarBtn.addEventListener('click', () => {
+        appSidebar.classList.add('-translate-x-full');
+      });
+    }
+  </script>
+</body>
+</html>

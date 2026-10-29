@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personalized Prep Plan | IMAIRA+</title>
+  <meta name="description" content="Adaptive 7-day interview preparation plan dynamically generated from your skill gap audits." />
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="../js/tailwind-config.js"></script>
+
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased selection:bg-[#AA7000] selection:text-white flex h-screen overflow-hidden">
+
+  <!-- ========================================================================
+       SIDEBAR NAVIGATION
+       ======================================================================== -->
+  <aside id="app-sidebar" class="w-64 bg-white border-r border-[#E8DFD0] flex flex-col justify-between shrink-0 transition-transform -translate-x-full md:translate-x-0 fixed md:static z-40 h-full">
+    <div>
+      <div class="h-20 px-6 flex items-center justify-between border-b border-[#E8DFD0]">
+        <a href="../index.html" class="flex items-center gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
+        </a>
+        <button id="close-sidebar-btn" class="md:hidden text-[#7F766C] hover:text-[#2C1F0E]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <nav class="p-4 space-y-1.5">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="mock-interview.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">record_voice_over</span>
+          <span>Mock Interview</span>
+        </a>
+
+        <a href="assessment.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">quiz</span>
+          <span>Assessments</span>
+        </a>
+
+        <a href="history.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">history</span>
+          <span>History</span>
+        </a>
+
+        <a href="resume.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">description</span>
+          <span>Resume Analyzer</span>
+        </a>
+
+        <a href="prep-plan.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-sm transition-all shadow-sm">
+          <span class="material-symbols-outlined text-xl">checklist</span>
+          <span>Prep Plan</span>
+        </a>
+
+        <div class="pt-4 pb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">
+          Account
+        </div>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">settings</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-[#E8DFD0] space-y-3">
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
+            AM
+          </div>
+          <div>
+            <div class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
+            <div class="text-[11px] text-[#7F766C]">Staff Candidate</div>
+          </div>
+        </div>
+        <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
+          <span class="material-symbols-outlined text-lg">logout</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================
+       PREP PLAN MAIN WORKSPACE
+       ======================================================================== -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Action Bar -->
+    <header class="h-20 bg-white border-b border-[#E8DFD0] px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
+      <div class="flex items-center gap-4">
+        <button id="mobile-sidebar-toggle" class="md:hidden text-[#2C1F0E] hover:text-[#AA7000] p-1">
+          <span class="material-symbols-outlined text-2xl">menu</span>
+        </button>
+        <div>
+          <h2 class="text-sm font-bold text-[#2C1F0E]">Personalized Prep Plan</h2>
+          <span class="text-xs text-[#8C7B6B]">7-Day targeted syllabus based on identified skill gaps</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="mock-interview.html" class="px-5 py-2 rounded-full bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-pill">
+          <span class="material-symbols-outlined text-base">play_arrow</span>
+          <span>Start Today's Practice</span>
+        </a>
+      </div>
+    </header>
+    <!-- Page Breadcrumb Nav -->
+    <div class="px-6 py-3 border-b border-[#E8DFD0] bg-[#FAF6EE] flex items-center gap-2 text-xs font-semibold text-[#8C7B6B]">
+      <a href="../index.html" class="hover:text-[#AA7000] transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">home</span>
+        <span>Home</span>
+      </a>
+      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
+      <a href="dashboard.html" class="hover:text-[#AA7000] transition-colors">Dashboard</a>
+      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
+      <span class="text-[#2C1F0E]">Prep Plan</span>
+      <div class="ml-auto">
+        <a href="javascript:history.back()" class="flex items-center gap-1 text-[#8C7B6B] hover:text-[#AA7000] transition-colors">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Back</span>
+        </a>
+      </div>
+    </div>
+
+
+    <main class="p-6 sm:p-8 space-y-8 max-w-6xl mx-auto w-full">
+      
+      <!-- WEAK AREAS & PROGRESS HEADER -->
+      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-[#E8DFD0] mb-6">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Adaptive Diagnostic Focus</span>
+            <h1 class="text-2xl font-extrabold tracking-tight text-[#2C1F0E] mt-1">
+              Staff Architect 7-Day Sprint
+            </h1>
+            <p class="text-xs text-[#8C7B6B] mt-1">
+              Tailored curriculum derived from your recent mock interview blunders and resume skill gaps.
+            </p>
+          </div>
+
+          <div class="bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0] flex items-center gap-4 shrink-0">
+            <div>
+              <div class="text-[11px] font-bold text-[#7F766C] uppercase tracking-wider">Completion Progress</div>
+              <div class="text-2xl font-black text-[#2C1F0E]" id="progress-percentage">42%</div>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-[#FBF3E0] border border-[#E8C97A] flex items-center justify-center text-[#AA7000] font-bold text-xs" id="progress-fraction">
+              3/7
+            </div>
+          </div>
+        </div>
+
+        <!-- Weak Area Tags -->
+        <div>
+          <h3 class="text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-3">Targeted Weak Areas</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">priority_high</span> Raft Pre-Vote Protocol
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">priority_high</span> Cross-Shard Saga Idempotency
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-[#FEF3C7] border border-[#F5A623]/30 text-[#92400E] text-xs font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">trending_up</span> Tail-Latency 99.9th Mitigation
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-[#FBF3E0] border border-[#E8C97A] text-[#AA7000] text-xs font-semibold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">tune</span> CAP Theorem Scoping Framing
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7-DAY WEEKLY PLAN -->
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Weekly Milestones</h3>
+
+        <!-- Day 1 (Completed) -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <label class="mt-1 cursor-pointer">
+                <input type="checkbox" checked onchange="updateProgress()" class="day-check w-5 h-5 rounded border-[#E8DFD0] text-[#AA7000] focus:ring-[#AA7000] cursor-pointer" />
+              </label>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#E8F8F2] text-[#10B981] text-[11px] font-bold">Completed</span>
+                  <span class="text-xs font-bold text-[#7F766C] uppercase tracking-wider">Day 1</span>
+                </div>
+                <h4 class="text-base font-bold text-[#2C1F0E] mt-1 line-through opacity-60">
+                  Distributed Consensus &amp; Raft Invariants
+                </h4>
+                <p class="text-xs text-[#8C7B6B] mt-1">
+                  Master leader leases, election safety, and why pre-vote mitigates partition disruption.
+                </p>
+              </div>
+            </div>
+            <a href="mock-interview.html" class="px-4 py-1.5 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-xs font-bold text-[#2C1F0E] transition-all self-start sm:self-auto">
+              Review Qs
+            </a>
+          </div>
+        </div>
+
+        <!-- Day 2 (Completed) -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <label class="mt-1 cursor-pointer">
+                <input type="checkbox" checked onchange="updateProgress()" class="day-check w-5 h-5 rounded border-[#E8DFD0] text-[#AA7000] focus:ring-[#AA7000] cursor-pointer" />
+              </label>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#E8F8F2] text-[#10B981] text-[11px] font-bold">Completed</span>
+                  <span class="text-xs font-bold text-[#7F766C] uppercase tracking-wider">Day 2</span>
+                </div>
+                <h4 class="text-base font-bold text-[#2C1F0E] mt-1 line-through opacity-60">
+                  Saga Patterns &amp; Event-Driven Outbox Isolation
+                </h4>
+                <p class="text-xs text-[#8C7B6B] mt-1">
+                  Compensating transactions across financial sharding without distributed 2PC locking.
+                </p>
+              </div>
+            </div>
+            <a href="mock-interview.html" class="px-4 py-1.5 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-xs font-bold text-[#2C1F0E] transition-all self-start sm:self-auto">
+              Review Qs
+            </a>
+          </div>
+        </div>
+
+        <!-- Day 3 (Completed) -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <label class="mt-1 cursor-pointer">
+                <input type="checkbox" checked onchange="updateProgress()" class="day-check w-5 h-5 rounded border-[#E8DFD0] text-[#AA7000] focus:ring-[#AA7000] cursor-pointer" />
+              </label>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#E8F8F2] text-[#10B981] text-[11px] font-bold">Completed</span>
+                  <span class="text-xs font-bold text-[#7F766C] uppercase tracking-wider">Day 3</span>
+                </div>
+                <h4 class="text-base font-bold text-[#2C1F0E] mt-1 line-through opacity-60">
+                  High-Throughput Partitioning &amp; Kafka Consumer Tuning
+                </h4>
+                <p class="text-xs text-[#8C7B6B] mt-1">
+                  Cooperative sticky assignors, consumer lag remediation, and hot-partition mitigation.
+                </p>
+              </div>
+            </div>
+            <a href="mock-interview.html" class="px-4 py-1.5 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-xs font-bold text-[#2C1F0E] transition-all self-start sm:self-auto">
+              Review Qs
+            </a>
+          </div>
+        </div>
+
+        <!-- Day 4 (Today / Active) -->
+        <div class="bg-white border-2 border-[#AA7000] rounded-3xl p-6 shadow-card transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <label class="mt-1 cursor-pointer">
+                <input type="checkbox" onchange="updateProgress()" class="day-check w-5 h-5 rounded border-[#E8DFD0] text-[#AA7000] focus:ring-[#AA7000] cursor-pointer" />
+              </label>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#FBF3E0] text-[#AA7000] text-[11px] font-bold uppercase tracking-wider">Today's Milestone</span>
+                  <span class="text-xs font-bold text-[#AA7000] uppercase tracking-wider">Day 4</span>
+                </div>
+                <h4 class="text-base font-bold text-[#2C1F0E] mt-1">
+                  Microservices Observability &amp; Envoy Service Mesh
+                </h4>
+                <p class="text-xs text-[#8C7B6B] mt-1">
+                  Distributed tracing propagation (W3C TraceContext), circuit breakers, and hedge requests for P99.9.
+                </p>
+
+                <!-- Attached Resources List -->
+                <div class="mt-4 pt-4 border-t border-[#E8DFD0] space-y-2">
+                  <div class="text-[11px] font-bold text-[#7F766C] uppercase tracking-wider">Study Resources:</div>
+                  <div class="space-y-1.5">
+                    <a href="#" class="flex items-center gap-2 text-xs text-[#AA7000] font-semibold hover:underline">
+                      <span class="material-symbols-outlined text-sm">open_in_new</span>
+                      <span>Google Systems Whitepaper: Eliminating Tail Latency at Scale</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-2 text-xs text-[#AA7000] font-semibold hover:underline">
+                      <span class="material-symbols-outlined text-sm">open_in_new</span>
+                      <span>Envoy Proxy Architecture: Circuit Breakers &amp; Outlier Detection</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <a href="mock-interview.html" class="px-5 py-2.5 rounded-full bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold transition-all self-start sm:self-auto shadow-pill">
+              Practise Day 4
+            </a>
+          </div>
+        </div>
+
+        <!-- Day 5 -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <label class="mt-1 cursor-pointer">
+                <input type="checkbox" onchange="updateProgress()" class="day-check w-5 h-5 rounded border-[#E8DFD0] text-[#AA7000] focus:ring-[#AA7000] cursor-pointer" />
+              </label>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#FAF6EE] text-[#7F766C] text-[11px] font-bold border border-[#E8DFD0]">Upcoming</span>
+                  <span class="text-xs font-bold text-[#7F766C] uppercase tracking-wider">Day 5</span>
+                </div>
+                <h4 class="text-base font-bold text-[#2C1F0E] mt-1">
+                  Multi-Region Data Consistency &amp; Linearizability
+                </h4>
+                <p class="text-xs text-[#8C7B6B] mt-1">
+                  Spanner TrueTime vs Hybrid Logical Clocks; cross-region read replicas with bounded staleness.
+                </p>
+              </div>
+            </div>
+            <span class="text-xs text-[#7F766C] font-semibold">Locked</span>
+          </div>
+        </div>
+
+        <!-- Day 6 -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <label class="mt-1 cursor-pointer">
+                <input type="checkbox" onchange="updateProgress()" class="day-check w-5 h-5 rounded border-[#E8DFD0] text-[#AA7000] focus:ring-[#AA7000] cursor-pointer" />
+              </label>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#FAF6EE] text-[#7F766C] text-[11px] font-bold border border-[#E8DFD0]">Upcoming</span>
+                  <span class="text-xs font-bold text-[#7F766C] uppercase tracking-wider">Day 6</span>
+                </div>
+                <h4 class="text-base font-bold text-[#2C1F0E] mt-1">
+                  Behavioural Leadership &amp; Cross-Team Conflict
+                </h4>
+                <p class="text-xs text-[#8C7B6B] mt-1">
+                  Structuring answers with STAR methodology for architectural disagreement and technical debt pushback.
+                </p>
+              </div>
+            </div>
+            <span class="text-xs text-[#7F766C] font-semibold">Locked</span>
+          </div>
+        </div>
+
+        <!-- Day 7 -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <label class="mt-1 cursor-pointer">
+                <input type="checkbox" onchange="updateProgress()" class="day-check w-5 h-5 rounded border-[#E8DFD0] text-[#AA7000] focus:ring-[#AA7000] cursor-pointer" />
+              </label>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#FAF6EE] text-[#7F766C] text-[11px] font-bold border border-[#E8DFD0]">Final Sprint</span>
+                  <span class="text-xs font-bold text-[#7F766C] uppercase tracking-wider">Day 7</span>
+                </div>
+                <h4 class="text-base font-bold text-[#2C1F0E] mt-1">
+                  Full 60-Minute Comprehensive Mock Interview Simulation
+                </h4>
+                <p class="text-xs text-[#8C7B6B] mt-1">
+                  Complete loop: System Design + Real-time Code Execution + Behavioural Leadership with full evaluation report.
+                </p>
+              </div>
+            </div>
+            <span class="text-xs text-[#7F766C] font-semibold">Capstone</span>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+    const appSidebar = document.getElementById('app-sidebar');
+
+    if (mobileSidebarToggle && appSidebar) {
+      mobileSidebarToggle.addEventListener('click', () => {
+        appSidebar.classList.remove('-translate-x-full');
+      });
+    }
+
+    if (closeSidebarBtn && appSidebar) {
+      closeSidebarBtn.addEventListener('click', () => {
+        appSidebar.classList.add('-translate-x-full');
+      });
+    }
+
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('.day-check');
+      const total = checkboxes.length;
+      let checkedCount = 0;
+      checkboxes.forEach(cb => {
+        if (cb.checked) checkedCount++;
+      });
+      const pct = Math.round((checkedCount / total) * 100);
+      document.getElementById('progress-percentage').innerText = pct + '%';
+      document.getElementById('progress-fraction').innerText = checkedCount + '/' + total;
+    }
+  </script>
+</body>
+</html>

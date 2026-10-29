@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Session Evaluation Report | IMAIRA+</title>
+  <meta name="description" content="In-depth objective evaluation report with tri-dimensional scores and accent-agnostic transcript analysis." />
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="../js/tailwind-config.js"></script>
+
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased selection:bg-[#AA7000] selection:text-white flex h-screen overflow-hidden">
+
+  <!-- ========================================================================
+       SIDEBAR NAVIGATION
+       ======================================================================== -->
+  <aside id="app-sidebar" class="w-64 bg-white border-r border-[#E8DFD0] flex flex-col justify-between shrink-0 transition-transform -translate-x-full md:translate-x-0 fixed md:static z-40 h-full">
+    <div>
+      <div class="h-20 px-6 flex items-center justify-between border-b border-[#E8DFD0]">
+        <a href="../index.html" class="flex items-center gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
+        </a>
+        <button id="close-sidebar-btn" class="md:hidden text-[#7F766C] hover:text-[#2C1F0E]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <nav class="p-4 space-y-1.5">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="mock-interview.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">record_voice_over</span>
+          <span>Mock Interview</span>
+        </a>
+
+        <a href="assessment.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">quiz</span>
+          <span>Assessments</span>
+        </a>
+
+        <a href="history.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-sm transition-all shadow-sm">
+          <span class="material-symbols-outlined text-xl">history</span>
+          <span>History</span>
+        </a>
+
+        <a href="resume.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">description</span>
+          <span>Resume Analyzer</span>
+        </a>
+
+        <a href="prep-plan.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">checklist</span>
+          <span>Prep Plan</span>
+        </a>
+
+        <div class="pt-4 pb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">
+          Account
+        </div>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">settings</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-[#E8DFD0] space-y-3">
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
+            AM
+          </div>
+          <div>
+            <div class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
+            <div class="text-[11px] text-[#7F766C]">Staff Candidate</div>
+          </div>
+        </div>
+        <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
+          <span class="material-symbols-outlined text-lg">logout</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================
+       REPORT MAIN WORKSPACE
+       ======================================================================== -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Action Bar -->
+    <header class="h-20 bg-white border-b border-[#E8DFD0] px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
+      <div class="flex items-center gap-4">
+        <button id="mobile-sidebar-toggle" class="md:hidden text-[#2C1F0E] hover:text-[#AA7000] p-1">
+          <span class="material-symbols-outlined text-2xl">menu</span>
+        </button>
+        <a href="history.html" class="flex items-center gap-1.5 text-xs font-bold text-[#8C7B6B] hover:text-[#2C1F0E]">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Back to History</span>
+        </a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="window.print()" class="px-4 py-2 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-xs font-bold text-[#2C1F0E] flex items-center gap-1.5 transition-all">
+          <span class="material-symbols-outlined text-base">download</span>
+          <span>Export Dossier PDF</span>
+        </button>
+        <a href="prep-plan.html" class="px-5 py-2 rounded-full bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-pill">
+          <span class="material-symbols-outlined text-base">auto_fix_high</span>
+          <span>Generate Prep Plan</span>
+        </a>
+      </div>
+    </header>
+    <!-- Page Breadcrumb Nav -->
+    <div class="px-6 py-3 border-b border-[#E8DFD0] bg-[#FAF6EE] flex items-center gap-2 text-xs font-semibold text-[#8C7B6B]">
+      <a href="../index.html" class="hover:text-[#AA7000] transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">home</span>
+        <span>Home</span>
+      </a>
+      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
+      <a href="dashboard.html" class="hover:text-[#AA7000] transition-colors">Dashboard</a>
+      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
+      <span class="text-[#2C1F0E]">Session Report</span>
+      <div class="ml-auto">
+        <a href="javascript:history.back()" class="flex items-center gap-1 text-[#8C7B6B] hover:text-[#AA7000] transition-colors">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Back</span>
+        </a>
+      </div>
+    </div>
+
+
+    <main class="p-6 sm:p-8 space-y-8 max-w-6xl mx-auto w-full" data-tabs-container>
+      
+      <!-- REPORT HEADER & OVERALL GRADE -->
+      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-3 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] text-[11px] font-bold border border-[#E8C97A]">
+              System Design &amp; Distributed Consensus
+            </span>
+            <span class="text-xs text-[#7F766C]">• Session ID: #SES-9821</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2C1F0E]">
+            Staff Backend Architect Evaluation
+          </h1>
+          <p class="text-xs text-[#8C7B6B] mt-1">
+            Conducted on October 28, 2026 • 28 minutes duration • 5 core questions evaluated
+          </p>
+        </div>
+
+        <div class="flex items-center gap-4 bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0] shrink-0">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">Composite Grade</div>
+            <div class="text-3xl font-black text-[#2C1F0E]">91.6 <span class="text-sm font-semibold text-[#7F766C]">/ 100</span></div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-[#E8F8F2] text-[#10B981] font-black text-xl flex items-center justify-center border border-[#10B981]/30">
+            A
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 SCORE GAUGES (Content, Structure, Communication) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Score 1: Content Depth -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Technical Depth</span>
+            <span class="material-symbols-outlined text-[#AA7000]">memory</span>
+          </div>
+          <div class="flex items-baseline gap-2 mb-3">
+            <span class="text-4xl font-black text-[#2C1F0E]">92</span>
+            <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+          </div>
+          <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
+            <div class="bg-[#AA7000] h-full rounded-full" style="width: 92%"></div>
+          </div>
+          <p class="text-xs text-[#8C7B6B] leading-relaxed">
+            Strong coverage of quorum requirements, log compaction, and leader lease mechanics under asymmetric partitions.
+          </p>
+        </div>
+
+        <!-- Score 2: Structural Logic -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Structural Flow</span>
+            <span class="material-symbols-outlined text-[#2C1F0E]">schema</span>
+          </div>
+          <div class="flex items-baseline gap-2 mb-3">
+            <span class="text-4xl font-black text-[#2C1F0E]">88</span>
+            <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+          </div>
+          <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
+            <div class="bg-[#2C1F0E] h-full rounded-full" style="width: 88%"></div>
+          </div>
+          <p class="text-xs text-[#8C7B6B] leading-relaxed">
+            Logical progression: problem constraints scoped first before detailing storage engines and recovery strategies.
+          </p>
+        </div>
+
+        <!-- Score 3: Communication & Clarity -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Speech Clarity</span>
+            <span class="material-symbols-outlined text-[#10B981]">record_voice_over</span>
+          </div>
+          <div class="flex items-baseline gap-2 mb-3">
+            <span class="text-4xl font-black text-[#2C1F0E]">95</span>
+            <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+          </div>
+          <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
+            <div class="bg-[#10B981] h-full rounded-full" style="width: 95%"></div>
+          </div>
+          <p class="text-xs text-[#8C7B6B] leading-relaxed">
+            Accent-agnostic model verified zero phonetic penalty. Pacing was steady at 138 words/minute with minimal hesitation.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- TABS NAVIGATION: Overview | Breakdown | Transcript | Key Moments -->
+      <div class="border-b border-[#E8DFD0]" id="tabs-header">
+        <div class="flex items-center gap-8 -mb-px">
+          <button onclick="switchTab('overview')" id="tab-btn-overview" class="pb-3 text-sm font-bold border-b-2 border-[#AA7000] text-[#2C1F0E] transition-all">
+            Overview
+          </button>
+          <button onclick="switchTab('breakdown')" id="tab-btn-breakdown" class="pb-3 text-sm font-semibold border-b-2 border-transparent text-[#7F766C] hover:text-[#2C1F0E] transition-all">
+            Per-Answer Breakdown
+          </button>
+          <button onclick="switchTab('transcript')" id="tab-btn-transcript" class="pb-3 text-sm font-semibold border-b-2 border-transparent text-[#7F766C] hover:text-[#2C1F0E] transition-all">
+            Full Transcript
+          </button>
+          <button onclick="switchTab('moments')" id="tab-btn-moments" class="pb-3 text-sm font-semibold border-b-2 border-transparent text-[#7F766C] hover:text-[#2C1F0E] transition-all">
+            Key Moments
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 1: OVERVIEW CONTENT -->
+      <div id="tab-overview" class="space-y-8">
+        
+        <!-- BLUNDERS & MISSED CONCEPTS -->
+        <div class="bg-white border-2 border-rose-200 rounded-3xl p-6 sm:p-8 shadow-card">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold">
+              <span class="material-symbols-outlined text-lg">warning</span>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-[#2C1F0E]">Critical Gaps &amp; Missed Concepts</h3>
+              <p class="text-xs text-[#8C7B6B]">Omissions detected during trade-off analysis that impact Staff-level evaluations.</p>
+            </div>
+          </div>
+
+          <div class="space-y-3 mt-4">
+            <div class="p-4 rounded-2xl bg-rose-50/60 border border-rose-100 flex items-start gap-3">
+              <span class="w-2 h-2 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
+              <div class="text-xs text-[#2C1F0E] leading-relaxed">
+                <strong class="text-[#2C1F0E] font-bold block mb-0.5">Omission of Raft Pre-Vote Protocol in Question 2:</strong>
+                When an isolated node reconnects with an outdated state, it disrupts healthy leaders unless a pre-vote election check is explicitly enforced. You failed to mention pre-vote phases when discussing reconnect recovery.
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-rose-50/60 border border-rose-100 flex items-start gap-3">
+              <span class="w-2 h-2 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
+              <div class="text-xs text-[#2C1F0E] leading-relaxed">
+                <strong class="text-[#2C1F0E] font-bold block mb-0.5">Unclear Tail-Latency Mitigation for Distributed Caching:</strong>
+                In Question 4, you proposed a broadcast invalidation without addressing cache stampede risks or hedge-request strategies for the 99.9th percentile.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECOMMENDATIONS SECTION -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-8 rounded-full bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg">recommend</span>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-[#2C1F0E]">Recommended Growth Steps</h3>
+              <p class="text-xs text-[#8C7B6B]">Three high-impact improvements to elevate your rating to Staff+.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0]">
+              <div class="w-6 h-6 rounded-full bg-[#AA7000] text-white text-xs font-bold flex items-center justify-center mb-3">1</div>
+              <h4 class="text-xs font-bold text-[#2C1F0E] mb-1.5">Explicitly State CAP Boundary Trade-offs</h4>
+              <p class="text-xs text-[#8C7B6B] leading-relaxed">
+                Do not wait for interviewer probing. Begin distributed systems answers by clearly bounding your linearizability requirements versus availability tolerances.
+              </p>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0]">
+              <div class="w-6 h-6 rounded-full bg-[#AA7000] text-white text-xs font-bold flex items-center justify-center mb-3">2</div>
+              <h4 class="text-xs font-bold text-[#2C1F0E] mb-1.5">Structure Numbers Around Back-of-the-Envelope Math</h4>
+              <p class="text-xs text-[#8C7B6B] leading-relaxed">
+                State QPS, write/read ratios, and storage growth per year in explicit numbers before detailing hardware cluster topology.
+              </p>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0]">
+              <div class="w-6 h-6 rounded-full bg-[#AA7000] text-white text-xs font-bold flex items-center justify-center mb-3">3</div>
+              <h4 class="text-xs font-bold text-[#2C1F0E] mb-1.5">Master Failure Domain Blast-Radius Isolation</h4>
+              <p class="text-xs text-[#8C7B6B] leading-relaxed">
+                Detail cell-based architectures and regional isolation boundaries to show staff-level risk containment instinct.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: PER-ANSWER BREAKDOWN -->
+      <div id="tab-breakdown" class="hidden space-y-6">
+        
+        <!-- Breakdown Card 1 -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
+          <div class="flex items-center justify-between pb-4 border-b border-[#E8DFD0] mb-4">
+            <span class="text-xs font-bold text-[#AA7000] uppercase tracking-wider">Question 01 • Architecture Framing</span>
+            <span class="px-3 py-1 rounded-full bg-[#E8F8F2] text-[#10B981] text-xs font-bold">94/100</span>
+          </div>
+          <h3 class="text-sm font-bold text-[#2C1F0E] mb-3">
+            "How do you ensure strong consistency and prevent phantom reads across partitioned shards in a high-volume financial ledger?"
+          </h3>
+          <div class="bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0] mb-4 text-xs text-[#2C1F0E] leading-relaxed">
+            <span class="text-[#7F766C] font-semibold block mb-1">Your Stated Solution:</span>
+            "I proposed using 2-Phase Commit coordinated with deterministic state machine replication (Raft) within each shard, pairing write-ahead logging with strict isolation levels."
+          </div>
+          <div class="p-3 bg-[#E8F8F2]/70 border border-[#10B981]/30 rounded-2xl text-xs text-[#065F46] flex items-start gap-2">
+            <span class="material-symbols-outlined text-sm text-[#10B981] mt-0.5">verified</span>
+            <span><strong>Evaluator Feedback:</strong> Excellent distinction between intra-shard consensus and cross-shard atomic commit protocols. Well-paced delivery without filler words.</span>
+          </div>
+        </div>
+
+        <!-- Breakdown Card 2 -->
+        <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
+          <div class="flex items-center justify-between pb-4 border-b border-[#E8DFD0] mb-4">
+            <span class="text-xs font-bold text-[#AA7000] uppercase tracking-wider">Question 02 • Fault Tolerance &amp; CAP</span>
+            <span class="px-3 py-1 rounded-full bg-[#F2EBD8] text-[#2C1F0E] text-xs font-bold">86/100</span>
+          </div>
+          <h3 class="text-sm font-bold text-[#2C1F0E] mb-3">
+            "Under a network split condition in a 5-node cluster, how does the minority leader behave and recover?"
+          </h3>
+          <div class="bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0] mb-4 text-xs text-[#2C1F0E] leading-relaxed">
+            <span class="text-[#7F766C] font-semibold block mb-1">Your Stated Solution:</span>
+            "The minority leader receives writes but cannot obtain quorum acknowledgments, so writes remain uncommitted. When reconnecting, it steps down to follower upon observing a higher election term."
+          </div>
+          <div class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2">
+            <span class="material-symbols-outlined text-sm text-amber-600 mt-0.5">info</span>
+            <span><strong>Evaluator Feedback:</strong> Accurate overall, but missing the pre-vote phase. Accent transcription had 100% confidence with zero phonetic ambiguity.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 3: TRANSCRIPT -->
+      <div id="tab-transcript" class="hidden bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
+        <div class="flex items-center justify-between pb-4 border-b border-[#E8DFD0] mb-6">
+          <h3 class="text-sm font-bold text-[#2C1F0E]">Complete Accent-Agnostic Audio Transcript</h3>
+          <span class="text-xs text-[#7F766C]">Total duration: 28:14</span>
+        </div>
+        <div class="space-y-4 text-xs text-[#2C1F0E] leading-relaxed font-normal">
+          <div class="p-3.5 bg-[#FAF6EE] rounded-2xl border border-[#E8DFD0]">
+            <span class="font-bold text-[#AA7000] block mb-1">AI Evaluator (00:00):</span>
+            "Hello Alex. Today we will focus on Senior and Staff distributed systems architecture. Let's begin by discussing partition tolerance in quorum clusters."
+          </div>
+          <div class="p-3.5 bg-white border border-[#E8DFD0] rounded-2xl">
+            <span class="font-bold text-[#2C1F0E] block mb-1">Alex Morgan (00:25):</span>
+            "Under a network partition condition with 5 nodes, if the leader is isolated in a 2-node minority partition, it will accept write requests but will not commit them to the state machine because it requires quorum acknowledgments from at least 3 nodes..."
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: KEY MOMENTS -->
+      <div id="tab-moments" class="hidden bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
+        <h3 class="text-sm font-bold text-[#2C1F0E] mb-6">Bookmarked Key Moments</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold text-[#2C1F0E]">Peak Technical Articulation</div>
+              <div class="text-[11px] text-[#7F766C] mt-0.5">Timestamp: 04:12 • 2PC vs Sagas</div>
+            </div>
+            <span class="material-symbols-outlined text-[#AA7000]">play_circle</span>
+          </div>
+          <div class="p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold text-[#2C1F0E]">Hesitation on Raft Pre-Vote</div>
+              <div class="text-[11px] text-[#7F766C] mt-0.5">Timestamp: 16:40 • Missed concept</div>
+            </div>
+            <span class="material-symbols-outlined text-[#7F766C]">play_circle</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+    const appSidebar = document.getElementById('app-sidebar');
+
+    if (mobileSidebarToggle && appSidebar) {
+      mobileSidebarToggle.addEventListener('click', () => {
+        appSidebar.classList.remove('-translate-x-full');
+      });
+    }
+
+    if (closeSidebarBtn && appSidebar) {
+      closeSidebarBtn.addEventListener('click', () => {
+        appSidebar.classList.add('-translate-x-full');
+      });
+    }
+
+    function switchTab(tabId) {
+      const tabs = ['overview', 'breakdown', 'transcript', 'moments'];
+      tabs.forEach(t => {
+        const content = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (content && btn) {
+          if (t === tabId) {
+            content.classList.remove('hidden');
+            btn.classList.add('border-[#AA7000]', 'text-[#2C1F0E]', 'font-bold');
+            btn.classList.remove('border-transparent', 'text-[#7F766C]', 'font-semibold');
+          } else {
+            content.classList.add('hidden');
+            btn.classList.remove('border-[#AA7000]', 'text-[#2C1F0E]', 'font-bold');
+            btn.classList.add('border-transparent', 'text-[#7F766C]', 'font-semibold');
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

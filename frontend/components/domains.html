@@ -1,0 +1,74 @@
+<!-- ==========================================================================
+     COMPONENT: Technical Domains
+     Curated Practice Areas Bento Grid
+     ========================================================================== -->
+<section class="py-24 md:py-28 px-6 max-w-7xl mx-auto" id="technical-domains">
+  <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+    <div>
+      <span class="inline-block px-3.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-xs uppercase tracking-wider mb-3">
+        Curated Practice Areas
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-[#2C1F0E] tracking-tight">
+        Supported Technical Domains
+      </h2>
+    </div>
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#E8DFD0] text-xs font-bold text-[#8C7B6B] shadow-sm">
+      <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+      <span>Staff+ Ready Benchmarks</span>
+    </div>
+  </div>
+
+  <!-- Spacious 3-Card Bento Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Domain 1 -->
+    <div class="bg-white border border-[#E8DFD0] hover:border-[#AA7000]/50 hover:shadow-card transition-all p-8 rounded-3xl flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <span class="text-xs font-bold text-[#AA7000] tracking-wider uppercase">DOMAIN 01</span>
+          <span class="text-xs font-bold text-[#7F766C] bg-[#FAF6EE] px-3 py-1 rounded-full border border-[#E8DFD0]/70">STAFF / PRINCIPAL</span>
+        </div>
+        <h3 class="text-xl font-bold text-[#2C1F0E] mb-3">Distributed Systems Architecture</h3>
+        <p class="text-sm text-[#8C7B6B] leading-relaxed mb-6">
+          Consensus protocols, Raft/Paxos invariants, fault tolerance under network partitions, and strong replication guarantees.
+        </p>
+      </div>
+      <div class="bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0]/70 text-xs text-[#2C1F0E] italic">
+        "Design a zero-data-loss cross-region replication layer under degraded transit."
+      </div>
+    </div>
+
+    <!-- Domain 2 -->
+    <div class="bg-white border border-[#E8DFD0] hover:border-[#AA7000]/50 hover:shadow-card transition-all p-8 rounded-3xl flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <span class="text-xs font-bold text-[#AA7000] tracking-wider uppercase">DOMAIN 02</span>
+          <span class="text-xs font-bold text-[#7F766C] bg-[#FAF6EE] px-3 py-1 rounded-full border border-[#E8DFD0]/70">INFRA CORE</span>
+        </div>
+        <h3 class="text-xl font-bold text-[#2C1F0E] mb-3">Storage Engines &amp; Databases</h3>
+        <p class="text-sm text-[#8C7B6B] leading-relaxed mb-6">
+          LSM-Trees vs B-Trees, Write-Ahead Logging (WAL), MVCC concurrency control, and storage compaction trade-offs.
+        </p>
+      </div>
+      <div class="bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0]/70 text-xs text-[#2C1F0E] italic">
+        "Explain write amplification trade-offs between leveled and size-tiered compaction."
+      </div>
+    </div>
+
+    <!-- Domain 3 -->
+    <div class="bg-white border border-[#E8DFD0] hover:border-[#AA7000]/50 hover:shadow-card transition-all p-8 rounded-3xl flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <span class="text-xs font-bold text-[#AA7000] tracking-wider uppercase">DOMAIN 03</span>
+          <span class="text-xs font-bold text-[#7F766C] bg-[#FAF6EE] px-3 py-1 rounded-full border border-[#E8DFD0]/70">LARGE SCALE AI</span>
+        </div>
+        <h3 class="text-xl font-bold text-[#2C1F0E] mb-3">ML Infrastructure &amp; Sharding</h3>
+        <p class="text-sm text-[#8C7B6B] leading-relaxed mb-6">
+          Tensor and pipeline parallelism, NCCL ring all-reduce communication collectives, and high-bandwidth interconnects.
+        </p>
+      </div>
+      <div class="bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0]/70 text-xs text-[#2C1F0E] italic">
+        "Size an inter-node 3D parallelism topology for a 405B parameter model under InfiniBand."
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,201 @@
+/* ==========================================================================
+   IMAIRA+ Landing Page Styles — Warm Kinetic System
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* ── Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── Bento Flying Cards Animation (Come Together Effect) ── */
+.bento-flying-card {
+  will-change: transform, opacity;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  #bento-showcase {
+    min-height: auto !important;
+  }
+  #bento-sticky {
+    position: relative !important;
+    height: auto !important;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+  #bento-header-1, #bento-header-2 {
+    position: relative !important;
+    top: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  #bento-header-2 {
+    display: none !important;
+  }
+  #bento-stage {
+    height: auto !important;
+    flex-direction: column !important;
+    gap: 1.25rem;
+    margin-top: 1.5rem !important;
+  }
+  .bento-flying-card {
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    max-width: 380px;
+  }
+  #bento-scroll-prompt {
+    display: none !important;
+  }
+}
+
+/* ── Typewriter Cursor ── */
+@keyframes blink-cursor {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.typewriter-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1.05em;
+  background-color: #AA7000;
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: blink-cursor 0.9s infinite;
+}
+
+/* ── Hero Ambient Orbs ── */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+@keyframes float-med {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  33% { transform: translateY(-20px) translateX(10px); }
+  66% { transform: translateY(10px) translateX(-10px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.6; }
+}
+.orb-coral {
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(170,112,0,0.18) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float-slow 8s ease-in-out infinite, pulse-glow 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.orb-amber {
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(89,67,0,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float-med 11s ease-in-out infinite, pulse-glow 6s ease-in-out infinite 2s;
+  pointer-events: none;
+}
+.orb-cream {
+  position: absolute;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(250,246,238,0.8) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float-slow 14s ease-in-out infinite 3s;
+  pointer-events: none;
+}
+
+/* ── Boy Hero Float Animation ── */
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+.boy-hero {
+  animation: hero-float 5s ease-in-out infinite;
+  filter: drop-shadow(0 30px 60px rgba(44,31,14,0.12));
+}
+
+/* ── Bento Feature Cards ── */
+.feature-card {
+  background: #FFFDF8;
+  border: 1px solid #E8DFD0;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px -2px rgba(42,25,0,0.05), 0 8px 24px -4px rgba(42,25,0,0.07);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.feature-card:hover {
+  box-shadow: 0 12px 32px -4px rgba(42,25,0,0.12);
+  transform: translateY(-3px);
+}
+
+/* ── Waveform bars (for communication card) ── */
+@keyframes wave-bar {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+.wave-bar {
+  width: 4px;
+  border-radius: 2px;
+  background: #10B981;
+  animation: wave-bar 1s ease-in-out infinite;
+}
+.wave-bar:nth-child(1) { animation-delay: 0s; height: 20px; }
+.wave-bar:nth-child(2) { animation-delay: 0.1s; height: 28px; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; height: 16px; }
+.wave-bar:nth-child(4) { animation-delay: 0.15s; height: 32px; }
+.wave-bar:nth-child(5) { animation-delay: 0.25s; height: 20px; }
+.wave-bar:nth-child(6) { animation-delay: 0.05s; height: 24px; }
+.wave-bar:nth-child(7) { animation-delay: 0.3s; height: 14px; }
+
+/* ── Stage Waveform bars (interview page) ── */
+.stage-wave-bar {
+  background: #AA7000;
+}
+
+/* ── Smooth Scrolling ── */
+html { scroll-behavior: smooth; }
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #FAF6EE; }
+::-webkit-scrollbar-thumb { background: #E8DFD0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #7F766C; }
+
+/* ── Selection ── */
+::selection { background-color: #AA7000; color: #ffffff; }
+
+/* ── Sidebar active state ── */
+.sidebar-active {
+  background: #FBF3E0 !important;
+  color: #AA7000 !important;
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .typewriter-cursor, .orb-coral, .orb-amber, .orb-cream, .boy-hero, .wave-bar { animation: none; }
+  .reveal { opacity: 1; transform: none; }
+  [data-bento] { opacity: 1 !important; transform: none !important; }
+}

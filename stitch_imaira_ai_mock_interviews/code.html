@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IMAIRA+ | Accent-Agnostic Senior Technical Evaluation</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "coral": "#FF5E4D",
+          "coral-hover": "#EB5A3C",
+          "coral-subtle": "#FFF0ED",
+          "cream-surface": "#FDF8EE",
+          "canvas-secondary": "#F7F2E7",
+          "surface-container": "#F4EFE6",
+          "metric-green": "#10B981",
+          "metric-green-subtle": "#E8F8F2",
+          "metric-purple": "#8B5CF6",
+          "metric-amber": "#F59E0B",
+          "border-subtle": "#EADECF"
+        },
+        fontFamily: {
+          sans: ["Plus Jakarta Sans", "sans-serif"],
+          mono: ["JetBrains Mono", "monospace"]
+        },
+        borderRadius: {
+          '2xl': '1.25rem',
+          '3xl': '1.75rem',
+          '4xl': '2.25rem'
+        },
+        boxShadow: {
+          'soft': '0 8px 30px -4px rgba(22, 19, 14, 0.05), 0 2px 6px -1px rgba(22, 19, 14, 0.03)',
+          'card': '0 12px 36px -6px rgba(220, 100, 70, 0.08), 0 4px 12px -2px rgba(0,0,0,0.03)',
+          'pill': '0 4px 14px 0 rgba(255, 94, 77, 0.25)'
+        }
+      }
+    }
+  };
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  }
+  @keyframes blink-cursor {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  .typewriter-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1.05em;
+    background-color: #EB5A3C;
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: blink-cursor 0.9s infinite;
+  }
+</style>
+</head>
+<body class="bg-[#FEF9EF] text-[#2D2A26] font-sans antialiased selection:bg-[#FF5E4D] selection:text-white">
+<!-- TOP SHELL: Warm Huru-style Navigation -->
+<header class="sticky top-0 z-50 bg-[#FEF9EF]/90 backdrop-blur-md border-b border-[#EADECF]/70 h-20 transition-all">
+<div class="max-w-7xl mx-auto h-full px-6 flex items-center justify-between"><!-- Brand Anchor ONLY (clean & bold) -->
+<div class="flex items-center">
+<a class="text-2xl font-black tracking-tight text-[#201D1A] flex items-center gap-1.5" href="#">
+<span class="">IMAIRA<span class="text-[#FF5E4D]">+</span></span>
+</a>
+</div>
+<!-- Navigation & Actions on the Right -->
+<div class="flex items-center gap-7">
+<!-- Nav Links -->
+<nav class="hidden lg:flex items-center gap-7">
+<a class="text-sm font-semibold text-[#2D2A26] hover:text-[#FF5E4D] transition-colors" href="#practice">Practice</a>
+<a class="text-sm font-semibold text-[#666056] hover:text-[#FF5E4D] transition-colors" href="#feedback">Feedback</a>
+<a class="text-sm font-semibold text-[#666056] hover:text-[#FF5E4D] transition-colors" href="#organisation">Organisation</a>
+<a class="text-sm font-semibold text-[#666056] hover:text-[#FF5E4D] transition-colors" href="#blog">Blog</a>
+</nav>
+<!-- Language selector -->
+<div class="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-[#666056] hover:text-[#201D1A] transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[18px] text-[#7D7569]" data-icon="language">language</span>
+<span class="">EN</span>
+<span class="material-symbols-outlined text-[16px] text-[#7D7569]" data-icon="expand_more">expand_more</span>
+</div>
+<!-- Log in -->
+<a class="text-sm font-semibold text-[#2D2A26] hover:text-[#FF5E4D] transition-colors" href="#login">Log in</a>
+<!-- Try now primary coral button -->
+<button class="bg-[#FF5E4D] hover:bg-[#EB5A3C] text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-pill hover:shadow-lg transition-all flex items-center gap-1.5">
+<span class="">Try now</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div></div>
+</header>
+<!-- MAIN CONTENT -->
+<main class="overflow-hidden">
+<!-- HERO SECTION: Warm, welcoming, high-conversion layout -->
+<section class="relative pt-20 pb-24 md:py-28 px-6 max-w-7xl mx-auto">
+<div class="text-center max-w-4xl mx-auto mb-16">
+<!-- Mascot Greeting Badge -->
+<div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#FFF0ED] border border-[#FFCFCA] mb-8 shadow-sm">
+<div class="w-7 h-7 rounded-full bg-[#FF5E4D] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+        🦊
+      </div>
+<span class="text-xs font-bold text-[#FF5E4D] tracking-wide uppercase">Meet Rory • Accent-Blind Technical Coach</span>
+</div>
+<!-- Main Headline with Dynamic Typewriter Effect -->
+<h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#201D1A] tracking-tight leading-[1.12] mb-6">
+<span class="block mb-2">Interview Practice Platform</span>
+<span class="inline-block text-[#EB5A3C]">
+        for <span class="underline decoration-[#FFCFCA] decoration-4 underline-offset-8" id="typewriter-text">Job Interviews</span><span aria-hidden="true" class="typewriter-cursor"></span>
+</span>
+</h1>
+<!-- Simplified Clean Subtitle -->
+<p class="text-lg md:text-xl text-[#6B6358] max-w-2xl mx-auto leading-relaxed mb-10">
+      Master distributed systems interviews with confidence. IMAIRA+ evaluates pure architecture logic and engineering depth—never native pronunciation.
+    </p>
+<!-- CTA Cluster -->
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+<button class="w-full sm:w-auto bg-[#FF5E4D] hover:bg-[#EB5A3C] text-white text-base font-bold px-8 py-4 rounded-full shadow-pill hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2.5">
+<span class="">Practice with Rory Now</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="mic">mic</span>
+</button>
+<button class="w-full sm:w-auto bg-white hover:bg-[#F9F4EB] text-[#2D2A26] border border-[#EADECF] text-base font-bold px-7 py-4 rounded-full shadow-soft transition-all flex items-center justify-center gap-2">
+<span class="">Explore Architecture</span>
+<span class="material-symbols-outlined text-[18px] text-[#7D7569]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Mascot Interactive Showcase Card -->
+<div class="relative bg-white rounded-3xl p-8 sm:p-10 border border-[#EADECF] shadow-card text-left max-w-3xl mx-auto">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-[#F4EFE6]">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-[#FFF0ED] border border-[#FFD9D2] flex items-center justify-center text-3xl shadow-sm">
+            🦊
+          </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-[#201D1A] text-base">Rory</span>
+<span class="px-2 py-0.5 rounded-full bg-[#E8F8F2] text-[#10B981] font-bold text-[11px]">Active Listener</span>
+</div>
+<p class="text-xs text-[#7D7569] mt-0.5">Calibrated for 84+ global dialects and speech patterns</p>
+</div>
+</div>
+<!-- Speech Bubble -->
+<div class="bg-[#FDF8EE] border border-[#EADECF] px-4 py-2.5 rounded-2xl text-xs font-semibold text-[#201D1A] relative shadow-sm">
+          "I listen to your architecture logic, not your accent!" 🎯
+        </div>
+</div>
+<!-- Simple Telemetry Row -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 text-center sm:text-left">
+<div>
+<div class="text-xs font-bold text-[#8C8375] uppercase mb-1">Neutrality Drift</div>
+<div class="text-2xl font-black text-[#10B981]">0.00%</div>
+<div class="text-xs text-[#7D7569] mt-0.5">Phonetic bias removed</div>
+</div>
+<div>
+<div class="text-xs font-bold text-[#8C8375] uppercase mb-1">Architecture Score</div>
+<div class="text-2xl font-black text-[#201D1A]">96 <span class="text-xs font-bold text-[#7D7569]">/ 100</span></div>
+<div class="text-xs text-[#7D7569] mt-0.5">Consensus &amp; Raft DAGs</div>
+</div>
+<div>
+<div class="text-xs font-bold text-[#8C8375] uppercase mb-1">Latency</div>
+<div class="text-2xl font-black text-[#FF5E4D]">12ms</div>
+<div class="text-xs text-[#7D7569] mt-0.5">Realtime speech-to-logic</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ARCHITECTURE: 3-Layer Separation Architecture -->
+<section class="py-24 md:py-28 px-6 bg-white border-y border-[#EADECF]" id="fairness-kernel">
+<div class="max-w-7xl mx-auto">
+<div class="max-w-2xl mx-auto text-center mb-16">
+<span class="inline-block px-3.5 py-1 rounded-full bg-[#FFF0ED] text-[#FF5E4D] font-bold text-xs uppercase tracking-wider mb-3">
+        Three Simple Principles
+      </span>
+<h2 class="text-3xl sm:text-4xl font-extrabold text-[#201D1A] tracking-tight mb-4">
+        How Rory Evaluates Technical Merit
+      </h2>
+<p class="text-[#6B6358] text-base leading-relaxed">
+        We strip away acoustic variations and focus purely on your technical problem solving.
+      </p>
+</div>
+<!-- Clean 3-Card Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-[#FDF8EE] border border-[#EADECF] rounded-3xl p-8 flex flex-col justify-between hover:shadow-card transition-all">
+<div>
+<div class="w-12 h-12 rounded-2xl bg-[#FFF0ED] text-[#FF5E4D] flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-2xl" data-icon="graphic_eq">graphic_eq</span>
+</div>
+<span class="text-xs font-bold text-[#FF5E4D] uppercase tracking-wider block mb-2">Layer 01</span>
+<h3 class="text-xl font-bold text-[#201D1A] mb-3">Acoustic Normalization</h3>
+<p class="text-sm text-[#6B6358] leading-relaxed">
+            Dialect and pronunciation variations are filtered out at the audio frequency level before any semantic analysis takes place.
+          </p>
+</div>
+<div class="mt-8 pt-4 border-t border-[#EADECF]/60 flex items-center justify-between text-xs font-semibold text-[#7D7569]">
+<span class="">Dialect invariant</span>
+<span class="text-[#10B981] font-bold">84 Accents</span>
+</div>
+</div>
+<div class="bg-[#FDF8EE] border border-[#EADECF] rounded-3xl p-8 flex flex-col justify-between hover:shadow-card transition-all">
+<div>
+<div class="w-12 h-12 rounded-2xl bg-[#E8F8F2] text-[#10B981] flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-2xl" data-icon="schema">schema</span>
+</div>
+<span class="text-xs font-bold text-[#10B981] uppercase tracking-wider block mb-2">Layer 02</span>
+<h3 class="text-xl font-bold text-[#201D1A] mb-3">Concept Extraction</h3>
+<p class="text-sm text-[#6B6358] leading-relaxed">
+            Your spoken thoughts map directly into structured architecture diagrams and system trade-offs regardless of sentence wording.
+          </p>
+</div>
+<div class="mt-8 pt-4 border-t border-[#EADECF]/60 flex items-center justify-between text-xs font-semibold text-[#7D7569]">
+<span class="">Topology mapped</span>
+<span class="text-[#10B981] font-bold">98.4% Accuracy</span>
+</div>
+</div>
+<div class="bg-[#FDF8EE] border border-[#EADECF] rounded-3xl p-8 flex flex-col justify-between hover:shadow-card transition-all">
+<div>
+<div class="w-12 h-12 rounded-2xl bg-[#EDE9FE] text-[#8B5CF6] flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-2xl" data-icon="verified_user">verified_user</span>
+</div>
+<span class="text-xs font-bold text-[#8B5CF6] uppercase tracking-wider block mb-2">Layer 03</span>
+<h3 class="text-xl font-bold text-[#201D1A] mb-3">Logic &amp; Trade-off Scoring</h3>
+<p class="text-sm text-[#6B6358] leading-relaxed">
+            Scores depend solely on technical soundness: boundary constraints, failure handling, and latency optimizations.
+          </p>
+</div>
+<div class="mt-8 pt-4 border-t border-[#EADECF]/60 flex items-center justify-between text-xs font-semibold text-[#7D7569]">
+<span class="">Zero bias drift</span>
+<span class="text-[#10B981] font-bold">Objective</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- TECHNICAL DOMAINS: Warm Bento Grid -->
+<section class="py-24 md:py-28 px-6 max-w-7xl mx-auto" id="technical-domains">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+<div>
+<span class="inline-block px-3.5 py-1 rounded-full bg-[#FFF0ED] text-[#FF5E4D] font-bold text-xs uppercase tracking-wider mb-3">
+        Curated Practice Areas
+      </span>
+<h2 class="text-3xl sm:text-4xl font-extrabold text-[#201D1A] tracking-tight">
+        Supported Technical Domains
+      </h2>
+</div>
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#EADECF] text-xs font-bold text-[#6B6358] shadow-sm">
+<span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+<span class="">Staff+ Ready Benchmarks</span>
+</div>
+</div>
+<!-- Spacious 3-Card Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Domain 1 -->
+<div class="bg-white border border-[#EADECF] hover:border-[#FF5E4D]/50 hover:shadow-card transition-all p-8 rounded-3xl flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<span class="text-xs font-bold text-[#FF5E4D] tracking-wider uppercase">DOMAIN 01</span>
+<span class="text-xs font-bold text-[#7D7569] bg-[#FDF8EE] px-3 py-1 rounded-full border border-[#EADECF]/70">STAFF / PRINCIPAL</span>
+</div>
+<h3 class="text-xl font-bold text-[#201D1A] mb-3">Distributed Systems Architecture</h3>
+<p class="text-sm text-[#6B6358] leading-relaxed mb-6">
+          Consensus protocols, Raft/Paxos invariants, fault tolerance under network partitions, and strong replication guarantees.
+        </p>
+</div>
+<div class="bg-[#FDF8EE] p-4 rounded-2xl border border-[#EADECF]/70 text-xs text-[#201D1A] italic">
+        "Design a zero-data-loss cross-region replication layer under degraded transit."
+      </div>
+</div>
+<!-- Domain 2 -->
+<div class="bg-white border border-[#EADECF] hover:border-[#FF5E4D]/50 hover:shadow-card transition-all p-8 rounded-3xl flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<span class="text-xs font-bold text-[#FF5E4D] tracking-wider uppercase">DOMAIN 02</span>
+<span class="text-xs font-bold text-[#7D7569] bg-[#FDF8EE] px-3 py-1 rounded-full border border-[#EADECF]/70">INFRA CORE</span>
+</div>
+<h3 class="text-xl font-bold text-[#201D1A] mb-3">Storage Engines &amp; Databases</h3>
+<p class="text-sm text-[#6B6358] leading-relaxed mb-6">
+          LSM-Trees vs B-Trees, Write-Ahead Logging (WAL), MVCC concurrency control, and storage compaction trade-offs.
+        </p>
+</div>
+<div class="bg-[#FDF8EE] p-4 rounded-2xl border border-[#EADECF]/70 text-xs text-[#201D1A] italic">
+        "Explain write amplification trade-offs between leveled and size-tiered compaction."
+      </div>
+</div>
+<!-- Domain 3 -->
+<div class="bg-white border border-[#EADECF] hover:border-[#FF5E4D]/50 hover:shadow-card transition-all p-8 rounded-3xl flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-6">
+<span class="text-xs font-bold text-[#FF5E4D] tracking-wider uppercase">DOMAIN 03</span>
+<span class="text-xs font-bold text-[#7D7569] bg-[#FDF8EE] px-3 py-1 rounded-full border border-[#EADECF]/70">LARGE SCALE AI</span>
+</div>
+<h3 class="text-xl font-bold text-[#201D1A] mb-3">ML Infrastructure &amp; Sharding</h3>
+<p class="text-sm text-[#6B6358] leading-relaxed mb-6">
+          Tensor and pipeline parallelism, NCCL ring all-reduce communication collectives, and high-bandwidth interconnects.
+        </p>
+</div>
+<div class="bg-[#FDF8EE] p-4 rounded-2xl border border-[#EADECF]/70 text-xs text-[#201D1A] italic">
+        "Size an inter-node 3D parallelism topology for a 405B parameter model under InfiniBand."
+      </div>
+</div>
+</div>
+</section>
+<!-- STATISTICAL BENCHMARKS: Clean Warm Comparison Table -->
+<section class="py-24 md:py-28 px-6 bg-white border-t border-[#EADECF]" id="benchmarks">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-6">
+<span class="inline-block px-3.5 py-1 rounded-full bg-[#FFF0ED] text-[#FF5E4D] font-bold text-xs uppercase tracking-wider mb-3">
+        Audited Neutrality
+      </span>
+<h2 class="text-3xl sm:text-4xl font-extrabold text-[#201D1A] tracking-tight mb-5">
+        Proven Fairness Across Every Region
+      </h2>
+<p class="text-base text-[#6B6358] mb-6 leading-relaxed">
+        Human interviewers often inadvertently dock non-native speakers on clarity despite pristine architectural reasoning. Rory guarantees an unassailable benchmark: your score reflects pure engineering clarity, nothing else.
+      </p>
+<!-- Rory Mascot Advice Callout -->
+<div class="flex items-center gap-4 bg-[#FDF8EE] border border-[#EADECF] p-5 rounded-2xl mb-6 shadow-sm">
+<div class="text-3xl flex-shrink-0">🦊</div>
+<div class="text-xs text-[#6B6358] leading-relaxed">
+<strong class="text-[#201D1A] block mb-0.5">Rory's Coaching Tip:</strong>
+          Speak at your natural pace and dialect. The engine automatically adapts to your cadence and extracts the formal invariants.
+        </div>
+</div>
+</div>
+<!-- Clean Summary Card with open spacing -->
+<div class="lg:col-span-6 bg-[#FDF8EE] border border-[#EADECF] rounded-3xl p-8 sm:p-10 shadow-soft">
+<div class="grid grid-cols-2 gap-8 mb-8 pb-8 border-b border-[#EADECF]">
+<div>
+<div class="text-xs font-bold text-[#8C8375] uppercase tracking-wider mb-1">Tested Candidates</div>
+<div class="text-3xl font-black text-[#201D1A]">12,400+</div>
+<div class="text-xs text-[#7D7569] mt-1">Across 5 continental hubs</div>
+</div>
+<div>
+<div class="text-xs font-bold text-[#8C8375] uppercase tracking-wider mb-1">Acoustic Delta</div>
+<div class="text-3xl font-black text-[#10B981]">&lt; 0.04%</div>
+<div class="text-xs text-[#7D7569] mt-1">Zero statistical drift</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between text-xs bg-white p-3.5 rounded-xl border border-[#EADECF]/70">
+<span class="font-semibold text-[#201D1A]">Indian Subcontinent (Hindi / Tamil / Bengali)</span>
+<span class="text-[#10B981] font-bold">+0.03% (Neutral)</span>
+</div>
+<div class="flex items-center justify-between text-xs bg-white p-3.5 rounded-xl border border-[#EADECF]/70">
+<span class="font-semibold text-[#201D1A]">East Asia (Mandarin / Japanese / Korean)</span>
+<span class="text-[#10B981] font-bold">+0.04% (Neutral)</span>
+</div>
+<div class="flex items-center justify-between text-xs bg-white p-3.5 rounded-xl border border-[#EADECF]/70">
+<span class="font-semibold text-[#201D1A]">Eastern Europe &amp; Latin America</span>
+<span class="text-[#10B981] font-bold">+0.02% (Neutral)</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA BANNER: Warm Coral Pill CTA (Huru.ai Style) -->
+<section class="py-20 px-6 max-w-7xl mx-auto">
+<div class="bg-[#FFF0ED] border border-[#FFD9D2] rounded-3xl md:rounded-4xl p-10 md:p-16 text-center max-w-5xl mx-auto shadow-card relative overflow-hidden">
+<!-- Soft ambient backdrop circle -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-[#FF5E4D]/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#FFB5AC]/20 rounded-full blur-3xl pointer-events-none"></div>
+<span class="inline-block px-4 py-1.5 rounded-full bg-white text-[#FF5E4D] font-extrabold text-xs uppercase tracking-wider mb-4 shadow-sm">
+        IMAIRA+ Calibration Platform
+      </span>
+<h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#201D1A] tracking-tight mb-5 max-w-3xl mx-auto">
+        Ready to experience interview evaluation stripped of acoustic prejudice?
+      </h2>
+<p class="text-base md:text-lg text-[#6B6358] max-w-2xl mx-auto mb-10 leading-relaxed">
+        Join leading engineering organizations conducting impartial Staff and Principal architect assessments. Launch a 30-minute sandbox session immediately.
+      </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<button class="w-full sm:w-auto bg-[#FF5E4D] hover:bg-[#EB5A3C] text-white text-base font-bold px-8 py-4 rounded-full shadow-pill hover:shadow-xl transition-all flex items-center justify-center gap-2">
+<span class="">Start Technical Mock Interview</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="mic">mic</span>
+</button>
+<button class="w-full sm:w-auto bg-white hover:bg-[#F9F4EB] text-[#201D1A] border border-[#EADECF] text-base font-bold px-7 py-4 rounded-full shadow-soft transition-all">
+          Schedule Engineering Demo
+        </button>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER: Warm, Friendly SaaS Footer -->
+<footer class="bg-white border-t border-[#EADECF] py-16 px-6">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
+<!-- Brand column -->
+<div>
+<div class="text-2xl font-black text-[#201D1A] mb-3 flex items-center gap-1">
+<span class="">IMAIRA<span class="text-[#FF5E4D]">+</span></span>
+</div>
+<p class="text-sm text-[#6B6358] leading-relaxed mb-5">
+        Forensic-grade accent-agnostic speech architecture evaluation engine. Developed for rigorous engineering standards.
+      </p>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8F8F2] text-xs font-bold text-[#10B981]">
+<span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+<span class="">Fairness Model: Normalized [Stable]</span>
+</div>
+</div>
+<!-- Col 2 -->
+<div>
+<div class="text-xs font-bold text-[#201D1A] uppercase tracking-wider mb-4">Architecture &amp; Proof</div>
+<ul class="space-y-2.5 text-sm font-medium text-[#6B6358]">
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Acoustic Orthogonalization</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Semantic Graph Parser</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Benchmark Whitepaper 2025</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Double-Blind Clinical Trials</a></li>
+</ul>
+</div>
+<!-- Col 3 -->
+<div>
+<div class="text-xs font-bold text-[#201D1A] uppercase tracking-wider mb-4">Domain Catalogs</div>
+<ul class="space-y-2.5 text-sm font-medium text-[#6B6358]">
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Distributed Consensus Engine</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Storage &amp; WAL Invariants</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Low-Latency Kernel Bypass</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">3D Parallelism ML Sharding</a></li>
+</ul>
+</div>
+<!-- Col 4 -->
+<div>
+<div class="text-xs font-bold text-[#201D1A] uppercase tracking-wider mb-4">Ethics &amp; Standards</div>
+<ul class="space-y-2.5 text-sm font-medium text-[#6B6358]">
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">ISO/IEC 24027 Certification</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Algorithmic Bias Transparency</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Data Privacy &amp; Zero Retention</a></li>
+<li class=""><a class="hover:text-[#FF5E4D] transition-colors" href="#">Security Hardening Standards</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto border-t border-[#F4EFE6] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-[#8C8375]">
+<div class="">© 2025 IMAIRA+ Kernel. All rights reserved. Registered for impartial evaluation.</div>
+<div class="flex items-center gap-6">
+<a class="hover:text-[#201D1A] transition-colors" href="#">Terms of Calibration</a>
+<a class="hover:text-[#201D1A] transition-colors" href="#">Ethics Charter</a>
+<a class="hover:text-[#201D1A] transition-colors" href="#">Security Audit</a>
+</div>
+</div>
+</footer>
+<!-- Typewriter Animation Script with Reduced-Motion Fallback -->
+<script>
+  (function() {
+    const words = ["Job Interviews", "Resume Checker", "Technical Rounds"];
+    const targetElement = document.getElementById("typewriter-text");
+    if (!targetElement) return;
+
+    // Reduced motion check
+    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      targetElement.textContent = words[0];
+      return;
+    }
+
+    let wordIndex = 0;
+    let charIndex = words[0].length;
+    let isDeleting = true; // start after full initial display
+    const typingSpeed = 90;
+    const deletingSpeed = 50;
+    const pauseBeforeDelete = 1800;
+    const pauseBeforeNextWord = 450;
+
+    function tick() {
+      const currentWord = words[wordIndex];
+
+      if (isDeleting) {
+        charIndex--;
+        targetElement.textContent = currentWord.substring(0, charIndex);
+
+        if (charIndex <= 0) {
+          isDeleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+          setTimeout(tick, pauseBeforeNextWord);
+          return;
+        }
+        setTimeout(tick, deletingSpeed);
+      } else {
+        charIndex++;
+        targetElement.textContent = currentWord.substring(0, charIndex);
+
+        if (charIndex === currentWord.length) {
+          isDeleting = true;
+          setTimeout(tick, pauseBeforeDelete);
+          return;
+        }
+        setTimeout(tick, typingSpeed);
+      }
+    }
+
+    // Initial pause before beginning deletion of initial word
+    setTimeout(tick, pauseBeforeDelete);
+  })();
+</script>
+</body></html>

@@ -1,0 +1,15 @@
+{
+  "name": "imaira-frontend",
+  "version": "1.0.0",
+  "description": "IMAIRA+ Accent-Agnostic Mock Interview Platform Frontend",
+  "private": true,
+  "scripts": {
+    "dev": "vite --port 3000",
+    "start": "vite --port 3000",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}

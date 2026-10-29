@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill Assessment | IMAIRA+</title>
+  <meta name="description" content="Standardized technical assessments across DSA, System Design, and Architecture." />
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="../js/tailwind-config.js"></script>
+
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased selection:bg-[#AA7000] selection:text-white flex h-screen overflow-hidden">
+
+  <!-- ========================================================================
+       SIDEBAR NAVIGATION
+       ======================================================================== -->
+  <aside id="app-sidebar" class="w-64 bg-white border-r border-[#E8DFD0] flex flex-col justify-between shrink-0 transition-transform -translate-x-full md:translate-x-0 fixed md:static z-40 h-full">
+    <div>
+      <div class="h-20 px-6 flex items-center justify-between border-b border-[#E8DFD0]">
+        <a href="../index.html" class="flex items-center gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
+        </a>
+        <button id="close-sidebar-btn" class="md:hidden text-[#7F766C] hover:text-[#2C1F0E]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <nav class="p-4 space-y-1.5">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="mock-interview.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">record_voice_over</span>
+          <span>Mock Interview</span>
+        </a>
+
+        <a href="assessment.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-sm transition-all shadow-sm">
+          <span class="material-symbols-outlined text-xl">quiz</span>
+          <span>Assessments</span>
+        </a>
+
+        <a href="history.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">history</span>
+          <span>History</span>
+        </a>
+
+        <a href="resume.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">description</span>
+          <span>Resume Analyzer</span>
+        </a>
+
+        <a href="prep-plan.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">checklist</span>
+          <span>Prep Plan</span>
+        </a>
+
+        <div class="pt-4 pb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">
+          Account
+        </div>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">settings</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-[#E8DFD0] space-y-3">
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
+            AM
+          </div>
+          <div>
+            <div class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
+            <div class="text-[11px] text-[#7F766C]">Staff Candidate</div>
+          </div>
+        </div>
+        <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
+          <span class="material-symbols-outlined text-lg">logout</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================
+       ASSESSMENT MAIN WORKSPACE
+       ======================================================================== -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Action Bar -->
+    <header class="h-20 bg-white border-b border-[#E8DFD0] px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
+      <div class="flex items-center gap-4">
+        <button id="mobile-sidebar-toggle" class="md:hidden text-[#2C1F0E] hover:text-[#AA7000] p-1">
+          <span class="material-symbols-outlined text-2xl">menu</span>
+        </button>
+        <div>
+          <h2 class="text-sm font-bold text-[#2C1F0E]">Skill Assessment Diagnostic</h2>
+          <span class="text-xs text-[#8C7B6B]">Objective competency benchmarks</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-mono px-3.5 py-1.5 rounded-full bg-[#FAF6EE] border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-[#AA7000]">schedule</span>
+          <span>Time Remaining: <strong id="question-timer" class="text-[#2C1F0E]">01:45</strong></span>
+        </span>
+      </div>
+    </header>
+    <!-- Page Breadcrumb Nav -->
+    <div class="px-6 py-3 border-b border-[#E8DFD0] bg-[#FAF6EE] flex items-center gap-2 text-xs font-semibold text-[#8C7B6B]">
+      <a href="../index.html" class="hover:text-[#AA7000] transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">home</span>
+        <span>Home</span>
+      </a>
+      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
+      <a href="dashboard.html" class="hover:text-[#AA7000] transition-colors">Dashboard</a>
+      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
+      <span class="text-[#2C1F0E]">Skill Assessment</span>
+      <div class="ml-auto">
+        <a href="javascript:history.back()" class="flex items-center gap-1 text-[#8C7B6B] hover:text-[#AA7000] transition-colors">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Back</span>
+        </a>
+      </div>
+    </div>
+
+
+    <main class="p-6 sm:p-8 space-y-8 max-w-5xl mx-auto w-full">
+      
+      <!-- Topic Selector Cards -->
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-[#7F766C] mb-4">Choose Diagnostic Track</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+          
+          <button onclick="selectTopic(this, 'DSA')" class="topic-btn p-4 rounded-2xl border border-[#E8DFD0] bg-white hover:border-[#AA7000]/50 transition-all text-left shadow-soft">
+            <div class="w-8 h-8 rounded-xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-lg">account_tree</span>
+            </div>
+            <div class="text-xs font-bold text-[#2C1F0E]">DSA</div>
+            <div class="text-[10px] text-[#8C7B6B] mt-0.5">Trees, DP, Graphs</div>
+          </button>
+
+          <button onclick="selectTopic(this, 'System Design')" class="topic-btn p-4 rounded-2xl border-2 border-[#AA7000] bg-white shadow-soft transition-all text-left">
+            <div class="w-8 h-8 rounded-xl bg-[#AA7000] text-white flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-lg">schema</span>
+            </div>
+            <div class="text-xs font-bold text-[#2C1F0E]">System Design</div>
+            <div class="text-[10px] text-[#AA7000] font-bold mt-0.5">Active Track</div>
+          </button>
+
+          <button onclick="selectTopic(this, 'Behavioural')" class="topic-btn p-4 rounded-2xl border border-[#E8DFD0] bg-white hover:border-[#AA7000]/50 transition-all text-left shadow-soft">
+            <div class="w-8 h-8 rounded-xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-lg">groups</span>
+            </div>
+            <div class="text-xs font-bold text-[#2C1F0E]">Behavioural</div>
+            <div class="text-[10px] text-[#8C7B6B] mt-0.5">STAR Leadership</div>
+          </button>
+
+          <button onclick="selectTopic(this, 'Frontend')" class="topic-btn p-4 rounded-2xl border border-[#E8DFD0] bg-white hover:border-[#AA7000]/50 transition-all text-left shadow-soft">
+            <div class="w-8 h-8 rounded-xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-lg">web</span>
+            </div>
+            <div class="text-xs font-bold text-[#2C1F0E]">Frontend</div>
+            <div class="text-[10px] text-[#8C7B6B] mt-0.5">Core Web Vitals</div>
+          </button>
+
+          <button onclick="selectTopic(this, 'Backend')" class="topic-btn p-4 rounded-2xl border border-[#E8DFD0] bg-white hover:border-[#AA7000]/50 transition-all text-left shadow-soft">
+            <div class="w-8 h-8 rounded-xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-lg">dns</span>
+            </div>
+            <div class="text-xs font-bold text-[#2C1F0E]">Backend</div>
+            <div class="text-[10px] text-[#8C7B6B] mt-0.5">Concurrency, I/O</div>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- MCQ QUESTION CARD -->
+      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-10 shadow-card">
+        
+        <!-- Progress Bar & Question Count -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="font-bold text-[#7F766C] uppercase tracking-wider">System Design Benchmark</span>
+            <span class="font-bold text-[#AA7000]">Question 3 of 10</span>
+          </div>
+          <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden border border-[#E8DFD0]">
+            <div class="bg-[#AA7000] h-full rounded-full transition-all duration-300" style="width: 30%"></div>
+          </div>
+        </div>
+
+        <!-- Question Prompt -->
+        <div class="mb-8">
+          <div class="inline-block px-3 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] text-[11px] font-bold mb-3 border border-[#E8C97A]">
+            CAP Theorem &amp; Partitioning
+          </div>
+          <h2 class="text-lg sm:text-xl font-bold text-[#2C1F0E] leading-snug">
+            In a globally replicated datastore requiring strong linearizability for financial ledger entries, which quorum configuration guarantees zero write loss during an asymmetric single-node network partition?
+          </h2>
+        </div>
+
+        <!-- Options List -->
+        <div class="space-y-3 mb-8">
+          <!-- Option A -->
+          <label class="option-item flex items-start gap-4 p-4 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000]/40 bg-white hover:bg-[#FAF6EE]/50 cursor-pointer transition-all">
+            <input type="radio" name="assessment-mcq" class="mt-1 w-4 h-4 text-[#AA7000] border-[#E8DFD0] focus:ring-[#AA7000]" />
+            <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed">
+              <strong class="text-[#2C1F0E] mr-1.5">A.</strong>
+              Configure write quorum W = 1 and read quorum R = N to prioritize client write availability at the cost of eventual ledger convergence.
+            </div>
+          </label>
+
+          <!-- Option B (Correct) -->
+          <label class="option-item flex items-start gap-4 p-4 rounded-2xl border border-[#AA7000] bg-[#FBF3E0] cursor-pointer transition-all">
+            <input type="radio" name="assessment-mcq" checked class="mt-1 w-4 h-4 text-[#AA7000] border-[#AA7000] focus:ring-[#AA7000]" />
+            <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed font-semibold">
+              <strong class="text-[#AA7000] mr-1.5">B.</strong>
+              Enforce strict majority quorum (W &gt; N/2 and R + W &gt; N) backed by Raft leader lease checks before committing to persistent WAL.
+            </div>
+          </label>
+
+          <!-- Option C -->
+          <label class="option-item flex items-start gap-4 p-4 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000]/40 bg-white hover:bg-[#FAF6EE]/50 cursor-pointer transition-all">
+            <input type="radio" name="assessment-mcq" class="mt-1 w-4 h-4 text-[#AA7000] border-[#E8DFD0] focus:ring-[#AA7000]" />
+            <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed">
+              <strong class="text-[#2C1F0E] mr-1.5">C.</strong>
+              Rely on Last-Write-Wins (LWW) timestamp conflict resolution using NTP synchronised wall clocks across all cloud zones.
+            </div>
+          </label>
+
+          <!-- Option D -->
+          <label class="option-item flex items-start gap-4 p-4 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000]/40 bg-white hover:bg-[#FAF6EE]/50 cursor-pointer transition-all">
+            <input type="radio" name="assessment-mcq" class="mt-1 w-4 h-4 text-[#AA7000] border-[#E8DFD0] focus:ring-[#AA7000]" />
+            <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed">
+              <strong class="text-[#2C1F0E] mr-1.5">D.</strong>
+              Implement gossip-based anti-entropy with vector clocks and delegate reconciliation to background read repairs.
+            </div>
+          </label>
+        </div>
+
+        <!-- Footer / Action Controls -->
+        <div class="pt-6 border-t border-[#E8DFD0] flex flex-wrap items-center justify-between gap-4">
+          <div class="text-xs text-[#8C7B6B] flex items-center gap-1.5 font-medium">
+            <span class="material-symbols-outlined text-sm text-[#10B981]">check_circle</span>
+            <span>Answer auto-saved to candidate diagnostic record</span>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button class="px-5 py-2.5 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-[#2C1F0E] text-xs font-bold transition-all">
+              Previous
+            </button>
+            <button onclick="nextAssessmentQuestion()" class="px-6 py-2.5 rounded-full bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold transition-all shadow-pill flex items-center gap-1.5">
+              <span>Next Question</span>
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Diagnostic Insight Note -->
+      <div class="p-5 rounded-2xl bg-white border border-[#E8DFD0] shadow-soft flex items-start gap-3.5">
+        <span class="material-symbols-outlined text-[#AA7000] text-xl shrink-0 mt-0.5">lightbulb</span>
+        <div>
+          <h4 class="text-xs font-bold text-[#2C1F0E]">Why this matters in Technical Interviews</h4>
+          <p class="text-xs text-[#8C7B6B] mt-1 leading-relaxed">
+            Leading engineering interview loops at Tier-1 tech organizations probe CAP trade-offs to assess whether you can prevent split-brain anomalies and phantom data corruption in production environments.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+    const appSidebar = document.getElementById('app-sidebar');
+
+    if (mobileSidebarToggle && appSidebar) {
+      mobileSidebarToggle.addEventListener('click', () => {
+        appSidebar.classList.remove('-translate-x-full');
+      });
+    }
+
+    if (closeSidebarBtn && appSidebar) {
+      closeSidebarBtn.addEventListener('click', () => {
+        appSidebar.classList.add('-translate-x-full');
+      });
+    }
+
+    function selectTopic(el, topicName) {
+      document.querySelectorAll('.topic-btn').forEach(btn => {
+        btn.classList.remove('border-2', 'border-[#AA7000]');
+        btn.classList.add('border', 'border-[#E8DFD0]');
+      });
+      el.classList.remove('border', 'border-[#E8DFD0]');
+      el.classList.add('border-2', 'border-[#AA7000]');
+    }
+
+    function nextAssessmentQuestion() {
+      alert("Advancing to next question in System Design diagnostic benchmark.");
+    }
+  </script>
+</body>
+</html>
