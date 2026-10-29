@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IMAIRA+ Real-Time Behavioral & Audio Analyzer</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      display: flex;
+      gap: 24px;
+      max-width: 1100px;
+      width: 100%;
+    }
+    .video-card {
+      position: relative;
+      flex: 1.2;
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #334155;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+    .dashboard {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .metric-card {
+      background: #1e293b;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+    }
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .metric-value {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .badge {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-ok { background: #065f46; color: #34d399; }
+    .badge-warn { background: #854d0e; color: #facc15; }
+    .badge-alert { background: #991b1b; color: #f87171; }
+    .tips {
+      background: #0284c7;
+      color: #f0f9ff;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+    button:hover { background: #1d4ed8; }
+  </style>
+  <!-- Load MediaPipe Vision Bundle via jsDelivr CDN -->
+  <script type="module">
+    import { FilesetResolver, FaceLandmarker, PoseLandmarker } 
+      from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.16";
+    window.FilesetResolver = FilesetResolver;
+    window.FaceLandmarker = FaceLandmarker;
+    window.PoseLandmarker = PoseLandmarker;
+  </script>
+</head>
+<body>
+
+  <h2>Live Behavioral & Audio Guardrail Engine</h2>
+  <button id="startBtn">Initialize & Start Camera</button>
+
+  <div class="container">
+    <div class="video-card">
+      <video id="webcam" autoplay playsinline></video>
+    </div>
+
+    <div class="dashboard">
+      <!-- 1. Eye Tracking -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span>Eye Movement & Contact</span>
+          <span id="eyeBadge" class="badge badge-ok">Centered</span>
+        </div>
+        <div id="eyeText" class="metric-value">Calibrating iris coordinates...</div>
+      </div>
+
+      <!-- 2. Reading Pattern -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span>Reading / Notes Check</span>
+          <span id="readingBadge" class="badge badge-ok">Spontaneous</span>
+        </div>
+        <div id="readingText" class="metric-value">Horizontal saccades: Normal</div>
+      </div>
+
+      <!-- 3. Posture & Body Language -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span>Body Language & Posture</span>
+          <span id="postureBadge" class="badge badge-ok">Poised</span>
+        </div>
+        <div id="postureText" class="metric-value">Shoulder alignment & spine check: Normal</div>
+      </div>
+
+      <!-- 4. Lip-Sync & Speaking Check -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span>Lip-Sync & Proxy Integrity</span>
+          <span id="syncBadge" class="badge badge-ok">In-Sync</span>
+        </div>
+        <div id="syncText" class="metric-value">Mouth aperture vs audio level: Valid</div>
+      </div>
+
+      <!-- 5. Monotone & Vocal Tone Delivery -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span>Pitch & Monotone Auditor</span>
+          <span id="toneBadge" class="badge badge-ok">Expressive</span>
+        </div>
+        <div id="toneText" class="metric-value">Vocal pitch variance: Calculating...</div>
+      </div>
+
+      <!-- Actionable Coaching Feedback -->
+      <div class="tips" id="actionableTips">
+        AI Coach: Sit upright, look at the lens, and speak naturally.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let faceLandmarker, poseLandmarker;
+    let audioCtx, analyser, timeDomainData, frequencyData;
+    let video = document.getElementById("webcam");
+    let baselineNeckLength = null;
+
+    // Rolling buffers for temporal checks
+    let pitchHistory = [];
+    let eyeHorizontalHistory = [];
+    let readingViolationCount = 0;
+    let lipSyncMismatchFrames = 0;
+
+    document.getElementById("startBtn").addEventListener("click", async () => {
+      document.getElementById("startBtn").disabled = true;
+      document.getElementById("startBtn").innerText = "Loading AI Vision Models...";
+
+      // 1. Initialize Audio Pipeline (Web Audio API)
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      video.srcObject = stream;
+
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaStreamSource(stream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);
+
+      timeDomainData = new Float32Array(analyser.fftSize);
+      frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+      // 2. Initialize MediaPipe Vision Tasks
+      const filesetResolver = await window.FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.16/wasm"
+      );
+
+      faceLandmarker = await window.FaceLandmarker.createFromOptions(filesetResolver, {
+        baseOptions: {
+          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+          delegate: "GPU"
+        },
+        outputFaceBlendshapes: true,
+        runningMode: "VIDEO",
+        numFaces: 1
+      });
+
+      poseLandmarker = await window.PoseLandmarker.createFromOptions(filesetResolver, {
+        baseOptions: {
+          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+          delegate: "GPU"
+        },
+        runningMode: "VIDEO",
+        numPoses: 1
+      });
+
+      document.getElementById("startBtn").innerText = "Engine Active";
+      video.play();
+      requestAnimationFrame(processVideoFrame);
+    });
+
+    // Main real-time frame processing loop
+    let lastVideoTime = -1;
+    function processVideoFrame() {
+      if (video.currentTime !== lastVideoTime) {
+        lastVideoTime = video.currentTime;
+        const now = performance.now();
+
+        // Run client-side models
+        const faceResults = faceLandmarker.detectForVideo(video, now);
+        const poseResults = poseLandmarker.detectForVideo(video, now);
+
+        // Run the 5 core analyzers
+        analyzeAudioAndTone();
+        if (faceResults.faceBlendshapes && faceResults.faceBlendshapes[0]) {
+          analyzeFaceAndGaze(faceResults.faceBlendshapes[0].categories);
+        }
+        if (poseResults.landmarks && poseResults.landmarks[0]) {
+          analyzePosture(poseResults.landmarks[0]);
+        }
+      }
+      requestAnimationFrame(processVideoFrame);
+    }
+
+    // 1. Eye Movement & Reading Detection
+    function analyzeFaceAndGaze(blendshapes) {
+      const b = {};
+      blendshapes.forEach(item => b[item.categoryName] = item.score);
+
+      const lookDown = (b['eyeLookDownLeft'] + b['eyeLookDownRight']) / 2;
+      const lookLeft = (b['eyeLookOutLeft'] + b['eyeLookInRight']) / 2;
+      const lookRight = (b['eyeLookInLeft'] + b['eyeLookOutRight']) / 2;
+      const eyeHDelta = lookRight - lookLeft; // Negative = left, Positive = right
+
+      // Tracking eye contact
+      const eyeBadge = document.getElementById("eyeBadge");
+      const eyeText = document.getElementById("eyeText");
+      if (lookDown > 0.35) {
+        eyeBadge.className = "badge badge-warn";
+        eyeBadge.innerText = "Looking Down";
+        eyeText.innerText = "Candidate is staring downward (notes or keyboard).";
+      } else if (lookLeft > 0.35 || lookRight > 0.35) {
+        eyeBadge.className = "badge badge-warn";
+        eyeBadge.innerText = "Looking Away";
+        eyeText.innerText = "Candidate is glancing off-screen.";
+      } else {
+        eyeBadge.className = "badge badge-ok";
+        eyeBadge.innerText = "Centered";
+        eyeText.innerText = "Direct engagement with interviewer/screen.";
+      }
+
+      // Reading Saccades Detector (Rapid left-to-right scanning with smooth reset)
+      eyeHorizontalHistory.push({ time: Date.now(), pos: eyeHDelta });
+      if (eyeHorizontalHistory.length > 50) eyeHorizontalHistory.shift();
+
+      let transitions = 0;
+      for (let i = 1; i < eyeHorizontalHistory.length; i++) {
+        const diff = eyeHorizontalHistory[i].pos - eyeHorizontalHistory[i-1].pos;
+        if (Math.abs(diff) > 0.18) transitions++;
+      }
+
+      const readingBadge = document.getElementById("readingBadge");
+      const readingText = document.getElementById("readingText");
+      if (transitions >= 4) {
+        readingBadge.className = "badge badge-alert";
+        readingBadge.innerText = "Reading Detected";
+        readingText.innerText = "Repetitive line-by-line reading saccades flagged.";
+      } else {
+        readingBadge.className = "badge badge-ok";
+        readingBadge.innerText = "Spontaneous";
+        readingText.innerText = "Organic visual focus and thinking rhythm.";
+      }
+
+      // 4. Lip Sync Cross-Check
+      const jawOpen = b['jawOpen'] || 0;
+      const micRMS = getAudioVolumeRMS();
+      const syncBadge = document.getElementById("syncBadge");
+      const syncText = document.getElementById("syncText");
+
+      // Audio present (>0.035) but mouth shut (<0.08)
+      if (micRMS > 0.035 && jawOpen < 0.08) {
+        lipSyncMismatchFrames++;
+        if (lipSyncMismatchFrames > 20) { // ~0.7 seconds mismatch
+          syncBadge.className = "badge badge-alert";
+          syncBadge.innerText = "Lip Mismatch";
+          syncText.innerText = "Voice detected while lips are stationary (Proxy risk).";
+        }
+      } else {
+        lipSyncMismatchFrames = Math.max(0, lipSyncMismatchFrames - 1);
+        syncBadge.className = "badge badge-ok";
+        syncBadge.innerText = "In-Sync";
+        syncText.innerText = "Acoustic envelope matches facial articulation.";
+      }
+    }
+
+    // 2. Posture & Body Language Confidence
+    function analyzePosture(landmarks) {
+      const nose = landmarks[0];
+      const leftShoulder = landmarks[11];
+      const rightShoulder = landmarks[12];
+
+      const shoulderY = (leftShoulder.y + rightShoulder.y) / 2;
+      const shoulderTilt = Math.abs(leftShoulder.y - rightShoulder.y);
+      const currentNeckLength = shoulderY - nose.y;
+
+      if (!baselineNeckLength && currentNeckLength > 0.1) {
+        baselineNeckLength = currentNeckLength; // Calibrate initial posture
+      }
+
+      const postureBadge = document.getElementById("postureBadge");
+      const postureText = document.getElementById("postureText");
+
+      if (currentNeckLength < baselineNeckLength * 0.82) {
+        postureBadge.className = "badge badge-warn";
+        postureBadge.innerText = "Slouching / Hunched";
+        postureText.innerText = "Low chest profile. Body suggests dropped confidence.";
+      } else if (shoulderTilt > 0.07) {
+        postureBadge.className = "badge badge-warn";
+        postureBadge.innerText = "Tilted / Leaning";
+        postureText.innerText = "Shoulder alignment off-balance (leaning on armrest).";
+      } else {
+        postureBadge.className = "badge badge-ok";
+        postureBadge.innerText = "Poised";
+        postureText.innerText = "Spine upright, shoulders level and open.";
+      }
+    }
+
+    // 3. Audio RMS Volume
+    function getAudioVolumeRMS() {
+      analyser.getFloatTimeDomainData(timeDomainData);
+      let sum = 0;
+      for (let i = 0; i < timeDomainData.length; i++) {
+        sum += timeDomainData[i] * timeDomainData[i];
+      }
+      return Math.sqrt(sum / timeDomainData.length);
+    }
+
+    // 5. Monotone Pitch Detector (Autocorrelation) & Vocal Feedback
+    function analyzeAudioAndTone() {
+      analyser.getFloatTimeDomainData(timeDomainData);
+      const pitch = autoCorrelate(timeDomainData, audioCtx.sampleRate);
+
+      if (pitch > 60 && pitch < 400) { // Valid human fundamental frequency (F0)
+        pitchHistory.push(pitch);
+        if (pitchHistory.length > 60) pitchHistory.shift();
+      }
+
+      if (pitchHistory.length >= 30) {
+        const mean = pitchHistory.reduce((a, b) => a + b, 0) / pitchHistory.length;
+        const variance = pitchHistory.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / pitchHistory.length;
+        const stdDev = Math.sqrt(variance);
+
+        const toneBadge = document.getElementById("toneBadge");
+        const toneText = document.getElementById("toneText");
+        const tips = document.getElementById("actionableTips");
+
+        if (stdDev < 7.0) {
+          toneBadge.className = "badge badge-warn";
+          toneBadge.innerText = "Monotone (Flat)";
+          toneText.innerText = `Pitch variance is narrow (${stdDev.toFixed(1)}Hz). Sounds scripted.`;
+          tips.innerText = "AI Coach: Modulate your tone. Stress key technical keywords to avoid sounding like you are reading a script.";
+        } else {
+          toneBadge.className = "badge badge-ok";
+          toneBadge.innerText = "Expressive";
+          toneText.innerText = `Dynamic vocal inflection (${stdDev.toFixed(1)}Hz pitch variance).`;
+          tips.innerText = "AI Coach: Pacing and inflection are natural. Keep this conversational cadence.";
+        }
+      }
+    }
+
+    // Normalized Square Difference Autocorrelation for Pitch
+    function autoCorrelate(buf, sampleRate) {
+      let SIZE = buf.length;
+      let rms = 0;
+      for (let i = 0; i < SIZE; i++) rms += buf[i] * buf[i];
+      rms = Math.sqrt(rms / SIZE);
+      if (rms < 0.02) return -1; // Background noise floor
+
+      let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+      for (let i = 0; i < SIZE / 2; i++) {
+        if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+      }
+      for (let i = 1; i < SIZE / 2; i++) {
+        if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+      }
+      buf = buf.slice(r1, r2);
+      SIZE = buf.length;
+
+      let c = new Array(SIZE).fill(0);
+      for (let i = 0; i < SIZE; i++) {
+        for (let j = 0; j < SIZE - i; j++) c[i] = c[i] + buf[j] * buf[j + i];
+      }
+
+      let d = 0; while (c[d] > c[d + 1]) d++;
+      let maxval = -1, maxpos = -1;
+      for (let i = d; i < SIZE; i++) {
+        if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
+      }
+      let T0 = maxpos;
+      return sampleRate / T0;
+    }
+  </script>
+</body>
+</html>
