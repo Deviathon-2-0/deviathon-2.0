@@ -75,22 +75,32 @@ class ImairaApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn('interviewers', data)
-        self.assertEqual(len(data['interviewers']), 9)
+        self.assertEqual(len(data['interviewers']), 16)
         names = [inv['name'] for inv in data['interviewers']]
         self.assertIn('Kabir', names)
         self.assertIn('Charlotte', names)
         self.assertIn('Kenji', names)
+        self.assertIn('Lukas', names)
+        self.assertIn('Mei', names)
+        self.assertIn('Chloe', names)
+
+        # Regional filtering test
+        in_res = self.client.get('/api/interviewers/?region=India')
+        self.assertEqual(in_res.status_code, 200)
+        self.assertEqual(len(in_res.json()['interviewers']), 4)
 
     def test_tts_accent_dispatch(self):
         payload = {
             "text": "Hello candidate, let us begin the system architecture round.",
-            "interviewer_name": "Kabir"
+            "interviewer_name": "Kabir",
+            "pacing": "1.15"
         }
         response = self.client.post('/api/tts/generate/', data=json.dumps(payload), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data.get('interviewer'), 'Kabir')
         self.assertEqual(data.get('bcp47'), 'en-IN')
+        self.assertIn('region', data)
 
     def test_compiler_execution(self):
         payload = {
