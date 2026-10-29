@@ -141,82 +141,110 @@
 
     <main class="p-6 sm:p-8 space-y-8 max-w-7xl mx-auto w-full">
       
-      <!-- PERFORMANCE TREND CHART -->
-      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <!-- INTERACTIVE PERFORMANCE TREND CHART -->
+      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card relative">
+        <!-- Chart Header & Interactive Controls -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
           <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Analytics</span>
-            <h3 class="text-lg font-bold text-[#2C1F0E]">Performance Trend</h3>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Evaluation Analytics</span>
+            <h3 class="text-xl font-extrabold text-[#2C1F0E] tracking-tight">Performance Trend Across Domains</h3>
+            <p class="text-xs text-[#7F766C] mt-0.5">Interactive metric trajectories across technical depth, structural logic, and articulation.</p>
           </div>
-          <div class="flex items-center gap-4 text-xs">
-            <span class="flex items-center gap-1.5 text-[#2C1F0E] font-semibold">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#AA7000]"></span> Content Depth
-            </span>
-            <span class="flex items-center gap-1.5 text-[#2C1F0E] font-semibold">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#2C1F0E]"></span> Structural Logic
-            </span>
-            <span class="flex items-center gap-1.5 text-[#2C1F0E] font-semibold">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#4F6B2D]"></span> Speech Clarity
-            </span>
+
+          <!-- Controls: View Mode & Metric Toggles -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- View Mode Switcher -->
+            <div class="flex items-center p-1 bg-[#FAF6EE] rounded-full border border-[#E8DFD0]">
+              <button id="chart-mode-spline" onclick="setChartMode('spline')" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#2C1F0E] text-white shadow-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">show_chart</span>
+                <span>Curves</span>
+              </button>
+              <button id="chart-mode-bars" onclick="setChartMode('bars')" class="px-3 py-1 rounded-full text-xs font-semibold transition-all text-[#7F766C] hover:text-[#2C1F0E] flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">bar_chart</span>
+                <span>Bars</span>
+              </button>
+            </div>
+
+            <!-- Metric Filter Pills (Click to toggle) -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button id="toggle-depth" onclick="toggleMetric('depth')" class="px-3 py-1 rounded-full text-xs font-bold border border-[#AA7000] bg-[#FBF3E0] text-[#AA7000] flex items-center gap-1.5 shadow-sm transition-all">
+                <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
+                <span>Content Depth</span>
+              </button>
+              <button id="toggle-logic" onclick="toggleMetric('logic')" class="px-3 py-1 rounded-full text-xs font-bold border border-[#2C1F0E] bg-[#F2EBD8] text-[#2C1F0E] flex items-center gap-1.5 shadow-sm transition-all">
+                <span class="w-2 h-2 rounded-full bg-[#2C1F0E]"></span>
+                <span>Structural Logic</span>
+              </button>
+              <button id="toggle-speech" onclick="toggleMetric('speech')" class="px-3 py-1 rounded-full text-xs font-bold border border-[#4F6B2D] bg-[#EFF4E8] text-[#4F6B2D] flex items-center gap-1.5 shadow-sm transition-all">
+                <span class="w-2 h-2 rounded-full bg-[#4F6B2D]"></span>
+                <span>Speech Clarity</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Simulated Trend Visualization -->
-        <div class="h-44 w-full flex items-end justify-between gap-2 sm:gap-6 pt-6 border-b border-[#E8DFD0] pb-2">
-          <!-- Session 1 -->
-          <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-            <div class="w-full max-w-[40px] flex items-end justify-center gap-1 h-32">
-              <div class="w-2 bg-[#E8C97A] rounded-t-full group-hover:bg-[#AA7000] transition-colors" style="height: 65%"></div>
-              <div class="w-2 bg-[#E8DFD0] rounded-t-full group-hover:bg-[#2C1F0E] transition-colors" style="height: 70%"></div>
-              <div class="w-2 bg-[#D1FAE5] rounded-t-full group-hover:bg-[#4F6B2D] transition-colors" style="height: 75%"></div>
-            </div>
-            <span class="text-[11px] text-[#7F766C] font-mono">Oct 10</span>
+        <!-- Chart Canvas Container -->
+        <div class="relative w-full h-72 sm:h-80 select-none" id="chart-main-container">
+          <!-- Background Grid Lines -->
+          <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8 text-[10px] font-mono text-[#8C7B6B]/60">
+            <div class="border-b border-[#E8DFD0]/60 w-full flex items-center justify-between pb-0.5"><span>100%</span></div>
+            <div class="border-b border-[#E8DFD0]/40 w-full flex items-center justify-between pb-0.5"><span>75%</span></div>
+            <div class="border-b border-[#E8DFD0]/40 w-full flex items-center justify-between pb-0.5"><span>50%</span></div>
+            <div class="border-b border-[#E8DFD0]/40 w-full flex items-center justify-between pb-0.5"><span>25%</span></div>
+            <div class="border-b border-[#E8DFD0] w-full flex items-center justify-between pb-0.5"><span>0%</span></div>
           </div>
 
-          <!-- Session 2 -->
-          <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-            <div class="w-full max-w-[40px] flex items-end justify-center gap-1 h-32">
-              <div class="w-2 bg-[#E8C97A] rounded-t-full group-hover:bg-[#AA7000] transition-colors" style="height: 72%"></div>
-              <div class="w-2 bg-[#E8DFD0] rounded-t-full group-hover:bg-[#2C1F0E] transition-colors" style="height: 74%"></div>
-              <div class="w-2 bg-[#A7F3D0] rounded-t-full group-hover:bg-[#4F6B2D] transition-colors" style="height: 80%"></div>
-            </div>
-            <span class="text-[11px] text-[#7F766C] font-mono">Oct 14</span>
+          <!-- Dynamic SVG Chart (Rendered via JS for Spline Curves) -->
+          <svg id="svg-chart-element" class="w-full h-full pb-8 overflow-visible relative z-10" viewBox="0 0 800 240" preserveAspectRatio="none">
+            <!-- Curves & Points Injected Here -->
+          </svg>
+
+          <!-- Dynamic Grouped Bars Container (Toggled via JS) -->
+          <div id="bars-chart-container" class="hidden absolute inset-0 pb-8 z-10 flex items-end justify-between px-6 sm:px-12">
+            <!-- Bars Injected Here -->
           </div>
 
-          <!-- Session 3 -->
-          <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-            <div class="w-full max-w-[40px] flex items-end justify-center gap-1 h-32">
-              <div class="w-2 bg-[#E8C97A] rounded-t-full group-hover:bg-[#AA7000] transition-colors" style="height: 78%"></div>
-              <div class="w-2 bg-[#7F766C] rounded-t-full group-hover:bg-[#2C1F0E] transition-colors" style="height: 79%"></div>
-              <div class="w-2 bg-[#6EE7B7] rounded-t-full group-hover:bg-[#4F6B2D] transition-colors" style="height: 86%"></div>
+          <!-- Floating Interactive Tooltip Card -->
+          <div id="chart-tooltip" class="hidden absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-3 bg-[#1A1208]/95 backdrop-blur-xl border border-[#3D2E15] text-white rounded-2xl p-3.5 shadow-2xl min-w-[210px] transition-all duration-150">
+            <div class="flex items-center justify-between pb-2 border-b border-white/10 text-[11px] text-slate-300">
+              <span id="tt-date" class="font-bold text-white">Oct 28</span>
+              <span id="tt-composite" class="px-2 py-0.5 rounded-full bg-[#4F6B2D]/30 text-[#7BB045] font-bold border border-[#4F6B2D]/40">92.7 / 100</span>
             </div>
-            <span class="text-[11px] text-[#7F766C] font-mono">Oct 18</span>
-          </div>
-
-          <!-- Session 4 -->
-          <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-            <div class="w-full max-w-[40px] flex items-end justify-center gap-1 h-32">
-              <div class="w-2 bg-[#AA7000] rounded-t-full" style="height: 86%"></div>
-              <div class="w-2 bg-[#2C1F0E] rounded-t-full" style="height: 84%"></div>
-              <div class="w-2 bg-[#4F6B2D] rounded-t-full" style="height: 90%"></div>
+            <div id="tt-title" class="text-xs font-semibold text-[#E8A338] mt-1.5 truncate">Distributed Consensus &amp; Raft</div>
+            <div class="space-y-1.5 mt-2.5 text-[11px] font-mono">
+              <div class="flex items-center justify-between text-slate-300">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>Content Depth:</span>
+                <strong id="tt-depth" class="text-white">93%</strong>
+              </div>
+              <div class="flex items-center justify-between text-slate-300">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#FAF6EE]"></span>Structural Logic:</span>
+                <strong id="tt-logic" class="text-white">89%</strong>
+              </div>
+              <div class="flex items-center justify-between text-slate-300">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#4F6B2D]"></span>Speech Clarity:</span>
+                <strong id="tt-speech" class="text-white">96%</strong>
+              </div>
             </div>
-            <span class="text-[11px] text-[#7F766C] font-mono">Oct 25</span>
-          </div>
-
-          <!-- Session 5 (Latest) -->
-          <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-            <div class="w-full max-w-[40px] flex items-end justify-center gap-1 h-32">
-              <div class="w-2 bg-[#AA7000] rounded-t-full shadow-pill" style="height: 92%"></div>
-              <div class="w-2 bg-[#2C1F0E] rounded-t-full" style="height: 88%"></div>
-              <div class="w-2 bg-[#059669] rounded-t-full" style="height: 95%"></div>
-            </div>
-            <span class="text-[11px] text-[#AA7000] font-mono font-bold">Oct 28</span>
           </div>
         </div>
 
-        <div class="pt-3 flex items-center justify-between text-xs text-[#7F766C]">
-          <span>Overall composite score trajectory: <strong class="text-[#4F6B2D]">+18.2%</strong> improvement</span>
-          <span>Zero phoneme bias detected across all runs</span>
+        <!-- Date Axis Labels -->
+        <div class="flex items-center justify-between px-4 sm:px-10 text-[11px] font-mono font-bold text-[#7F766C] border-t border-[#E8DFD0] pt-2.5">
+          <span class="hover:text-[#AA7000] cursor-pointer" onclick="spotlightSession(0)">Oct 10</span>
+          <span class="hover:text-[#AA7000] cursor-pointer" onclick="spotlightSession(1)">Oct 14</span>
+          <span class="hover:text-[#AA7000] cursor-pointer" onclick="spotlightSession(2)">Oct 18</span>
+          <span class="hover:text-[#AA7000] cursor-pointer" onclick="spotlightSession(3)">Oct 22</span>
+          <span class="hover:text-[#AA7000] cursor-pointer" onclick="spotlightSession(4)">Oct 25</span>
+          <span class="text-[#AA7000] font-black cursor-pointer" onclick="spotlightSession(5)">Oct 28 (Latest)</span>
+        </div>
+
+        <!-- Chart Footer Telemetry -->
+        <div class="pt-4 mt-2 border-t border-[#E8DFD0] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#7F766C]">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#4F6B2D] animate-ping"></span>
+            <span>Overall composite score trajectory: <strong class="text-[#4F6B2D]">+21.4% improvement</strong> across 6 evaluation sessions</span>
+          </div>
+          <span class="font-medium text-[#8C7B6B]">Zero accent phoneme bias deduction across all runs</span>
         </div>
       </div>
 
@@ -427,5 +455,167 @@
       }
     }
   </script>
+  <!-- Interactive Chart Engine Script -->
+  <script>
+    const sessionsTrend = [
+      { date: "Oct 10", title: "System Design - Distributed Caching", depth: 68, logic: 70, speech: 76, composite: 71.3 },
+      { date: "Oct 14", title: "API Gateway Rate Limiting Invariants", depth: 74, logic: 76, speech: 81, composite: 77.0 },
+      { date: "Oct 18", title: "Database Sharding & LSM Storage Trees", depth: 80, logic: 79, speech: 85, composite: 81.3 },
+      { date: "Oct 22", title: "Cross-Functional Deprecation Conflict", depth: 84, logic: 83, speech: 88, composite: 85.0 },
+      { date: "Oct 25", title: "Microservices Saga & Dual-Write Mitigation", depth: 88, logic: 85, speech: 91, composite: 88.0 },
+      { date: "Oct 28", title: "Distributed Consensus & Raft Invariants", depth: 93, logic: 89, speech: 96, composite: 92.7 }
+    ];
+
+    let chartMode = 'spline';
+    let visibleMetrics = { depth: true, logic: true, speech: true };
+
+    function renderTrendChart() {
+      const svg = document.getElementById('svg-chart-element');
+      const bars = document.getElementById('bars-chart-container');
+      const w = 800;
+      const h = 240;
+      const count = sessionsTrend.length;
+
+      // X positions
+      const xs = sessionsTrend.map((_, i) => 40 + (i * ((w - 80) / (count - 1))));
+      // Y converter: score 0 -> h-10, score 100 -> 15
+      const getY = val => h - 15 - ((val / 100) * (h - 30));
+
+      if (chartMode === 'spline') {
+        svg.classList.remove('hidden');
+        bars.classList.add('hidden');
+        svg.innerHTML = '';
+
+        // Helper for bezier curves
+        function createPath(key, strokeColor, fillColor, isVisible) {
+          if (!isVisible) return '';
+          const pts = sessionsTrend.map((s, i) => [xs[i], getY(s[key])]);
+          let d = `M ${pts[0][0]} ${pts[0][1]}`;
+          for (let i = 0; i < pts.length - 1; i++) {
+            const p0 = pts[i];
+            const p1 = pts[i + 1];
+            const cx = (p0[0] + p1[0]) / 2;
+            d += ` C ${cx} ${p0[1]}, ${cx} ${p1[1]}, ${p1[0]} ${p1[1]}`;
+          }
+
+          // Area fill
+          const areaD = d + ` L ${pts[pts.length - 1][0]} ${h - 15} L ${pts[0][0]} ${h - 15} Z`;
+          return `
+            <path d="${areaD}" fill="${fillColor}" opacity="0.12" />
+            <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          `;
+        }
+
+        let inner = '';
+        inner += createPath('depth', '#AA7000', '#AA7000', visibleMetrics.depth);
+        inner += createPath('logic', '#2C1F0E', '#2C1F0E', visibleMetrics.logic);
+        inner += createPath('speech', '#4F6B2D', '#4F6B2D', visibleMetrics.speech);
+
+        // Nodes & hover circles
+        sessionsTrend.forEach((s, i) => {
+          const x = xs[i];
+          if (visibleMetrics.depth) {
+            const yd = getY(s.depth);
+            inner += `<circle cx="${x}" cy="${yd}" r="5" fill="#AA7000" stroke="#FFFDF8" stroke-width="2" class="cursor-pointer hover:r-7 transition-all" />`;
+          }
+          if (visibleMetrics.logic) {
+            const yl = getY(s.logic);
+            inner += `<circle cx="${x}" cy="${yl}" r="5" fill="#2C1F0E" stroke="#FFFDF8" stroke-width="2" class="cursor-pointer hover:r-7 transition-all" />`;
+          }
+          if (visibleMetrics.speech) {
+            const ys = getY(s.speech);
+            inner += `<circle cx="${x}" cy="${ys}" r="5" fill="#4F6B2D" stroke="#FFFDF8" stroke-width="2" class="cursor-pointer hover:r-7 transition-all" />`;
+          }
+          // Invisible full height hit area for tooltip
+          inner += `<rect x="${x - 30}" y="0" width="60" height="${h}" fill="transparent" class="cursor-pointer" onmouseenter="showTooltip(${i}, event)" onmouseleave="hideTooltip()" />`;
+        });
+
+        svg.innerHTML = inner;
+      } else {
+        // Bars Mode
+        svg.classList.add('hidden');
+        bars.classList.remove('hidden');
+        bars.innerHTML = '';
+
+        sessionsTrend.forEach((s, i) => {
+          const col = document.createElement('div');
+          col.className = "flex flex-col items-center gap-1.5 h-full justify-end cursor-pointer group";
+          col.onmouseenter = (e) => showTooltip(i, e);
+          col.onmouseleave = hideTooltip;
+
+          col.innerHTML = `
+            <div class="flex items-end justify-center gap-1.5 h-48 w-16">
+              ${visibleMetrics.depth ? `<div class="w-3.5 bg-[#AA7000] rounded-t-lg transition-all group-hover:brightness-110 shadow-sm" style="height: ${s.depth}%"></div>` : ''}
+              ${visibleMetrics.logic ? `<div class="w-3.5 bg-[#2C1F0E] rounded-t-lg transition-all group-hover:brightness-125 shadow-sm" style="height: ${s.logic}%"></div>` : ''}
+              ${visibleMetrics.speech ? `<div class="w-3.5 bg-[#4F6B2D] rounded-t-lg transition-all group-hover:brightness-110 shadow-sm" style="height: ${s.speech}%"></div>` : ''}
+            </div>
+            <span class="text-[11px] font-mono text-[#7F766C] group-hover:text-[#2C1F0E] font-bold">${s.date}</span>
+          `;
+          bars.appendChild(col);
+        });
+      }
+    }
+
+    function setChartMode(mode) {
+      chartMode = mode;
+      const splineBtn = document.getElementById('chart-mode-spline');
+      const barsBtn = document.getElementById('chart-mode-bars');
+      if (mode === 'spline') {
+        splineBtn.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#2C1F0E] text-white shadow-sm flex items-center gap-1";
+        barsBtn.className = "px-3 py-1 rounded-full text-xs font-semibold transition-all text-[#7F766C] hover:text-[#2C1F0E] flex items-center gap-1";
+      } else {
+        barsBtn.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#2C1F0E] text-white shadow-sm flex items-center gap-1";
+        splineBtn.className = "px-3 py-1 rounded-full text-xs font-semibold transition-all text-[#7F766C] hover:text-[#2C1F0E] flex items-center gap-1";
+      }
+      renderTrendChart();
+    }
+
+    function toggleMetric(key) {
+      visibleMetrics[key] = !visibleMetrics[key];
+      const btn = document.getElementById('toggle-' + key);
+      if (visibleMetrics[key]) {
+        btn.classList.remove('opacity-40');
+      } else {
+        btn.classList.add('opacity-40');
+      }
+      renderTrendChart();
+    }
+
+    function showTooltip(idx, e) {
+      const s = sessionsTrend[idx];
+      const tt = document.getElementById('chart-tooltip');
+      const container = document.getElementById('chart-main-container');
+      const rect = container.getBoundingClientRect();
+
+      document.getElementById('tt-date').textContent = s.date;
+      document.getElementById('tt-composite').textContent = s.composite.toFixed(1) + ' / 100';
+      document.getElementById('tt-title').textContent = s.title;
+      document.getElementById('tt-depth').textContent = s.depth + '%';
+      document.getElementById('tt-logic').textContent = s.logic + '%';
+      document.getElementById('tt-speech').textContent = s.speech + '%';
+
+      // Position tooltip
+      const pct = (idx / (sessionsTrend.length - 1));
+      const leftPos = (pct * (rect.width - 80)) + 40;
+      tt.style.left = leftPos + 'px';
+      tt.style.top = '120px';
+      tt.classList.remove('hidden');
+    }
+
+    function hideTooltip() {
+      document.getElementById('chart-tooltip').classList.add('hidden');
+    }
+
+    function spotlightSession(idx) {
+      showTooltip(idx);
+    }
+
+    // Auto-render chart
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTrendChart();
+    });
+    renderTrendChart();
+  </script>
+
 </body>
 </html>
