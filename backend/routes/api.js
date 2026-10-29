@@ -14,13 +14,22 @@ router.get("/health", (req, res) => {
   });
 });
 
-// Technical domains endpoints
-router.get("/domains", interviewController.getDomains);
+// Roles API (all 255 roles with categories & levels)
+router.get("/roles", interviewController.getRoles);
 
-// Mock session endpoints
+// Companies API (100 companies with sectors & 10 subroles each)
+router.get("/companies", interviewController.getCompanies);
+router.get("/companies/:name/subroles", interviewController.getCompanySubroles);
+
+// Questions Engine API
+router.post("/interview/questions", interviewController.getQuestions);
+
+// Code Execution / Compiler API
+router.post("/compiler/execute", interviewController.executeCode);
+
+// Sessions Management API
 router.post("/sessions/start", interviewController.startSession);
-
-// Benchmarks and neutrality metrics endpoint
-router.get("/benchmarks", interviewController.getFairnessMetrics);
+router.post("/sessions/:id/submit", interviewController.submitSession);
+router.get("/sessions/:id/report", interviewController.getSessionReport);
 
 module.exports = router;
