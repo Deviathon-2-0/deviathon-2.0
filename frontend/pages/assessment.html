@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Skill Assessment | IMAIRA+</title>
-  <meta name="description" content="Standardized technical assessments across DSA, System Design, and Architecture." />
+  <title>Skill &amp; Aptitude Assessments | IMAIRA+</title>
+  <meta name="description" content="Standardized objective benchmarks for aptitude, reasoning, workplace style, and digital fluency." />
 
   <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,303 +18,510 @@
 
   <!-- Custom Stylesheets -->
   <link rel="stylesheet" href="../css/style.css" />
+
+  <style>
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #F2EBD8;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #D8CEB8;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #AA7000;
+    }
+  </style>
 </head>
 
-<body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased selection:bg-[#AA7000] selection:text-white flex h-screen overflow-hidden">
+<body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased min-h-screen flex flex-col selection:bg-[#AA7000] selection:text-white">
 
   <!-- ========================================================================
-       SIDEBAR NAVIGATION
+       TOP NAVIGATION BAR
        ======================================================================== -->
-  <aside id="app-sidebar" class="w-64 bg-white border-r border-[#E8DFD0] flex flex-col justify-between shrink-0 transition-transform -translate-x-full md:translate-x-0 fixed md:static z-40 h-full">
-    <div>
-      <div class="h-20 px-6 flex items-center justify-between border-b border-[#E8DFD0]">
-        <a href="../index.html" class="flex items-center gap-1.5">
-          <span class="text-2xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
-        </a>
-        <button id="close-sidebar-btn" class="md:hidden text-[#7F766C] hover:text-[#2C1F0E]">
-          <span class="material-symbols-outlined">close</span>
+  <header class="h-16 border-b border-[#E8DFD0] px-6 lg:px-12 flex items-center justify-between shrink-0 bg-[#FAF6EE]/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="flex items-center gap-6">
+      <a href="../index.html" class="flex items-center gap-1.5 focus:outline-none">
+        <span class="text-xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
+      </a>
+      <div class="h-4 w-px bg-[#E8DFD0] hidden sm:block"></div>
+      <span class="text-xs font-semibold text-[#8C7B6B] hidden sm:inline">Diagnostic Assessments</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <a href="mock-interview.html" class="px-4 py-1.5 rounded-full border border-[#E8DFD0] bg-[#FFFDF8] hover:bg-[#F2EBD8] text-[#2C1F0E] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
+        <span class="material-symbols-outlined text-sm text-[#AA7000]">mic</span>
+        <span>Mock Interview</span>
+      </a>
+      <a href="dashboard.html" class="px-4 py-1.5 rounded-full border border-[#E8DFD0] bg-[#FFFDF8] hover:bg-[#F2EBD8] text-[#2C1F0E] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
+        <span class="material-symbols-outlined text-sm text-[#8C7B6B]">dashboard</span>
+        <span>Dashboard</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       STAGE 1: ASSESSMENT CATALOG (Clean Apple Aesthetic)
+       ======================================================================== -->
+  <main id="catalog-view" class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 flex flex-col">
+    <!-- Header Title -->
+    <div class="text-center max-w-2xl mx-auto mb-8">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FBF3E0] border border-[#E8C97A] text-[#AA7000] text-xs font-bold mb-3">
+        <span class="material-symbols-outlined text-sm">assignment_turned_in</span>
+        <span>24 Standardized Evaluation Tests</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#2C1F0E] tracking-tight">
+        Assessments &amp; Diagnostics
+      </h1>
+      <p class="text-sm sm:text-base text-[#8C7B6B] mt-2">
+        Objective, timed evaluations designed to benchmark your aptitude, situational judgment, cognitive resilience, and digital fluency.
+      </p>
+    </div>
+
+    <!-- Category Filters & Search Bar -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <!-- 4 Categories Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-pills">
+        <button onclick="filterCategory('All')" class="cat-pill active px-4 py-1.5 rounded-full text-xs font-bold bg-[#2C1F0E] text-white border border-[#2C1F0E] transition-all whitespace-nowrap" data-cat="All">
+          All Tests (24)
+        </button>
+        <button onclick="filterCategory('Aptitude & Reasoning')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Aptitude & Reasoning">
+          Aptitude &amp; Reasoning
+        </button>
+        <button onclick="filterCategory('Workplace & Work Style')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Workplace & Work Style">
+          Workplace &amp; Work Style
+        </button>
+        <button onclick="filterCategory('Psychometric Assessment')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Psychometric Assessment">
+          Psychometric Assessment
+        </button>
+        <button onclick="filterCategory('Digital Fluency')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Digital Fluency">
+          Digital Fluency
         </button>
       </div>
 
-      <nav class="p-4 space-y-1.5">
-        <a href="dashboard.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
-          <span class="material-symbols-outlined text-xl">dashboard</span>
-          <span>Dashboard</span>
-        </a>
-
-        <a href="mock-interview.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
-          <span class="material-symbols-outlined text-xl">record_voice_over</span>
-          <span>Mock Interview</span>
-        </a>
-
-        <a href="assessment.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-sm transition-all shadow-sm">
-          <span class="material-symbols-outlined text-xl">quiz</span>
-          <span>Assessments</span>
-        </a>
-
-        <a href="history.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
-          <span class="material-symbols-outlined text-xl">history</span>
-          <span>History</span>
-        </a>
-
-        <a href="resume.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
-          <span class="material-symbols-outlined text-xl">description</span>
-          <span>Resume Analyzer</span>
-        </a>
-
-        <a href="prep-plan.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
-          <span class="material-symbols-outlined text-xl">checklist</span>
-          <span>Prep Plan</span>
-        </a>
-
-        <div class="pt-4 pb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">
-          Account
-        </div>
-
-        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
-          <span class="material-symbols-outlined text-xl">settings</span>
-          <span>Settings</span>
-        </a>
-      </nav>
-    </div>
-
-    <div class="p-4 border-t border-[#E8DFD0] space-y-3">
-      <div class="flex items-center justify-between px-1">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
-            AM
-          </div>
-          <div>
-            <div class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
-            <div class="text-[11px] text-[#7F766C]">Staff Candidate</div>
-          </div>
-        </div>
-        <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
-          <span class="material-symbols-outlined text-lg">logout</span>
-        </a>
+      <!-- Search Input -->
+      <div class="relative w-full md:w-72 shrink-0">
+        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">search</span>
+        <input
+          type="text"
+          id="assessment-search-input"
+          oninput="renderAssessments()"
+          placeholder="Search assessments..."
+          class="w-full bg-[#FFFDF8] border border-[#E8DFD0] rounded-full pl-9 pr-4 py-2 text-xs text-[#2C1F0E] placeholder:text-slate-400 focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all shadow-sm"
+        />
       </div>
     </div>
-  </aside>
+
+    <!-- Assessments Cards Grid -->
+    <div id="assessments-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 custom-scroll">
+      <!-- Injected via JavaScript -->
+    </div>
+  </main>
+
 
   <!-- ========================================================================
-       ASSESSMENT MAIN WORKSPACE
+       STAGE 2: ACTIVE QUESTION RUNNER (Clean Focus Mode)
        ======================================================================== -->
-  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-    
-    <!-- Top Action Bar -->
-    <header class="h-20 bg-white border-b border-[#E8DFD0] px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
-      <div class="flex items-center gap-4">
-        <button id="mobile-sidebar-toggle" class="md:hidden text-[#2C1F0E] hover:text-[#AA7000] p-1">
-          <span class="material-symbols-outlined text-2xl">menu</span>
+  <section id="active-test-view" class="hidden flex-1 flex-col bg-[#FAF6EE] max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <!-- Top Active Header Bar -->
+    <div class="bg-white border border-[#E8DFD0] rounded-3xl p-4 sm:p-5 shadow-sm mb-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button onclick="exitActiveTest()" class="w-8 h-8 rounded-full bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#7F766C] hover:text-[#2C1F0E] flex items-center justify-center transition-colors" title="Exit Test">
+          <span class="material-symbols-outlined text-base">arrow_back</span>
         </button>
         <div>
-          <h2 class="text-sm font-bold text-[#2C1F0E]">Skill Assessment Diagnostic</h2>
-          <span class="text-xs text-[#8C7B6B]">Objective competency benchmarks</span>
+          <span id="active-test-category" class="text-[10px] font-bold text-[#AA7000] uppercase tracking-wider">Aptitude &amp; Reasoning</span>
+          <h2 id="active-test-title" class="text-sm sm:text-base font-bold text-[#2C1F0E] truncate max-w-md">Quantitative Reasoning &amp; Numerical Analysis</h2>
         </div>
       </div>
 
+      <!-- Right: Timer & Exit -->
       <div class="flex items-center gap-3">
-        <span class="text-xs font-mono px-3.5 py-1.5 rounded-full bg-[#FAF6EE] border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-sm text-[#AA7000]">schedule</span>
-          <span>Time Remaining: <strong id="question-timer" class="text-[#2C1F0E]">01:45</strong></span>
-        </span>
-      </div>
-    </header>
-    <!-- Page Breadcrumb Nav -->
-    <div class="px-6 py-3 border-b border-[#E8DFD0] bg-[#FAF6EE] flex items-center gap-2 text-xs font-semibold text-[#8C7B6B]">
-      <a href="../index.html" class="hover:text-[#AA7000] transition-colors flex items-center gap-1">
-        <span class="material-symbols-outlined text-sm">home</span>
-        <span>Home</span>
-      </a>
-      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
-      <a href="dashboard.html" class="hover:text-[#AA7000] transition-colors">Dashboard</a>
-      <span class="material-symbols-outlined text-sm text-[#E8DFD0]">chevron_right</span>
-      <span class="text-[#2C1F0E]">Skill Assessment</span>
-      <div class="ml-auto">
-        <a href="javascript:history.back()" class="flex items-center gap-1 text-[#8C7B6B] hover:text-[#AA7000] transition-colors">
-          <span class="material-symbols-outlined text-sm">arrow_back</span>
-          <span>Back</span>
-        </a>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FAF6EE] border border-[#E8DFD0] text-xs font-mono font-bold text-[#2C1F0E]">
+          <span class="material-symbols-outlined text-sm text-[#AA7000]">timer</span>
+          <span id="active-test-timer">20:00</span>
+        </div>
       </div>
     </div>
 
-
-    <main class="p-6 sm:p-8 space-y-8 max-w-5xl mx-auto w-full">
-      
-      <!-- Topic Selector Cards -->
+    <!-- Question Card -->
+    <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-10 shadow-card flex-1 flex flex-col justify-between">
       <div>
-        <h3 class="text-xs font-bold uppercase tracking-wider text-[#7F766C] mb-4">Choose Diagnostic Track</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-          
-          <button onclick="selectTopic(this, 'DSA')" class="topic-btn p-4 rounded-2xl border border-[#E8DFD0] bg-white hover:border-[#AA7000]/50 transition-all text-left shadow-soft">
-            <div class="w-8 h-8 rounded-xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mb-2">
-              <span class="material-symbols-outlined text-lg">account_tree</span>
-            </div>
-            <div class="text-xs font-bold text-[#2C1F0E]">DSA</div>
-            <div class="text-[10px] text-[#8C7B6B] mt-0.5">Trees, DP, Graphs</div>
-          </button>
-
-          <button onclick="selectTopic(this, 'System Design')" class="topic-btn p-4 rounded-2xl border-2 border-[#AA7000] bg-white shadow-soft transition-all text-left">
-            <div class="w-8 h-8 rounded-xl bg-[#AA7000] text-white flex items-center justify-center mb-2">
-              <span class="material-symbols-outlined text-lg">schema</span>
-            </div>
-            <div class="text-xs font-bold text-[#2C1F0E]">System Design</div>
-            <div class="text-[10px] text-[#AA7000] font-bold mt-0.5">Active Track</div>
-          </button>
-
-          <button onclick="selectTopic(this, 'Behavioural')" class="topic-btn p-4 rounded-2xl border border-[#E8DFD0] bg-white hover:border-[#AA7000]/50 transition-all text-left shadow-soft">
-            <div class="w-8 h-8 rounded-xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mb-2">
-              <span class="material-symbols-outlined text-lg">groups</span>
-            </div>
-            <div class="text-xs font-bold text-[#2C1F0E]">Behavioural</div>
-            <div class="text-[10px] text-[#8C7B6B] mt-0.5">STAR Leadership</div>
-          </button>
-
-          <button onclick="selectTopic(this, 'Frontend')" class="topic-btn p-4 rounded-2xl border border-[#E8DFD0] bg-white hover:border-[#AA7000]/50 transition-all text-left shadow-soft">
-            <div class="w-8 h-8 rounded-xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mb-2">
-              <span class="material-symbols-outlined text-lg">web</span>
-            </div>
-            <div class="text-xs font-bold text-[#2C1F0E]">Frontend</div>
-            <div class="text-[10px] text-[#8C7B6B] mt-0.5">Core Web Vitals</div>
-          </button>
-
-          <button onclick="selectTopic(this, 'Backend')" class="topic-btn p-4 rounded-2xl border border-[#E8DFD0] bg-white hover:border-[#AA7000]/50 transition-all text-left shadow-soft">
-            <div class="w-8 h-8 rounded-xl bg-[#FBF3E0] text-[#AA7000] flex items-center justify-center mb-2">
-              <span class="material-symbols-outlined text-lg">dns</span>
-            </div>
-            <div class="text-xs font-bold text-[#2C1F0E]">Backend</div>
-            <div class="text-[10px] text-[#8C7B6B] mt-0.5">Concurrency, I/O</div>
-          </button>
-
-        </div>
-      </div>
-
-      <!-- MCQ QUESTION CARD -->
-      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-10 shadow-card">
-        
-        <!-- Progress Bar & Question Count -->
-        <div class="mb-8">
+        <!-- Progress Bar & Count -->
+        <div class="mb-6">
           <div class="flex items-center justify-between text-xs mb-2">
-            <span class="font-bold text-[#7F766C] uppercase tracking-wider">System Design Benchmark</span>
-            <span class="font-bold text-[#AA7000]">Question 3 of 10</span>
+            <span class="font-bold text-[#7F766C] uppercase tracking-wider">Active Question</span>
+            <span id="active-q-counter" class="font-bold text-[#AA7000]">Question 1 of 3</span>
           </div>
           <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden border border-[#E8DFD0]">
-            <div class="bg-[#AA7000] h-full rounded-full transition-all duration-300" style="width: 30%"></div>
+            <div id="active-q-progress" class="bg-[#AA7000] h-full rounded-full transition-all duration-300" style="width: 33%"></div>
           </div>
         </div>
 
-        <!-- Question Prompt -->
+        <!-- Question Text -->
         <div class="mb-8">
-          <div class="inline-block px-3 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] text-[11px] font-bold mb-3 border border-[#E8C97A]">
-            CAP Theorem &amp; Partitioning
-          </div>
-          <h2 class="text-lg sm:text-xl font-bold text-[#2C1F0E] leading-snug">
-            In a globally replicated datastore requiring strong linearizability for financial ledger entries, which quorum configuration guarantees zero write loss during an asymmetric single-node network partition?
-          </h2>
+          <h3 id="active-q-prompt" class="text-base sm:text-lg md:text-xl font-bold text-[#2C1F0E] leading-relaxed">
+            "Prompt goes here..."
+          </h3>
         </div>
 
-        <!-- Options List -->
-        <div class="space-y-3 mb-8">
-          <!-- Option A -->
-          <label class="option-item flex items-start gap-4 p-4 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000]/40 bg-white hover:bg-[#FAF6EE]/50 cursor-pointer transition-all">
-            <input type="radio" name="assessment-mcq" class="mt-1 w-4 h-4 text-[#AA7000] border-[#E8DFD0] focus:ring-[#AA7000]" />
-            <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed">
-              <strong class="text-[#2C1F0E] mr-1.5">A.</strong>
-              Configure write quorum W = 1 and read quorum R = N to prioritize client write availability at the cost of eventual ledger convergence.
-            </div>
-          </label>
-
-          <!-- Option B (Correct) -->
-          <label class="option-item flex items-start gap-4 p-4 rounded-2xl border border-[#AA7000] bg-[#FBF3E0] cursor-pointer transition-all">
-            <input type="radio" name="assessment-mcq" checked class="mt-1 w-4 h-4 text-[#AA7000] border-[#AA7000] focus:ring-[#AA7000]" />
-            <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed font-semibold">
-              <strong class="text-[#AA7000] mr-1.5">B.</strong>
-              Enforce strict majority quorum (W &gt; N/2 and R + W &gt; N) backed by Raft leader lease checks before committing to persistent WAL.
-            </div>
-          </label>
-
-          <!-- Option C -->
-          <label class="option-item flex items-start gap-4 p-4 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000]/40 bg-white hover:bg-[#FAF6EE]/50 cursor-pointer transition-all">
-            <input type="radio" name="assessment-mcq" class="mt-1 w-4 h-4 text-[#AA7000] border-[#E8DFD0] focus:ring-[#AA7000]" />
-            <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed">
-              <strong class="text-[#2C1F0E] mr-1.5">C.</strong>
-              Rely on Last-Write-Wins (LWW) timestamp conflict resolution using NTP synchronised wall clocks across all cloud zones.
-            </div>
-          </label>
-
-          <!-- Option D -->
-          <label class="option-item flex items-start gap-4 p-4 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000]/40 bg-white hover:bg-[#FAF6EE]/50 cursor-pointer transition-all">
-            <input type="radio" name="assessment-mcq" class="mt-1 w-4 h-4 text-[#AA7000] border-[#E8DFD0] focus:ring-[#AA7000]" />
-            <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed">
-              <strong class="text-[#2C1F0E] mr-1.5">D.</strong>
-              Implement gossip-based anti-entropy with vector clocks and delegate reconciliation to background read repairs.
-            </div>
-          </label>
+        <!-- Options Container -->
+        <div id="active-options-list" class="space-y-3 mb-8">
+          <!-- Dynamically populated via JS -->
         </div>
-
-        <!-- Footer / Action Controls -->
-        <div class="pt-6 border-t border-[#E8DFD0] flex flex-wrap items-center justify-between gap-4">
-          <div class="text-xs text-[#8C7B6B] flex items-center gap-1.5 font-medium">
-            <span class="material-symbols-outlined text-sm text-[#4F6B2D]">check_circle</span>
-            <span>Answer auto-saved to candidate diagnostic record</span>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <button class="px-5 py-2.5 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-[#2C1F0E] text-xs font-bold transition-all">
-              Previous
-            </button>
-            <button onclick="nextAssessmentQuestion()" class="px-6 py-2.5 rounded-full bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold transition-all shadow-pill flex items-center gap-1.5">
-              <span>Next Question</span>
-              <span class="material-symbols-outlined text-sm">arrow_forward</span>
-            </button>
-          </div>
-        </div>
-
       </div>
 
-      <!-- Diagnostic Insight Note -->
-      <div class="p-5 rounded-2xl bg-white border border-[#E8DFD0] shadow-soft flex items-start gap-3.5">
-        <span class="material-symbols-outlined text-[#AA7000] text-xl shrink-0 mt-0.5">lightbulb</span>
+      <!-- Bottom Question Controls -->
+      <div class="pt-6 border-t border-[#E8DFD0] flex items-center justify-between">
+        <button id="active-prev-btn" onclick="navQuestion(-1)" class="px-5 py-2.5 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-xs font-bold text-[#7F766C] hover:text-[#2C1F0E] transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Previous</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button id="active-next-btn" onclick="navQuestion(1)" class="px-6 py-2.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 transform hover:-translate-y-0.5">
+            <span>Next Question</span>
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========================================================================
+       MODAL: START TEST CONFIRMATION & INSTRUCTIONS
+       ======================================================================== -->
+  <div id="test-start-modal" class="fixed inset-0 z-50 hidden bg-[#1A1208]/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div class="bg-[#FFFDF8] border border-[#E8DFD0] rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl my-auto transition-all transform scale-100 animate-fadeIn">
+      <div class="flex items-center justify-between pb-3 border-b border-[#E8DFD0] mb-4">
         <div>
-          <h4 class="text-xs font-bold text-[#2C1F0E]">Why this matters in Technical Interviews</h4>
-          <p class="text-xs text-[#8C7B6B] mt-1 leading-relaxed">
-            Leading engineering interview loops at Tier-1 tech organizations probe CAP trade-offs to assess whether you can prevent split-brain anomalies and phantom data corruption in production environments.
-          </p>
+          <span id="modal-confirm-category" class="text-[10px] font-bold text-[#AA7000] uppercase tracking-wider">Aptitude &amp; Reasoning</span>
+          <h3 id="modal-confirm-title" class="text-lg sm:text-xl font-bold text-[#2C1F0E]">Quantitative Reasoning</h3>
+        </div>
+        <button onclick="closeStartModal()" class="w-8 h-8 rounded-full bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#7F766C] hover:text-[#2C1F0E] flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+
+      <!-- Test Highlights Specs -->
+      <div class="grid grid-cols-2 gap-3 mb-5">
+        <div class="p-3 bg-[#FAF6EE] rounded-2xl border border-[#E8DFD0]">
+          <div class="text-[10px] text-[#8C7B6B] font-semibold uppercase">Questions</div>
+          <div id="modal-confirm-questions" class="text-sm font-bold text-[#2C1F0E] mt-0.5">30 Questions</div>
+        </div>
+        <div class="p-3 bg-[#FAF6EE] rounded-2xl border border-[#E8DFD0]">
+          <div class="text-[10px] text-[#8C7B6B] font-semibold uppercase">Duration</div>
+          <div id="modal-confirm-duration" class="text-sm font-bold text-[#2C1F0E] mt-0.5">30 min</div>
         </div>
       </div>
 
-    </main>
+      <!-- Rules & Rubric -->
+      <div class="space-y-2.5 mb-6 text-xs text-[#8C7B6B]">
+        <div class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-sm text-[#4F6B2D] mt-0.5">check_circle</span>
+          <span>Each question carries equal weight with no penalty for educated guesses.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-sm text-[#4F6B2D] mt-0.5">check_circle</span>
+          <span>Instant scoring breakdown across accuracy, speed, and analytical reasoning.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-sm text-[#4F6B2D] mt-0.5">check_circle</span>
+          <span>Accent-agnostic forensic logic normalization standard.</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-[#E8DFD0]">
+        <button onclick="closeStartModal()" class="px-5 py-2.5 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-xs font-bold text-[#7F766C] hover:text-[#2C1F0E] transition-all">
+          Cancel
+        </button>
+        <button onclick="launchConfirmedTest()" class="px-6 py-2.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 transform hover:-translate-y-0.5">
+          <span>Start Test</span>
+          <span class="material-symbols-outlined text-sm">play_arrow</span>
+        </button>
+      </div>
+    </div>
   </div>
 
+
+  <!-- ========================================================================
+       MODAL: TEST COMPLETED & SCORE SUMMARY
+       ======================================================================== -->
+  <div id="test-result-modal" class="fixed inset-0 z-50 hidden bg-[#1A1208]/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div class="bg-[#FFFDF8] border border-[#E8DFD0] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl my-auto text-center animate-fadeIn">
+      <div class="w-14 h-14 rounded-full bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/20 flex items-center justify-center mx-auto mb-4">
+        <span class="material-symbols-outlined text-2xl">verified</span>
+      </div>
+      <h3 class="text-xl font-extrabold text-[#2C1F0E]">Assessment Completed</h3>
+      <p id="result-test-title" class="text-xs text-[#8C7B6B] mt-1 mb-5">Quantitative Reasoning &amp; Numerical Analysis</p>
+
+      <div class="p-4 bg-[#FAF6EE] border border-[#E8DFD0] rounded-2xl mb-6">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">Diagnostic Score</div>
+        <div id="result-score-percent" class="text-3xl font-black text-[#2C1F0E] mt-1">92%</div>
+        <div class="text-xs font-semibold text-[#4F6B2D] mt-1">Benchmark: Exceeds Staff+ Standard</div>
+      </div>
+
+      <div class="flex items-center justify-center gap-3">
+        <button onclick="returnToCatalog()" class="px-6 py-2.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all shadow-sm">
+          Return to Assessments
+        </button>
+        <a href="dashboard.html" class="px-5 py-2.5 rounded-full border border-[#E8DFD0] hover:bg-[#FAF6EE] text-xs font-bold text-[#2C1F0E] transition-all">
+          View Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
+       APPLICATION LOGIC
+       ======================================================================== -->
   <script>
-    const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
-    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
-    const appSidebar = document.getElementById('app-sidebar');
+    const assessments = [{"id": "apt-1", "title": "Quantitative Reasoning & Numerical Analysis", "category": "Aptitude & Reasoning", "questionsCount": 30, "duration": "30 min", "description": "Numbers, percentages, ratios, probability and data trends for placement rounds.", "skills": ["Numerical Logic", "Algebraic Estimation", "Data Arithmetic"], "questions": [{"prompt": "A distributed worker pool processes a queue. Worker A finishes a batch in 4 hours, and Worker B in 6 hours. If both workers operate concurrently, how many hours will they take to complete 5 batches?", "options": [{"label": "A", "text": "10 hours", "correct": false}, {"label": "B", "text": "12 hours", "correct": true}, {"label": "C", "text": "14 hours", "correct": false}, {"label": "D", "text": "15 hours", "correct": false}], "explanation": "Worker A rate is 1/4 batch/hr. Worker B rate is 1/6 batch/hr. Combined rate = 1/4 + 1/6 = 5/12 batches/hr. To complete 5 batches: 5 / (5/12) = 12 hours."}, {"prompt": "If a server's memory usage increases by 20% on Monday and then decreases by 15% on Tuesday relative to Monday's peak, what is the net percentage change from the initial baseline?", "options": [{"label": "A", "text": "+5.0% increase", "correct": false}, {"label": "B", "text": "+2.0% increase", "correct": true}, {"label": "C", "text": "+3.5% increase", "correct": false}, {"label": "D", "text": "-1.0% decrease", "correct": false}], "explanation": "Initial = 1.0. Monday = 1.20. Tuesday = 1.20 * 0.85 = 1.02. Net change = +2.0%."}, {"prompt": "In an event stream where the probability of a packet arriving corrupted is 0.02, what is the probability that in an independent sample of 2 packets, at least one packet arrives intact?", "options": [{"label": "A", "text": "0.9996", "correct": true}, {"label": "B", "text": "0.9800", "correct": false}, {"label": "C", "text": "0.9604", "correct": false}, {"label": "D", "text": "0.0396", "correct": false}], "explanation": "P(at least one intact) = 1 - P(both corrupted) = 1 - (0.02 * 0.02) = 1 - 0.0004 = 0.9996."}]}, {"id": "apt-2", "title": "Logical Deductions & Syllogisms", "category": "Aptitude & Reasoning", "questionsCount": 25, "duration": "25 min", "description": "Formal propositional logic, conditional syllogisms, and validity verification.", "skills": ["Deductive Proofs", "Syllogistic Inference", "Logical Validity"], "questions": [{"prompt": "Premise 1: All microservices with persistent disks require WAL replication. Premise 2: Service Lambda does not have WAL replication. What necessarily follows?", "options": [{"label": "A", "text": "Service Lambda is stateless or lacks persistent disks", "correct": true}, {"label": "B", "text": "Service Lambda is prone to data corruption", "correct": false}, {"label": "C", "text": "All stateless services use WAL replication", "correct": false}, {"label": "D", "text": "Service Lambda will fail in production", "correct": false}], "explanation": "Modus Tollens: If P (persistent disk) -> Q (requires WAL). Not Q -> Not P."}]}, {"id": "apt-3", "title": "Data Interpretation & Graph Literacy", "category": "Aptitude & Reasoning", "questionsCount": 20, "duration": "25 min", "description": "Multi-axis time-series, cumulative distributions, and throughput percentiles.", "skills": ["Percentile Reading", "Trend Extraction", "Data Discrepancy Audits"], "questions": [{"prompt": "A service reports p50 latency = 12ms and p99 latency = 840ms. What does this distribution disparity most accurately indicate?", "options": [{"label": "A", "text": "The entire fleet of servers is overloaded uniformly", "correct": false}, {"label": "B", "text": "A severe long-tail latency bottleneck affecting a minority of requests (e.g., GC pauses or lock contention)", "correct": true}, {"label": "C", "text": "The p50 calculation was corrupted by packet loss", "correct": false}, {"label": "D", "text": "Network bandwidth is completely saturated across all nodes", "correct": false}], "explanation": "Large gap between p50 and p99 indicates long-tail behavior where 99th percentile suffers from outliers."}]}, {"id": "apt-4", "title": "Abstract Pattern Recognition & Sequences", "category": "Aptitude & Reasoning", "questionsCount": 30, "duration": "20 min", "description": "Non-verbal reasoning, alphanumeric series, matrix progression, and rotation.", "skills": ["Pattern Extrapolation", "Inductive Heuristics", "Matrix Transformation"], "questions": [{"prompt": "Identify the next term in the sequence: 2, 6, 14, 30, 62, ?", "options": [{"label": "A", "text": "124", "correct": false}, {"label": "B", "text": "126", "correct": true}, {"label": "C", "text": "128", "correct": false}, {"label": "D", "text": "132", "correct": false}], "explanation": "Each term is multiplied by 2 and incremented by 2: (62 * 2) + 2 = 124 + 2 = 126."}]}, {"id": "apt-5", "title": "Critical Thinking & Argument Evaluation", "category": "Aptitude & Reasoning", "questionsCount": 25, "duration": "25 min", "description": "Dissecting engineering premises, unstated assumptions, and causal fallacies.", "skills": ["Premise Decomposition", "Assumption Testing", "Fallacy Avoidance"], "questions": [{"prompt": "A lead engineer claims: 'Adopting language X reduced our deployment errors by 40% this quarter; therefore, all teams should immediately migrate to language X.' What is the primary logical flaw?", "options": [{"label": "A", "text": "Post hoc ergo propter hoc (ignoring concurrent changes such as improved CI testing or smaller release sizes)", "correct": true}, {"label": "B", "text": "Circular reasoning regarding programming syntax", "correct": false}, {"label": "C", "text": "Ad hominem against competing languages", "correct": false}, {"label": "D", "text": "Strawman representation of codebase bugs", "correct": false}], "explanation": "Attributing correlation to a single variable without controlling for confounding factors is a classic causal fallacy."}]}, {"id": "apt-6", "title": "Spatial Reasoning & Systems Topology", "category": "Aptitude & Reasoning", "questionsCount": 20, "duration": "20 min", "description": "Mental projection of network graph partitions, ring topologies, and routing hops.", "skills": ["Graph Topologies", "Ring Traversal", "Topological Ordering"], "questions": [{"prompt": "In a consistent hashing ring with 1024 token slots and 4 physical nodes spaced symmetrically, what happens to partition ownership when a 5th node is introduced?", "options": [{"label": "A", "text": "All existing keys are rehashed across all nodes completely", "correct": false}, {"label": "B", "text": "Only a fraction of keys (roughly 1/5th) are migrated to the new node from its immediate neighbors", "correct": true}, {"label": "C", "text": "The ring requires complete downtime to reindex", "correct": false}, {"label": "D", "text": "Replication factor must double", "correct": false}], "explanation": "Consistent hashing minimizes key movement to K/N keys where N is the number of servers."}]}, {"id": "work-1", "title": "Situational Judgment in Engineering Teams", "category": "Workplace & Work Style", "questionsCount": 20, "duration": "20 min", "description": "Prioritization under competing deadlines, production blockers, and team trade-offs.", "skills": ["Urgency Triage", "Stakeholder Diplomacy", "Impact Prioritization"], "questions": [{"prompt": "Two hours before a scheduled enterprise client demo, a minor visual bug is discovered in the reporting table alongside a flaky test in the payment webhook. How should you prioritize?", "options": [{"label": "A", "text": "Immediately push an untested patch for both issues to main", "correct": false}, {"label": "B", "text": "Assess the critical path of the demo; isolate the flaky payment test with an alert, and evaluate visual bug severity with the presenter before modifying production code", "correct": true}, {"label": "C", "text": "Cancel the enterprise demo immediately", "correct": false}, {"label": "D", "text": "Ignore both issues without notifying the presentation team", "correct": false}], "explanation": "Risk mitigation requires triaging critical user flows and transparent communication over last-minute risky commits."}]}, {"id": "work-2", "title": "Cross-Functional Alignment & Communication", "category": "Workplace & Work Style", "questionsCount": 20, "duration": "20 min", "description": "Translating technical constraints into business tradeoffs for product and design partners.", "skills": ["Technical Translation", "Empathy & Negotiation", "RFC Alignment"], "questions": [{"prompt": "A product manager requests real-time sub-second analytics on a dashboard, but backend infrastructure can only support 5-second polling without a costly architectural overhaul. What is the most effective approach?", "options": [{"label": "A", "text": "Reject the ticket without explanation", "correct": false}, {"label": "B", "text": "Present the latency vs cost trade-off with concrete infrastructure numbers and propose a phased rollout (5s polling now, WebSockets when scale justifies cost)", "correct": true}, {"label": "C", "text": "Over-provision expensive cloud instances without budget approval", "correct": false}, {"label": "D", "text": "Tell the PM to redesign the UI entirely", "correct": false}], "explanation": "Collaborative engineering offers transparent trade-offs and pragmatic phased compromises."}]}, {"id": "work-3", "title": "Conflict Resolution & Engineering Consensus", "category": "Workplace & Work Style", "questionsCount": 25, "duration": "25 min", "description": "Navigating architecture stalemates, code review disputes, and technical pride.", "skills": ["De-escalation", "Objective Benchmarks", "Disagree & Commit"], "questions": [{"prompt": "Two senior engineers disagree strongly on whether to use GraphQL or REST for a new internal API, stalling the project for a week. As tech lead, how do you resolve this?", "options": [{"label": "A", "text": "Choose the one you personally prefer without discussion", "correct": false}, {"label": "B", "text": "Establish a time-boxed decision matrix scored on concrete criteria (client query complexity, tooling maturity, caching requirements), evaluate a 1-day spike, and apply 'disagree and commit'", "correct": true}, {"label": "C", "text": "Build two parallel implementations and decide in 6 months", "correct": false}, {"label": "D", "text": "Escalate immediately to the VP of Engineering", "correct": false}], "explanation": "A structured decision matrix backed by spikes neutralizes subjective arguments and unblocks the team."}]}, {"id": "work-4", "title": "Ownership & Incident Accountability", "category": "Workplace & Work Style", "questionsCount": 20, "duration": "20 min", "description": "Blameless post-mortems, root cause analysis, and systemic resiliency improvements.", "skills": ["Blameless Post-Mortems", "Root Cause Analysis", "SLO Defense"], "questions": [{"prompt": "A junior engineer accidentally triggers a database migration script that drops an indexing table in staging. What is the culturally sound response?", "options": [{"label": "A", "text": "Publicly reprimand the engineer in the team channel", "correct": false}, {"label": "B", "text": "Lead a blameless post-mortem focusing on why permissions allowed non-dry-run executions and automate safety guardrails in the CI/CD pipeline", "correct": true}, {"label": "C", "text": "Revoke the junior engineer's database access permanently", "correct": false}, {"label": "D", "text": "Hide the mistake from senior leadership", "correct": false}], "explanation": "Resilient systems focus on architectural guardrails and process improvements rather than assigning personal blame."}]}, {"id": "work-5", "title": "Remote & Asynchronous Work Hygiene", "category": "Workplace & Work Style", "questionsCount": 20, "duration": "20 min", "description": "RFC documentation, timezone collaboration, and asynchronous task handoffs.", "skills": ["Written Documentation", "Timezone Empathy", "Async Task Handoffs"], "questions": [{"prompt": "When handing off an in-progress incident investigation to an engineering squad 8 timezones ahead, what should your handoff document include?", "options": [{"label": "A", "text": "A brief message saying 'check the logs'", "correct": false}, {"label": "B", "text": "A structured summary of known symptoms, confirmed eliminated hypotheses, active dashboards/queries, open mitigation actions, and designated incident commander", "correct": true}, {"label": "C", "text": "Ask them to schedule a meeting 4 hours into their night", "correct": false}, {"label": "D", "text": "Wait until tomorrow morning to write down the findings", "correct": false}], "explanation": "Clear async handoffs prevent redundant work and ensure uninterrupted incident resolution."}]}, {"id": "work-6", "title": "Feedback Reception & Mentorship Impact", "category": "Workplace & Work Style", "questionsCount": 20, "duration": "20 min", "description": "Constructive code reviews, mentoring interns, and receiving tough performance evaluations.", "skills": ["Constructive Critique", "Growth Mindset", "Mentorship Delivery"], "questions": [{"prompt": "In a code review, an intern submits a 1200-line pull request that works correctly but lacks modularity and unit tests. What is the most constructive response?", "options": [{"label": "A", "text": "Approve the PR to avoid discouraging the intern", "correct": false}, {"label": "B", "text": "Acknowledge the working functional logic, then hop on a pairing session to demonstrate how to break the PR into atomic commits with test fixtures", "correct": true}, {"label": "C", "text": "Reject the PR with a one-word comment: 'refactor'", "correct": false}, {"label": "D", "text": "Rewrite the PR yourself without telling them", "correct": false}], "explanation": "High-leverage mentorship pairs positive reinforcement with actionable pairing guidance."}]}, {"id": "psy-1", "title": "Cognitive Agility & Fast Task Switching", "category": "Psychometric Assessment", "questionsCount": 30, "duration": "20 min", "description": "Working memory, conceptual pivoting under rapid contextual shifts, and mental throughput.", "skills": ["Context Switching", "Working Memory", "Adaptive Problem Solving"], "questions": [{"prompt": "You are transitioning between an algorithmic debugging session and a high-level client architecture review. Which cognitive strategy minimizes residual attention lag?", "options": [{"label": "A", "text": "Keep code open and switch tabs constantly during the meeting", "correct": false}, {"label": "B", "text": "Take a 2-minute break, log state notes on the bug for easy resumption, and focus exclusively on the client context", "correct": true}, {"label": "C", "text": "Cancel the client review at the last second", "correct": false}, {"label": "D", "text": "Delegate all answering in the review to a junior colleague", "correct": false}], "explanation": "Logging mental state and establishing an intentional threshold boundary reduces attention residue."}]}, {"id": "psy-2", "title": "Decision Making Under High Ambiguity", "category": "Psychometric Assessment", "questionsCount": 25, "duration": "25 min", "description": "Formulating sound technical hypotheses with incomplete telemetry and conflicting data points.", "skills": ["Hypothesis Testing", "Probabilistic Thinking", "Reversible Decisions"], "questions": [{"prompt": "When facing a high-ambiguity technical decision with incomplete performance data, what framework best prevents paralysis by analysis?", "options": [{"label": "A", "text": "Wait indefinitely until 100% of telemetry data is collected", "correct": false}, {"label": "B", "text": "Identify whether the decision is a Type 1 (irreversible) or Type 2 (reversible) door; if reversible, pick a fast hypothesis with automated rollback metrics", "correct": true}, {"label": "C", "text": "Flip a coin to maintain velocity", "correct": false}, {"label": "D", "text": "Choose the most complex architecture available", "correct": false}], "explanation": "Categorizing decisions by reversibility allows engineering teams to move fast with minimal existential risk."}]}, {"id": "psy-3", "title": "Resilience & Pressure Tolerance", "category": "Psychometric Assessment", "questionsCount": 20, "duration": "20 min", "description": "Maintaining analytical composure during live production outages and high-stakes audits.", "skills": ["Stress Inoculation", "Executive Function Under Duress", "Crisis Composure"], "questions": [{"prompt": "During a Severity-1 outage where millions in revenue are leaking per minute, leadership joins the call asking for constant updates. What is the sound operational protocol?", "options": [{"label": "A", "text": "Stop all debugging and write extensive slide decks for leadership", "correct": false}, {"label": "B", "text": "Designate an Incident Scribe/Liaison to manage external communications, freeing the primary engineers to diagnose root cause in an unhindered channel", "correct": true}, {"label": "C", "text": "Mute all microphones and refuse to communicate", "correct": false}, {"label": "D", "text": "Make random config changes quickly hoping one resolves it", "correct": false}], "explanation": "Separating incident communications from investigation ensures cognitive bandwidth remains focused on remediation."}]}, {"id": "psy-4", "title": "Intellectual Curiosity & Rapid Learning", "category": "Psychometric Assessment", "questionsCount": 25, "duration": "25 min", "description": "Assimilating unfamiliar programming paradigms, internal SDKs, and novel abstractions.", "skills": ["First-Principles Thinking", "Conceptual Mapping", "Rapid Prototyping"], "questions": [{"prompt": "When learning a completely new language paradigm (e.g. moving from imperative OOP to purely functional programming), what is the most effective mental strategy?", "options": [{"label": "A", "text": "Try to force imperative design patterns into the functional codebase", "correct": false}, {"label": "B", "text": "Study core first-principles (immutability, higher-order functions, pure evaluation) through small canonical Katas before building production systems", "correct": true}, {"label": "C", "text": "Avoid reading documentation and copy-paste stack snippets", "correct": false}, {"label": "D", "text": "Conclude that the paradigm is useless if it feels unfamiliar initially", "correct": false}], "explanation": "Mastering fundamental invariants through deliberate practice prevents antipattern propagation."}]}, {"id": "psy-5", "title": "Attention to Detail & Regression Acumen", "category": "Psychometric Assessment", "questionsCount": 30, "duration": "20 min", "description": "Detecting off-by-one errors, subtle schema drift, time-zone offsets, and race conditions.", "skills": ["Boundary Auditing", "Schema Drift Detection", "Edge Case Anticipation"], "questions": [{"prompt": "In an API contract, timestamps are sent as ISO-8601 strings without an explicit timezone offset (e.g., '2026-10-29T18:30:00'). What critical risk does this introduce?", "options": [{"label": "A", "text": "Payload size will exceed JSON parser buffer limits", "correct": false}, {"label": "B", "text": "Ambiguity between UTC and local server zone, causing silent data skew during daylight saving adjustments", "correct": true}, {"label": "C", "text": "The API will automatically fail SSL handshake", "correct": false}, {"label": "D", "text": "Database will refuse to store string timestamps", "correct": false}], "explanation": "Unqualified local timestamps create severe synchronization and auditing bugs across distributed timezones."}]}, {"id": "psy-6", "title": "Pragmatism vs Perfectionism Tradeoffs", "category": "Psychometric Assessment", "questionsCount": 20, "duration": "20 min", "description": "Balancing technical debt, code cleanliness, and shipping velocity for high-growth goals.", "skills": ["Pragmatic Engineering", "Technical Debt Budgeting", "Velocity Optimization"], "questions": [{"prompt": "When building an MVP for a time-sensitive market pilot, an engineer suggests spending 3 weeks building a fully generic multi-tenant plugin architecture. What is the pragmatic counter-proposal?", "options": [{"label": "A", "text": "Accept the proposal because clean code always supersedes time-to-market", "correct": false}, {"label": "B", "text": "Build a clean single-tenant implementation now with modular interfaces, test market traction, and refactor for multi-tenancy once requirements are proven", "correct": true}, {"label": "C", "text": "Write throwaway spaghetti code with no intention of ever refactoring", "correct": false}, {"label": "D", "text": "Abandon the product initiative completely", "correct": false}], "explanation": "YAGNI (You Aren't Gonna Need It) and modular isolation balance rapid learning with maintainability."}]}, {"id": "dig-1", "title": "Cloud Infrastructure & Distributed Fundamentals", "category": "Digital Fluency", "questionsCount": 25, "duration": "25 min", "description": "Multi-region topologies, availability zones, load balancers, and container orchestration.", "skills": ["Multi-AZ Resilience", "Container Orchestration", "Traffic Ingress"], "questions": [{"prompt": "What is the primary advantage of deploying stateless application containers across multiple Availability Zones (AZs) behind an Application Load Balancer?", "options": [{"label": "A", "text": "Elimination of all network latency worldwide", "correct": false}, {"label": "B", "text": "Fault tolerance against physical data center outages without requiring manual failover", "correct": true}, {"label": "C", "text": "Automatic translation between HTTP/2 and gRPC", "correct": false}, {"label": "D", "text": "Infinite relational database scale with zero sharding", "correct": false}], "explanation": "Multi-AZ topologies isolate failure domains so a facility-level disaster does not bring down the application."}]}, {"id": "dig-2", "title": "Information Security & Zero Trust Architecture", "category": "Digital Fluency", "questionsCount": 25, "duration": "20 min", "description": "Secrets rotation, OAuth2/OIDC, least privilege access, and secure code hygiene.", "skills": ["Least Privilege", "Secrets Management", "Token Invalidation"], "questions": [{"prompt": "Under the Zero Trust security model, what is the core premise regarding internal network traffic behind the corporate perimeter?", "options": [{"label": "A", "text": "Traffic on internal private subnets is inherently trusted and requires no encryption", "correct": false}, {"label": "B", "text": "Never trust, always verify: every service-to-service call must authenticate and authorize via mutual TLS and scoped identity tokens regardless of network location", "correct": true}, {"label": "C", "text": "All internal databases should have public IPs with password protection", "correct": false}, {"label": "D", "text": "Firewalls replace the need for application-level authentication", "correct": false}], "explanation": "Zero Trust rejects perimeter-based security, enforcing mutual authentication on every internal hop."}]}, {"id": "dig-3", "title": "Modern API Paradigms & Protocol Design", "category": "Digital Fluency", "questionsCount": 25, "duration": "25 min", "description": "REST, GraphQL, gRPC, HTTP/2 multiplexing, idempotency keys, and rate limiting.", "skills": ["Idempotency Keys", "Protocol Tradeoffs", "Payload Serialization"], "questions": [{"prompt": "Why are idempotency keys critical when designing payment or subscription charge endpoints over HTTP?", "options": [{"label": "A", "text": "To compress the JSON body over gzip", "correct": false}, {"label": "B", "text": "To prevent duplicate charges when network timeouts cause the client to safely retry the POST request", "correct": true}, {"label": "C", "text": "To bypass HTTPS TLS verification", "correct": false}, {"label": "D", "text": "To speed up database index lookups", "correct": false}], "explanation": "Idempotency keys ensure repeated calls with the same key produce the exact same outcome without duplicate execution."}]}, {"id": "dig-4", "title": "DevOps, CI/CD & Production Rollback Strategies", "category": "Digital Fluency", "questionsCount": 20, "duration": "20 min", "description": "Blue/green deployments, canary testing, automated rollbacks, and trunk-based development.", "skills": ["Canary Deployments", "Automated Rollbacks", "Trunk-Based Development"], "questions": [{"prompt": "In a canary deployment strategy, how is traffic initially routed to the new application version?", "options": [{"label": "A", "text": "100% of production traffic is switched instantly", "correct": false}, {"label": "B", "text": "A tiny percentage (e.g. 2-5%) of production users are routed to the new release while monitoring error budgets and latency metrics before progressing", "correct": true}, {"label": "C", "text": "Only internal developer machines execute the code", "correct": false}, {"label": "D", "text": "Traffic is duplicated but all responses from the new version are discarded", "correct": false}], "explanation": "Canary routing validates behavior against genuine production traffic with minimal blast radius."}]}, {"id": "dig-5", "title": "Data Governance, Retention & Privacy Invariants", "category": "Digital Fluency", "questionsCount": 20, "duration": "20 min", "description": "GDPR compliance, PII anonymization, audit trails, and zero persistent biometric retention.", "skills": ["PII Masking", "Right to be Forgotten", "Ephemeral Processing"], "questions": [{"prompt": "When an application processes candidate voice recordings for real-time acoustic analysis under zero-retention privacy standards, where should the audio data reside?", "options": [{"label": "A", "text": "Stored indefinitely in an unencrypted S3 bucket for training", "correct": false}, {"label": "B", "text": "Processed in an ephemeral in-memory ring buffer and immediately purged upon transcription with zero disk persistence", "correct": true}, {"label": "C", "text": "Shared with third-party advertising partners via webhooks", "correct": false}, {"label": "D", "text": "Committed to git repository logs", "correct": false}], "explanation": "Zero retention requires volatile ephemeral memory buffers that discard sensitive biometrics after extraction."}]}, {"id": "dig-6", "title": "Database Fundamentals & Storage Engines", "category": "Digital Fluency", "questionsCount": 25, "duration": "25 min", "description": "ACID transactions, B-Trees vs LSM-Trees, index selectivity, and connection pooling.", "skills": ["Index Selectivity", "ACID Invariants", "Connection Pooling"], "questions": [{"prompt": "Why can adding an index on a boolean column (e.g., is_active) often provide little to no query performance gain on a large relational table?", "options": [{"label": "A", "text": "Boolean columns cannot be indexed in SQL", "correct": false}, {"label": "B", "text": "Low cardinality (poor selectivity) means the query optimizer will likely opt for a sequential scan over an index lookup", "correct": true}, {"label": "C", "text": "Indexes only work on primary keys", "correct": false}, {"label": "D", "text": "B-Trees require string data types", "correct": false}], "explanation": "Low cardinality columns fail to narrow down search rows effectively, making full table scans faster."}]}];
 
-    if (mobileSidebarToggle && appSidebar) {
-      mobileSidebarToggle.addEventListener('click', () => {
-        appSidebar.classList.remove('-translate-x-full');
+    let activeCategory = 'All';
+    let selectedAssessment = null;
+    let activeQuestionIndex = 0;
+    let userAnswers = {};
+    let countdownInterval = null;
+    let remainingSeconds = 1200; // 20 mins default
+
+    // Filter by Category
+    function filterCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('#category-pills .cat-pill').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = "cat-pill active px-4 py-1.5 rounded-full text-xs font-bold bg-[#2C1F0E] text-white border border-[#2C1F0E] transition-all whitespace-nowrap";
+        } else {
+          btn.className = "cat-pill px-4 py-1.5 rounded-full text-xs font-bold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap";
+        }
+      });
+      renderAssessments();
+    }
+
+    // Render Cards in Catalog
+    function renderAssessments() {
+      const query = (document.getElementById('assessment-search-input').value || '').toLowerCase().trim();
+      const grid = document.getElementById('assessments-grid');
+      grid.innerHTML = '';
+
+      const filtered = assessments.filter(item => {
+        const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
+        const matchesQuery = !query || item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query);
+        return matchesCategory && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-16 text-center text-[#8C7B6B]">
+            <span class="material-symbols-outlined text-4xl mb-2 text-slate-400">search_off</span>
+            <p class="text-sm font-semibold">No assessments match your filter criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "group bg-[#FFFDF8] border border-[#E8DFD0] hover:border-[#AA7000] rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-card transition-all duration-200 flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-full bg-[#FAF6EE] text-[#7F766C] border border-[#E8DFD0] text-[10px] font-bold tracking-wider uppercase group-hover:bg-[#FBF3E0] group-hover:text-[#AA7000] transition-colors">
+                ${item.category}
+              </span>
+              <span class="text-xs font-semibold text-[#8C7B6B] flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-[#AA7000]">schedule</span>
+                ${item.duration}
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors leading-snug">
+              ${item.title}
+            </h3>
+            <p class="text-xs text-[#8C7B6B] mt-2 line-clamp-2 leading-relaxed">
+              ${item.description}
+            </p>
+            <div class="flex flex-wrap gap-1.5 mt-3">
+              ${item.skills.map(s => `<span class="px-2 py-0.5 rounded-md bg-[#FAF6EE] text-[#8C7B6B] text-[10px] font-medium border border-[#E8DFD0]">${s}</span>`).join('')}
+            </div>
+          </div>
+          <div class="mt-5 pt-4 border-t border-[#F2EBD8] flex items-center justify-between">
+            <span class="text-xs font-semibold text-[#2C1F0E]">${item.questionsCount} Questions</span>
+            <button onclick="promptStartModal('${item.id}')" class="px-4 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1 group-hover:translate-x-0.5">
+              <span>Start Test</span>
+              <span class="material-symbols-outlined text-xs">play_arrow</span>
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
       });
     }
 
-    if (closeSidebarBtn && appSidebar) {
-      closeSidebarBtn.addEventListener('click', () => {
-        appSidebar.classList.add('-translate-x-full');
-      });
+    // Prompt Confirmation Modal
+    function promptStartModal(testId) {
+      selectedAssessment = assessments.find(a => a.id === testId);
+      if (!selectedAssessment) return;
+
+      document.getElementById('modal-confirm-category').textContent = selectedAssessment.category;
+      document.getElementById('modal-confirm-title').textContent = selectedAssessment.title;
+      document.getElementById('modal-confirm-questions').textContent = `${selectedAssessment.questionsCount} Questions`;
+      document.getElementById('modal-confirm-duration').textContent = selectedAssessment.duration;
+
+      const modal = document.getElementById('test-start-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
-    function selectTopic(el, topicName) {
-      document.querySelectorAll('.topic-btn').forEach(btn => {
-        btn.classList.remove('border-2', 'border-[#AA7000]');
-        btn.classList.add('border', 'border-[#E8DFD0]');
-      });
-      el.classList.remove('border', 'border-[#E8DFD0]');
-      el.classList.add('border-2', 'border-[#AA7000]');
+    function closeStartModal() {
+      const modal = document.getElementById('test-start-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
-    function nextAssessmentQuestion() {
-      alert("Advancing to next question in System Design diagnostic benchmark.");
+    // Launch the Confirmed Test
+    function launchConfirmedTest() {
+      closeStartModal();
+      if (!selectedAssessment) return;
+
+      userAnswers = {};
+      activeQuestionIndex = 0;
+
+      // Parse duration
+      const mins = parseInt(selectedAssessment.duration) || 20;
+      remainingSeconds = mins * 60;
+
+      // Update Active Screen Info
+      document.getElementById('active-test-category').textContent = selectedAssessment.category;
+      document.getElementById('active-test-title').textContent = selectedAssessment.title;
+
+      // Switch views
+      document.getElementById('catalog-view').classList.add('hidden');
+      document.getElementById('active-test-view').classList.remove('hidden');
+      document.getElementById('active-test-view').classList.add('flex');
+
+      // Start timer
+      startCountdown();
+
+      // Render Question
+      renderActiveQuestion();
     }
+
+    function startCountdown() {
+      clearInterval(countdownInterval);
+      const timerEl = document.getElementById('active-test-timer');
+      countdownInterval = setInterval(() => {
+        if (remainingSeconds > 0) {
+          remainingSeconds--;
+          const m = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+          const s = String(remainingSeconds % 60).padStart(2, '0');
+          if (timerEl) timerEl.textContent = `${m}:${s}`;
+        } else {
+          clearInterval(countdownInterval);
+          finishTest();
+        }
+      }, 1000);
+    }
+
+    // Render Current Active Question
+    function renderActiveQuestion() {
+      if (!selectedAssessment || !selectedAssessment.questions) return;
+      const questions = selectedAssessment.questions;
+      const q = questions[activeQuestionIndex];
+
+      document.getElementById('active-q-counter').textContent = `Question ${activeQuestionIndex + 1} of ${questions.length}`;
+      const pct = Math.round(((activeQuestionIndex + 1) / questions.length) * 100);
+      document.getElementById('active-q-progress').style.width = `${pct}%`;
+      document.getElementById('active-q-prompt').textContent = `"${q.prompt}"`;
+
+      const optionsList = document.getElementById('active-options-list');
+      optionsList.innerHTML = '';
+
+      const currentSelected = userAnswers[activeQuestionIndex];
+
+      q.options.forEach((opt, idx) => {
+        const isSelected = currentSelected === idx;
+        const item = document.createElement('label');
+        item.className = isSelected
+          ? "option-item flex items-start gap-4 p-4 rounded-2xl border-2 border-[#2C1F0E] bg-[#F2EBD8] cursor-pointer transition-all shadow-sm"
+          : "option-item flex items-start gap-4 p-4 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000] bg-white hover:bg-[#FAF6EE] cursor-pointer transition-all";
+        item.onclick = () => {
+          userAnswers[activeQuestionIndex] = idx;
+          renderActiveQuestion();
+        };
+        item.innerHTML = `
+          <div class="w-6 h-6 rounded-full border border-[#E8DFD0] bg-white flex items-center justify-center text-xs font-bold text-[#2C1F0E] shrink-0 mt-0.5 ${isSelected ? 'bg-[#2C1F0E] text-white border-[#2C1F0E]' : ''}">
+            ${opt.label}
+          </div>
+          <div class="text-xs sm:text-sm text-[#2C1F0E] leading-relaxed">
+            ${opt.text}
+          </div>
+        `;
+        optionsList.appendChild(item);
+      });
+
+      // Update Prev / Next buttons
+      const prevBtn = document.getElementById('active-prev-btn');
+      const nextBtn = document.getElementById('active-next-btn');
+
+      if (activeQuestionIndex === 0) {
+        prevBtn.classList.add('opacity-40', 'pointer-events-none');
+      } else {
+        prevBtn.classList.remove('opacity-40', 'pointer-events-none');
+      }
+
+      if (activeQuestionIndex === questions.length - 1) {
+        nextBtn.innerHTML = `<span>Submit Test</span><span class="material-symbols-outlined text-sm">check</span>`;
+      } else {
+        nextBtn.innerHTML = `<span>Next Question</span><span class="material-symbols-outlined text-sm">arrow_forward</span>`;
+      }
+    }
+
+    function navQuestion(delta) {
+      const total = selectedAssessment.questions.length;
+      if (delta === 1 && activeQuestionIndex === total - 1) {
+        finishTest();
+        return;
+      }
+      activeQuestionIndex += delta;
+      if (activeQuestionIndex < 0) activeQuestionIndex = 0;
+      if (activeQuestionIndex >= total) activeQuestionIndex = total - 1;
+      renderActiveQuestion();
+    }
+
+    function finishTest() {
+      clearInterval(countdownInterval);
+      document.getElementById('result-test-title').textContent = selectedAssessment.title;
+      
+      const modal = document.getElementById('test-result-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function returnToCatalog() {
+      document.getElementById('test-result-modal').classList.add('hidden');
+      document.getElementById('test-result-modal').classList.remove('flex');
+
+      document.getElementById('active-test-view').classList.add('hidden');
+      document.getElementById('active-test-view').classList.remove('flex');
+
+      document.getElementById('catalog-view').classList.remove('hidden');
+      renderAssessments();
+    }
+
+    function exitActiveTest() {
+      if (confirm("Are you sure you want to exit? Your progress will be saved.")) {
+        clearInterval(countdownInterval);
+        returnToCatalog();
+      }
+    }
+
+    // Initial render
+    renderAssessments();
   </script>
 </body>
 </html>
