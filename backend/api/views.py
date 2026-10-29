@@ -337,207 +337,87 @@ def get_company_subroles(request, company_id):
 @api_view(['GET'])
 def get_interviewers(request):
     """
-    List all curated evaluators across 5 global regions with authentic ethnic avatars,
-    accents, regional flags, and voice preview samples.
+    List 6 focused, iconic evaluators (3 male, 3 female) across key international regions
+    with neural human voices, unmistakable gender timbre, and authentic accents.
     """
-    region_filter = request.GET.get('region', '').strip()
-
     interviewers = [
-        # ── 1. Indian Subcontinent ──
         {
             "id": "kabir",
             "name": "Kabir",
+            "gender": "male",
             "region": "India",
             "region_flag": "🇮🇳",
-            "accent_label": "IN English (North)",
-            "sub_label": "North Indian Male",
+            "accent_label": "Indian English (North)",
+            "sub_label": "Senior Systems Architect",
             "bcp47": "en-IN",
-            "sample_intro": "Hello! I am Kabir. I'll be guiding you through today's technical systems architecture interview.",
+            "sample_intro": "Hello! I am Kabir. Let's delve into your technical architecture and problem-solving strategy.",
             "avatar": "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=400&auto=format&fit=crop&q=80"
         },
         {
             "id": "payal",
             "name": "Payal",
+            "gender": "female",
             "region": "India",
             "region_flag": "🇮🇳",
-            "accent_label": "IN English (Standard)",
-            "sub_label": "Indian Female",
+            "accent_label": "Indian English (Standard)",
+            "sub_label": "VP of Engineering",
             "bcp47": "en-IN",
-            "sample_intro": "Hi there! I am Payal. We are looking forward to exploring your distributed system decomposition.",
+            "sample_intro": "Hi there! I am Payal. I look forward to exploring your distributed systems and algorithmic trade-offs.",
             "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80"
         },
         {
-            "id": "karthik",
-            "name": "Karthik",
-            "region": "India",
-            "region_flag": "🇮🇳",
-            "accent_label": "IN South English",
-            "sub_label": "South Indian Male",
-            "bcp47": "en-IN",
-            "sample_intro": "Greetings! I am Karthik. Let's delve right into algorithmic efficiency and cache invariants.",
-            "avatar": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&auto=format&fit=crop&q=80"
+            "id": "charlotte",
+            "name": "Charlotte",
+            "gender": "female",
+            "region": "UK & Europe",
+            "region_flag": "🇬🇧",
+            "accent_label": "British English (London RP)",
+            "sub_label": "Principal Systems Lead",
+            "bcp47": "en-GB",
+            "sample_intro": "Good day. I am Charlotte. We shall be exploring system constraints, latency guarantees, and failure modes.",
+            "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80"
         },
-        {
-            "id": "vikram",
-            "name": "Vikram",
-            "region": "India",
-            "region_flag": "🇮🇳",
-            "accent_label": "IN Central English",
-            "sub_label": "Central Indian Male",
-            "bcp47": "en-IN",
-            "sample_intro": "Good day. I am Vikram. Take your time to clarify invariants before structuring your design.",
-            "avatar": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&auto=format&fit=crop&q=80"
-        },
-
-        # ── 2. North America ──
         {
             "id": "john",
             "name": "John",
+            "gender": "male",
             "region": "North America",
             "region_flag": "🇺🇸",
             "accent_label": "US English (West Coast)",
-            "sub_label": "American Male",
+            "sub_label": "Silicon Valley Tech Lead",
             "bcp47": "en-US",
-            "sample_intro": "Hey there! I am John. Excited to chat through your approach and tackle scaling bottlenecks.",
+            "sample_intro": "Hey there! I am John. Excited to chat through your approach and see how you tackle scaling bottlenecks.",
             "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80"
         },
         {
             "id": "sarah",
             "name": "Sarah",
+            "gender": "female",
             "region": "North America",
             "region_flag": "🇺🇸",
             "accent_label": "US English (Standard)",
-            "sub_label": "American Female",
+            "sub_label": "Engineering Director",
             "bcp47": "en-US",
-            "sample_intro": "Welcome! I am Sarah. We'll examine both algorithmic tradeoffs and production maintainability.",
+            "sample_intro": "Welcome! I am Sarah. We will examine your architectural tradeoffs, data structures, and edge case mitigation.",
             "avatar": "https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=400&auto=format&fit=crop&q=80"
         },
         {
-            "id": "marcus",
-            "name": "Marcus",
-            "region": "North America",
-            "region_flag": "🇺🇸",
-            "accent_label": "US English (Southern / Austin)",
-            "sub_label": "American Male",
-            "bcp47": "en-US",
-            "sample_intro": "Howdy! I am Marcus. We're focused on sound fundamentals, so feel free to walk me through your thoughts.",
-            "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80"
-        },
-        {
-            "id": "liam",
-            "name": "Liam",
-            "region": "North America",
-            "region_flag": "🇨🇦",
-            "accent_label": "Canadian English",
-            "sub_label": "Canadian Male",
-            "bcp47": "en-CA",
-            "sample_intro": "Hello! I am Liam from Toronto. Looking forward to our collaborative design review today.",
-            "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80"
-        },
-
-        # ── 3. UK & Europe ──
-        {
-            "id": "charlotte",
-            "name": "Charlotte",
-            "region": "UK & Europe",
-            "region_flag": "🇬🇧",
-            "accent_label": "UK English (Received Pronunciation)",
-            "sub_label": "British Female",
-            "bcp47": "en-GB",
-            "sample_intro": "Good day. I am Charlotte. We shall be exploring system constraints and latency guarantees.",
-            "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80"
-        },
-        {
-            "id": "alistair",
-            "name": "Alistair",
-            "region": "UK & Europe",
-            "region_flag": "🇬🇧",
-            "accent_label": "UK English (Scottish)",
-            "sub_label": "Scottish Male",
-            "bcp47": "en-GB",
-            "sample_intro": "Hello! I'm Alistair. Let's dig into how your system maintains consistency when partitions strike.",
-            "avatar": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&auto=format&fit=crop&q=80"
-        },
-        {
-            "id": "lukas",
-            "name": "Lukas",
-            "region": "UK & Europe",
-            "region_flag": "🇩🇪",
-            "accent_label": "German English (Berlin Tech)",
-            "sub_label": "German Male",
-            "bcp47": "de-DE",
-            "sample_intro": "Guten Tag. I am Lukas. We will look at deterministic state machines and concurrency primitives.",
-            "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80"
-        },
-        {
-            "id": "amelie",
-            "name": "Amelie",
-            "region": "UK & Europe",
-            "region_flag": "🇫🇷",
-            "accent_label": "French English (Paris Tech)",
-            "sub_label": "French Female",
-            "bcp47": "fr-FR",
-            "sample_intro": "Bonjour! I am Amelie. I am eager to discuss your approach to scalable API gateways and telemetry.",
-            "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
-        },
-
-        # ── 4. East & Southeast Asia ──
-        {
             "id": "kenji",
             "name": "Kenji",
+            "gender": "male",
             "region": "East & SE Asia",
             "region_flag": "🇯🇵",
-            "accent_label": "JP English (Male)",
-            "sub_label": "Japanese Male",
+            "accent_label": "Japanese English (Tokyo)",
+            "sub_label": "Robotics & Backend Lead",
             "bcp47": "ja-JP",
-            "sample_intro": "Konnichiwa. I am Kenji. Please walk through your architectural assumptions step-by-step.",
+            "sample_intro": "Konnichiwa. I am Kenji. Please walk through your architectural assumptions step-by-step with clarity.",
             "avatar": "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=400&auto=format&fit=crop&q=80"
-        },
-        {
-            "id": "aoi",
-            "name": "Aoi",
-            "region": "East & SE Asia",
-            "region_flag": "🇯🇵",
-            "accent_label": "JP English (Female)",
-            "sub_label": "Japanese Female",
-            "bcp47": "ja-JP",
-            "sample_intro": "Hello! I am Aoi. We will evaluate how your interface and backend interact seamlessly under high load.",
-            "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80"
-        },
-        {
-            "id": "mei",
-            "name": "Mei",
-            "region": "East & SE Asia",
-            "region_flag": "🇸🇬",
-            "accent_label": "Singaporean English",
-            "sub_label": "Singaporean Female",
-            "bcp47": "en-SG",
-            "sample_intro": "Hi candidate! I'm Mei. Let's inspect your idempotency keys, payment pipeline, and distributed locking.",
-            "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&auto=format&fit=crop&q=80"
-        },
-
-        # ── 5. Australia ──
-        {
-            "id": "chloe",
-            "name": "Chloe",
-            "region": "Australia",
-            "region_flag": "🇦🇺",
-            "accent_label": "Australian English (Sydney)",
-            "sub_label": "Australian Female",
-            "bcp47": "en-AU",
-            "sample_intro": "G'day! I'm Chloe. Really keen to hear how you design for resilience and automated recovery.",
-            "avatar": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&auto=format&fit=crop&q=80"
         }
     ]
 
-    if region_filter and region_filter != 'All':
-        interviewers = [i for i in interviewers if i.get('region', '').lower() == region_filter.lower()]
-
-    regions = ["All", "India", "North America", "UK & Europe", "East & SE Asia", "Australia"]
     return Response({
         'interviewers': interviewers,
-        'count': len(interviewers),
-        'available_regions': regions
+        'count': len(interviewers)
     })
 
 

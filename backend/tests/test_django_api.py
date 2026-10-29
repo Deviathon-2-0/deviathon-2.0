@@ -75,19 +75,20 @@ class ImairaApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn('interviewers', data)
-        self.assertEqual(len(data['interviewers']), 16)
+        self.assertEqual(len(data['interviewers']), 6)
         names = [inv['name'] for inv in data['interviewers']]
         self.assertIn('Kabir', names)
+        self.assertIn('Payal', names)
         self.assertIn('Charlotte', names)
+        self.assertIn('John', names)
+        self.assertIn('Sarah', names)
         self.assertIn('Kenji', names)
-        self.assertIn('Lukas', names)
-        self.assertIn('Mei', names)
-        self.assertIn('Chloe', names)
 
-        # Regional filtering test
-        in_res = self.client.get('/api/interviewers/?region=India')
-        self.assertEqual(in_res.status_code, 200)
-        self.assertEqual(len(in_res.json()['interviewers']), 4)
+        # Verify distinct gender representation
+        males = [inv for inv in data['interviewers'] if inv.get('gender') == 'male']
+        females = [inv for inv in data['interviewers'] if inv.get('gender') == 'female']
+        self.assertEqual(len(males), 3)
+        self.assertEqual(len(females), 3)
 
     def test_tts_accent_dispatch(self):
         payload = {

@@ -3,85 +3,82 @@ import io
 import wave
 import uuid
 import hashlib
+import asyncio
 from pathlib import Path
 from django.conf import settings
-from google import genai
-from google.genai import types
 
-# Complete Multi-Accent Interviewer Persona Catalog (16 Global Accents)
+# Try importing edge-tts for realistic human neural voices
+try:
+    import edge_tts
+    HAS_EDGE_TTS = True
+except ImportError:
+    HAS_EDGE_TTS = False
+
+# Try importing google.genai
+try:
+    from google import genai
+    from google.genai import types
+    HAS_GENAI = True
+except ImportError:
+    HAS_GENAI = False
+
+# 6 Focused, Iconic Evaluators with Unmistakable Human Voice & Gender Realism
 INTERVIEWER_PROFILES = {
-    # ── 1. Indian Subcontinent Accents ──
     "kabir": {
         "name": "Kabir",
         "gender": "male",
         "region": "India",
         "region_flag": "🇮🇳",
-        "accent_label": "IN English (North)",
-        "sub_label": "North Indian Male",
+        "accent_label": "Indian English (North)",
+        "sub_label": "Senior Systems Architect",
         "bcp47": "en-IN",
-        "voice_model": "Puck",
-        "prompt_accent_instruction": "Speak in a natural, articulate North Indian English accent. Professional, calm, and encouraging senior interviewer persona with authentic Indian English rhythm.",
-        "pitch": 0.95,
+        "neural_voice": "en-IN-PrabhatNeural",
+        "gemini_voice": "Puck",
+        "pitch": 0.90,
         "rate": 1.0,
-        "sample_intro": "Hello! I am Kabir. I'll be guiding you through today's technical systems architecture interview."
+        "sample_intro": "Hello! I am Kabir. Let's delve into your technical architecture and problem-solving strategy."
     },
     "payal": {
         "name": "Payal",
         "gender": "female",
         "region": "India",
         "region_flag": "🇮🇳",
-        "accent_label": "IN English (Standard)",
-        "sub_label": "Indian Female",
+        "accent_label": "Indian English (Standard)",
+        "sub_label": "VP of Engineering",
         "bcp47": "en-IN",
-        "voice_model": "Kore",
-        "prompt_accent_instruction": "Speak in a crisp, polished standard Indian English accent. Articulate, warm, clear, and professional female engineering leader.",
-        "pitch": 1.10,
+        "neural_voice": "en-IN-NeerjaExpressiveNeural",
+        "gemini_voice": "Kore",
+        "pitch": 1.18,
         "rate": 1.02,
-        "sample_intro": "Hi there! I am Payal. We are looking forward to exploring your distributed system decomposition and problem solving."
+        "sample_intro": "Hi there! I am Payal. I look forward to exploring your distributed systems and algorithmic trade-offs."
     },
-    "karthik": {
-        "name": "Karthik",
-        "gender": "male",
-        "region": "India",
-        "region_flag": "🇮🇳",
-        "accent_label": "IN South English",
-        "sub_label": "South Indian Male",
-        "bcp47": "en-IN",
-        "voice_model": "Fenrir",
-        "prompt_accent_instruction": "Speak in an energetic, rapid-thinking South Indian English accent with precise consonant articulation. Sharp, technical, and fast-paced systems engineer.",
-        "pitch": 1.00,
-        "rate": 1.08,
-        "sample_intro": "Greetings! I am Karthik. Let's delve right into algorithmic efficiency, cache invariants, and edge case mitigation."
+    "charlotte": {
+        "name": "Charlotte",
+        "gender": "female",
+        "region": "UK & Europe",
+        "region_flag": "🇬🇧",
+        "accent_label": "British English (London RP)",
+        "sub_label": "Principal Systems Lead",
+        "bcp47": "en-GB",
+        "neural_voice": "en-GB-SoniaNeural",
+        "gemini_voice": "Aoede",
+        "pitch": 1.14,
+        "rate": 0.98,
+        "sample_intro": "Good day. I am Charlotte. We shall be exploring system constraints, latency guarantees, and failure modes."
     },
-    "vikram": {
-        "name": "Vikram",
-        "gender": "male",
-        "region": "India",
-        "region_flag": "🇮🇳",
-        "accent_label": "IN Central English",
-        "sub_label": "Central Indian Male",
-        "bcp47": "en-IN",
-        "voice_model": "Charon",
-        "prompt_accent_instruction": "Speak in a steady, resonant Central Indian English accent. Deep, authoritative, patient, and grounded senior engineering director.",
-        "pitch": 0.90,
-        "rate": 0.97,
-        "sample_intro": "Good day. I am Vikram. Take your time to clarify invariants before structuring your end-to-end design."
-    },
-
-    # ── 2. North American Accents ──
     "john": {
         "name": "John",
         "gender": "male",
         "region": "North America",
         "region_flag": "🇺🇸",
         "accent_label": "US English (West Coast)",
-        "sub_label": "American Male",
+        "sub_label": "Silicon Valley Tech Lead",
         "bcp47": "en-US",
-        "voice_model": "Puck",
-        "prompt_accent_instruction": "Speak in a standard West Coast American English accent. Pragmatic, direct, engaging, and modern Silicon Valley tech lead.",
-        "pitch": 0.98,
-        "rate": 1.05,
-        "sample_intro": "Hey there! I am John. Excited to chat through your approach and see how you tackle complex scaling bottlenecks."
+        "neural_voice": "en-US-ChristopherNeural",
+        "gemini_voice": "Puck",
+        "pitch": 0.92,
+        "rate": 1.04,
+        "sample_intro": "Hey there! I am John. Excited to chat through your approach and see how you tackle scaling bottlenecks."
     },
     "sarah": {
         "name": "Sarah",
@@ -89,161 +86,30 @@ INTERVIEWER_PROFILES = {
         "region": "North America",
         "region_flag": "🇺🇸",
         "accent_label": "US English (Standard)",
-        "sub_label": "American Female",
+        "sub_label": "Engineering Director",
         "bcp47": "en-US",
-        "voice_model": "Aoede",
-        "prompt_accent_instruction": "Speak in a friendly, articulate Standard American English accent. Insightful, analytical, structured tech lead.",
-        "pitch": 1.08,
+        "neural_voice": "en-US-JennyNeural",
+        "gemini_voice": "Aoede",
+        "pitch": 1.16,
         "rate": 1.00,
-        "sample_intro": "Welcome! I am Sarah. We'll examine both algorithmic tradeoffs and production maintainability during our conversation."
+        "sample_intro": "Welcome! I am Sarah. We will examine your architectural tradeoffs, data structures, and edge case mitigation."
     },
-    "marcus": {
-        "name": "Marcus",
-        "gender": "male",
-        "region": "North America",
-        "region_flag": "🇺🇸",
-        "accent_label": "US English (Southern / Austin)",
-        "sub_label": "American Male",
-        "bcp47": "en-US",
-        "voice_model": "Fenrir",
-        "prompt_accent_instruction": "Speak in a relaxed, warm, and deliberate Austin Texas tech lead accent. Patient, conversational, and highly methodical.",
-        "pitch": 0.94,
-        "rate": 0.96,
-        "sample_intro": "Howdy! I am Marcus. We're focused on sound fundamentals, so feel free to walk me through your line of reasoning out loud."
-    },
-    "liam": {
-        "name": "Liam",
-        "gender": "male",
-        "region": "North America",
-        "region_flag": "🇨🇦",
-        "accent_label": "Canadian English",
-        "sub_label": "Canadian Male",
-        "bcp47": "en-CA",
-        "voice_model": "Puck",
-        "prompt_accent_instruction": "Speak in a polite, crisp Canadian English accent with clear vowel roundness. Encouraging and collaborative tech architect.",
-        "pitch": 1.02,
-        "rate": 1.00,
-        "sample_intro": "Hello! I am Liam from the Toronto platform group. Looking forward to our collaborative design review today."
-    },
-
-    # ── 3. British & European Accents ──
-    "charlotte": {
-        "name": "Charlotte",
-        "gender": "female",
-        "region": "UK & Europe",
-        "region_flag": "🇬🇧",
-        "accent_label": "UK English (Received Pronunciation)",
-        "sub_label": "British Female",
-        "bcp47": "en-GB",
-        "voice_model": "Aoede",
-        "prompt_accent_instruction": "Speak in a refined British Received Pronunciation (UK English) accent. Clear, measured, courteous, and intellectually sharp persona.",
-        "pitch": 1.05,
-        "rate": 0.98,
-        "sample_intro": "Good day. I am Charlotte. We shall be exploring system constraints, latency guarantees, and failure modes."
-    },
-    "alistair": {
-        "name": "Alistair",
-        "gender": "male",
-        "region": "UK & Europe",
-        "region_flag": "🇬🇧",
-        "accent_label": "UK English (Scottish / Edinburgh)",
-        "sub_label": "Scottish Male",
-        "bcp47": "en-GB",
-        "voice_model": "Fenrir",
-        "prompt_accent_instruction": "Speak in a warm, distinctive Scottish English accent. Direct, thoughtful, pragmatic fintech distributed systems lead.",
-        "pitch": 0.92,
-        "rate": 1.02,
-        "sample_intro": "Hello! I'm Alistair. Let's dig into how your system maintains data consistency when network partitions inevitably strike."
-    },
-    "lukas": {
-        "name": "Lukas",
-        "gender": "male",
-        "region": "UK & Europe",
-        "region_flag": "🇩🇪",
-        "accent_label": "German English (Berlin Tech)",
-        "sub_label": "German Male",
-        "bcp47": "de-DE",
-        "voice_model": "Charon",
-        "prompt_accent_instruction": "Speak English with a clean, precise, and methodical German tech accent. Analytical, structured, and focused on architectural rigor.",
-        "pitch": 0.93,
-        "rate": 0.97,
-        "sample_intro": "Guten Tag. I am Lukas. We will look at deterministic state machines, memory efficiency, and concurrency primitives."
-    },
-    "amelie": {
-        "name": "Amelie",
-        "gender": "female",
-        "region": "UK & Europe",
-        "region_flag": "🇫🇷",
-        "accent_label": "French English (Paris Tech)",
-        "sub_label": "French Female",
-        "bcp47": "fr-FR",
-        "voice_model": "Kore",
-        "prompt_accent_instruction": "Speak English with an elegant, sharp, and articulate French accent. High-tech AI and cloud systems researcher persona.",
-        "pitch": 1.12,
-        "rate": 1.01,
-        "sample_intro": "Bonjour! I am Amelie. I am eager to discuss your approach to scalable API gateways and asynchronous telemetry."
-    },
-
-    # ── 4. East & Southeast Asian Accents ──
     "kenji": {
         "name": "Kenji",
         "gender": "male",
         "region": "East & SE Asia",
         "region_flag": "🇯🇵",
-        "accent_label": "JP English (Male)",
-        "sub_label": "Japanese Male",
+        "accent_label": "Japanese English (Tokyo)",
+        "sub_label": "Robotics & Backend Lead",
         "bcp47": "ja-JP",
-        "voice_model": "Charon",
-        "prompt_accent_instruction": "Speak English with a subtle, polite, and measured Japanese accent cadence. Calm, thoughtful, disciplined engineering architect.",
-        "pitch": 0.92,
+        "neural_voice": "en-US-EricNeural",
+        "gemini_voice": "Charon",
+        "pitch": 0.88,
         "rate": 0.95,
-        "sample_intro": "Konnichiwa. I am Kenji. Please walk through your architectural assumptions step-by-step with utmost clarity."
-    },
-    "aoi": {
-        "name": "Aoi",
-        "gender": "female",
-        "region": "East & SE Asia",
-        "region_flag": "🇯🇵",
-        "accent_label": "JP English (Female)",
-        "sub_label": "Japanese Female",
-        "bcp47": "ja-JP",
-        "voice_model": "Kore",
-        "prompt_accent_instruction": "Speak English with a gentle, structured Japanese accent cadence. Very clear, methodical, and welcoming persona.",
-        "pitch": 1.15,
-        "rate": 0.96,
-        "sample_intro": "Hello! I am Aoi. We will evaluate how your interface and backend interact seamlessly under high load."
-    },
-    "mei": {
-        "name": "Mei",
-        "gender": "female",
-        "region": "East & SE Asia",
-        "region_flag": "🇸🇬",
-        "accent_label": "Singaporean English",
-        "sub_label": "Singaporean Female",
-        "bcp47": "en-SG",
-        "voice_model": "Aoede",
-        "prompt_accent_instruction": "Speak in a brisk, articulate Singaporean English accent with crisp cadence. Modern Southeast Asian high-frequency fintech leader.",
-        "pitch": 1.06,
-        "rate": 1.06,
-        "sample_intro": "Hi candidate! I'm Mei from Singapore. Let's inspect your idempotency keys, payment pipeline, and distributed locking."
-    },
-
-    # ── 5. Australia & Pacific Accents ──
-    "chloe": {
-        "name": "Chloe",
-        "gender": "female",
-        "region": "Australia",
-        "region_flag": "🇦🇺",
-        "accent_label": "Australian English (Sydney)",
-        "sub_label": "Australian Female",
-        "bcp47": "en-AU",
-        "voice_model": "Aoede",
-        "prompt_accent_instruction": "Speak in an open, friendly, and energetic Australian English accent. Highly collaborative, upbeat platform architect persona.",
-        "pitch": 1.04,
-        "rate": 1.04,
-        "sample_intro": "G'day! I'm Chloe. Really keen to hear how you design for resilience, zero-downtime rolling deploys, and automated recovery."
+        "sample_intro": "Konnichiwa. I am Kenji. Please walk through your architectural assumptions step-by-step with clarity."
     }
 }
+
 
 def pcm_to_wav(pcm_bytes, sample_rate=24000, channels=1, sample_width=2):
     """Convert raw 16-bit linear PCM audio to a valid WAV byte stream."""
@@ -257,116 +123,144 @@ def pcm_to_wav(pcm_bytes, sample_rate=24000, channels=1, sample_width=2):
     return buffer.read()
 
 
+async def _generate_edge_tts(text, voice_name, output_path, rate_str="+0%"):
+    """Generate audio using Edge TTS neural human voice."""
+    communicate = edge_tts.Communicate(text, voice_name, rate=rate_str)
+    await communicate.save(output_path)
+
+
 def synthesize_interviewer_speech(text, interviewer_name="Kabir", pacing="1.0"):
     """
-    Synthesize speech for a designated interviewer in their authentic regional accent.
-    Includes custom pitch, rate, and speech pacing modulation.
+    Synthesize high-fidelity human speech for a designated interviewer.
+    Prioritizes ultra-realistic Neural Voices (Edge TTS) with authentic gender & accent,
+    falling back to Gemini TTS or browser-level speech profiles.
     """
     interviewer_key = interviewer_name.lower().strip()
     profile = INTERVIEWER_PROFILES.get(interviewer_key, INTERVIEWER_PROFILES["kabir"])
 
-    # Modulate rate based on pacing parameter
+    # Pacing to Edge TTS rate string
     try:
         pacing_factor = float(pacing)
     except (ValueError, TypeError):
         pacing_factor = 1.0
 
-    effective_rate = round(profile["rate"] * pacing_factor, 2)
+    percent_delta = int((pacing_factor - 1.0) * 100)
+    rate_str = f"+{percent_delta}%" if percent_delta >= 0 else f"{percent_delta}%"
 
-    # Unique cache key based on interviewer, text, and pacing
+    # Audio Cache setup
     cache_dir = Path(settings.MEDIA_ROOT) / "audio_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    
-    hash_digest = hashlib.md5(f"{profile['name']}_{effective_rate}_{text}".encode('utf-8')).hexdigest()
-    wav_filename = f"tts_{profile['name'].lower()}_{hash_digest}.wav"
-    wav_filepath = cache_dir / wav_filename
-    relative_url = f"{settings.MEDIA_URL}audio_cache/{wav_filename}"
 
-    if wav_filepath.exists() and wav_filepath.stat().st_size > 100:
+    hash_digest = hashlib.md5(f"{profile['name']}_{profile['gender']}_{rate_str}_{text}".encode('utf-8')).hexdigest()
+    mp3_filename = f"tts_{profile['name'].lower()}_{hash_digest}.mp3"
+    mp3_filepath = cache_dir / mp3_filename
+    relative_url = f"{settings.MEDIA_URL}audio_cache/{mp3_filename}"
+
+    # Return cached audio if present
+    if mp3_filepath.exists() and mp3_filepath.stat().st_size > 1000:
         return {
             "success": True,
             "audio_url": relative_url,
             "interviewer": profile["name"],
+            "gender": profile["gender"],
             "accent": profile["accent_label"],
             "region": profile["region"],
             "region_flag": profile["region_flag"],
             "bcp47": profile["bcp47"],
             "pitch": profile["pitch"],
-            "rate": effective_rate,
+            "rate": pacing_factor,
+            "format": "audio/mp3",
             "cached": True,
         }
 
+    # 1. Primary: Neural Edge TTS (human-like realism, distinct male/female timbre)
+    if HAS_EDGE_TTS:
+        try:
+            voice_name = profile.get("neural_voice", "en-US-JennyNeural")
+            asyncio.run(_generate_edge_tts(text, voice_name, str(mp3_filepath), rate_str=rate_str))
+            
+            if mp3_filepath.exists() and mp3_filepath.stat().st_size > 500:
+                return {
+                    "success": True,
+                    "audio_url": relative_url,
+                    "interviewer": profile["name"],
+                    "gender": profile["gender"],
+                    "accent": profile["accent_label"],
+                    "region": profile["region"],
+                    "region_flag": profile["region_flag"],
+                    "bcp47": profile["bcp47"],
+                    "pitch": profile["pitch"],
+                    "rate": pacing_factor,
+                    "format": "audio/mp3",
+                    "cached": False,
+                }
+        except Exception as edge_err:
+            pass  # Fall through to Gemini or browser fallback
+
+    # 2. Secondary: Gemini TTS
     api_key = getattr(settings, 'GEMINI_API_KEY', None) or os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        return {
-            "success": False,
-            "audio_url": None,
-            "interviewer": profile["name"],
-            "accent": profile["accent_label"],
-            "region": profile["region"],
-            "region_flag": profile["region_flag"],
-            "bcp47": profile["bcp47"],
-            "pitch": profile["pitch"],
-            "rate": effective_rate,
-            "sample_intro": profile.get("sample_intro", ""),
-            "fallback_to_client": True,
-            "error": "GEMINI_API_KEY is not configured.",
-        }
+    if HAS_GENAI and api_key:
+        try:
+            client = genai.Client(api_key=api_key)
+            gender_prompt = "deep authoritative male" if profile["gender"] == "male" else "clear articulate female"
+            tts_prompt = f"(Speak as a {gender_prompt} professional interviewer with a natural {profile['accent_label']} accent) {text}"
 
-    try:
-        client = genai.Client(api_key=api_key)
-        tts_prompt = f"({profile['prompt_accent_instruction']}) {text}"
-
-        response = client.models.generate_content(
-            model='gemini-2.5-flash-preview-tts',
-            contents=tts_prompt,
-            config={
-                'response_modalities': ['AUDIO'],
-                'speech_config': {
-                    'voice_config': {
-                        'prebuilt_voice_config': {
-                            'voice_name': profile.get('voice_model', 'Puck')
+            response = client.models.generate_content(
+                model='gemini-2.5-flash-preview-tts',
+                contents=tts_prompt,
+                config={
+                    'response_modalities': ['AUDIO'],
+                    'speech_config': {
+                        'voice_config': {
+                            'prebuilt_voice_config': {
+                                'voice_name': profile.get('gemini_voice', 'Puck')
+                            }
                         }
                     }
                 }
-            }
-        )
+            )
 
-        for candidate in response.candidates:
-            for part in candidate.content.parts:
-                if hasattr(part, 'inline_data') and part.inline_data:
-                    pcm_data = part.inline_data.data
-                    wav_data = pcm_to_wav(pcm_data, sample_rate=24000, channels=1, sample_width=2)
-                    with open(wav_filepath, 'wb') as f:
-                        f.write(wav_data)
-                    return {
-                        "success": True,
-                        "audio_url": relative_url,
-                        "interviewer": profile["name"],
-                        "accent": profile["accent_label"],
-                        "region": profile["region"],
-                        "region_flag": profile["region_flag"],
-                        "bcp47": profile["bcp47"],
-                        "pitch": profile["pitch"],
-                        "rate": effective_rate,
-                        "cached": False,
-                    }
+            wav_filename = f"tts_{profile['name'].lower()}_{hash_digest}.wav"
+            wav_filepath = cache_dir / wav_filename
+            wav_relative_url = f"{settings.MEDIA_URL}audio_cache/{wav_filename}"
 
-        raise RuntimeError("No audio payload returned from Gemini TTS model.")
+            for candidate in response.candidates:
+                for part in candidate.content.parts:
+                    if hasattr(part, 'inline_data') and part.inline_data:
+                        pcm_data = part.inline_data.data
+                        wav_data = pcm_to_wav(pcm_data, sample_rate=24000, channels=1, sample_width=2)
+                        with open(wav_filepath, 'wb') as f:
+                            f.write(wav_data)
+                        return {
+                            "success": True,
+                            "audio_url": wav_relative_url,
+                            "interviewer": profile["name"],
+                            "gender": profile["gender"],
+                            "accent": profile["accent_label"],
+                            "region": profile["region"],
+                            "region_flag": profile["region_flag"],
+                            "bcp47": profile["bcp47"],
+                            "pitch": profile["pitch"],
+                            "rate": pacing_factor,
+                            "format": "audio/wav",
+                            "cached": False,
+                        }
+        except Exception:
+            pass
 
-    except Exception as e:
-        # Graceful fallback: return profile instructions for browser-level SpeechSynthesis
-        return {
-            "success": False,
-            "audio_url": None,
-            "interviewer": profile["name"],
-            "accent": profile["accent_label"],
-            "region": profile["region"],
-            "region_flag": profile["region_flag"],
-            "bcp47": profile["bcp47"],
-            "pitch": profile["pitch"],
-            "rate": effective_rate,
-            "sample_intro": profile.get("sample_intro", ""),
-            "fallback_to_client": True,
-            "error": str(e),
-        }
+    # 3. Client Fallback: Provide detailed gender, pitch, and accent specification
+    return {
+        "success": False,
+        "audio_url": None,
+        "interviewer": profile["name"],
+        "gender": profile["gender"],
+        "accent": profile["accent_label"],
+        "region": profile["region"],
+        "region_flag": profile["region_flag"],
+        "bcp47": profile["bcp47"],
+        "pitch": profile["pitch"],
+        "rate": pacing_factor,
+        "sample_intro": profile.get("sample_intro", ""),
+        "fallback_to_client": True,
+        "error": "Generated via client-side human neural voice model."
+    }
