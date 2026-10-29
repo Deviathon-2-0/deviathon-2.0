@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mock Interview | IMAIRA+</title>
-  <meta name="description" content="Technical and behavioral mock interview platform with Google Meet style video controls, draggable PiP frames, and verified evaluators." />
+  <meta name="description" content="Technical and behavioral mock interview platform with comprehensive role-based & company question banks, Google Meet video controls, and verified evaluators." />
 
   <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -122,7 +122,7 @@
           Select Your Interview Track
         </h1>
         <p class="text-sm sm:text-base text-[#7F766C] mt-2">
-          Practice role-specific, company-focused, or custom mock rounds with dialect-neutral scoring.
+          Practice role-specific, company-focused, or custom mock rounds with curated question banks &amp; dialect-neutral scoring.
         </p>
       </div>
 
@@ -146,7 +146,7 @@
         </button>
       </div>
 
-      <!-- MODE 1: ROLE BASED -->
+      <!-- MODE 1: ROLE BASED (With Questions Count & Topic Preview) -->
       <section id="mode-role-container" class="flex flex-col flex-1">
         <div class="flex items-center justify-between flex-wrap gap-4 mb-6 pb-4 border-b border-[#E8DFD0]">
           <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full custom-scroll" id="role-category-pills">
@@ -159,14 +159,14 @@
 
           <div class="relative w-full sm:w-64">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-            <input type="text" id="role-search-input" oninput="searchRoles(this.value)" placeholder="Search roles..." class="w-full pl-9 pr-4 py-1.5 rounded-full bg-[#FFFDF8] border border-[#E8DFD0] text-xs text-[#2C1F0E] focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all" />
+            <input type="text" id="role-search-input" oninput="searchRoles(this.value)" placeholder="Search roles & questions..." class="w-full pl-9 pr-4 py-1.5 rounded-full bg-[#FFFDF8] border border-[#E8DFD0] text-xs text-[#2C1F0E] focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all" />
           </div>
         </div>
 
         <div id="roles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 mb-8"></div>
       </section>
 
-      <!-- MODE 2: COMPANY BASED -->
+      <!-- MODE 2: COMPANY BASED (100 Companies -> 10 Role Subtracks With Curated Questions) -->
       <section id="mode-company-container" class="hidden flex-col flex-1">
         <div id="company-catalog-view" class="flex flex-col">
           <div class="flex items-center justify-between flex-wrap gap-4 mb-6 pb-4 border-b border-[#E8DFD0]">
@@ -188,6 +188,7 @@
           <div id="companies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 mb-8"></div>
         </div>
 
+        <!-- Drilldown Subroles for Selected Company -->
         <div id="company-roles-view" class="hidden flex-col">
           <div class="flex items-center justify-between mb-6 pb-4 border-b border-[#E8DFD0]">
             <div class="flex items-center gap-3">
@@ -200,7 +201,7 @@
                 <div id="company-detail-logo" class="w-8 h-8 rounded-lg bg-[#2C1F0E] text-white font-mono font-bold text-xs flex items-center justify-center">G</div>
                 <div>
                   <h2 id="company-detail-name" class="text-sm font-bold text-[#2C1F0E]">Google</h2>
-                  <p id="company-detail-sector" class="text-[10px] text-[#8C7B6B]">FAANG+ / Big Tech • 10 Standardized Tracks</p>
+                  <p id="company-detail-sector" class="text-[10px] text-[#8C7B6B]">FAANG+ / Big Tech • 10 Standardized Tracks with Curated Questions</p>
                 </div>
               </div>
             </div>
@@ -245,7 +246,7 @@
             <h2 class="text-base font-bold text-[#2C1F0E]">Custom Interview Session</h2>
           </div>
           <p class="text-xs text-[#7F766C] mb-4">
-            Specify your custom role title, focus domain, and optionally enter your own custom questions.
+            Specify your custom role title, focus domain, and enter your own custom questions to be evaluated on.
           </p>
           <div class="space-y-4">
             <div>
@@ -411,11 +412,11 @@
 
 
   <!-- ========================================================================
-       SCREEN 2: LIVE INTERVIEW STAGE (Full-Screen, Draggable PiP, Google Meet Style)
+       SCREEN 2: LIVE INTERVIEW STAGE (Full-Screen, Question Navigation Pills, Draggable PiP)
        ======================================================================== -->
   <div id="interview-stage" class="hidden h-full flex flex-col bg-[#120B04] text-white overflow-hidden relative select-none">
     
-    <!-- Top Header Bar (Clean, Minimal) -->
+    <!-- Top Header Bar with Live Role Info, Question Progress Pills, Timer & Actions -->
     <header class="h-16 border-b border-[#2A1C0A] px-4 sm:px-6 flex items-center justify-between shrink-0 bg-[#120B04] z-30">
       <!-- Left: Role & Seniority -->
       <div class="flex items-center gap-3">
@@ -426,27 +427,39 @@
         </div>
       </div>
 
-      <!-- Center: Layout Switcher (Conditionally displayed) -->
-      <div id="stage-focus-switcher" class="flex items-center p-1 bg-[#1A1208] border border-[#3D2E15] rounded-full shadow-inner">
-        <button id="focus-btn-code" onclick="setFocus('code')" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1.5" title="Focus on Code & Problem">
-          <span class="material-symbols-outlined text-sm">code</span>
-          <span class="hidden sm:inline">Code Focus</span>
-        </button>
-        <button id="focus-btn-interviewer" onclick="setFocus('interviewer')" class="px-3 py-1 rounded-full text-xs font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1.5" title="Spotlight Interviewer Video">
-          <span class="material-symbols-outlined text-sm">person</span>
-          <span class="hidden sm:inline">Interviewer</span>
-        </button>
-        <button id="focus-btn-candidate" onclick="setFocus('candidate')" class="px-3 py-1 rounded-full text-xs font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1.5" title="Spotlight Your Camera">
-          <span class="material-symbols-outlined text-sm">account_circle</span>
-          <span class="hidden sm:inline">You (Candidate)</span>
-        </button>
-        <button id="focus-btn-split" onclick="setFocus('split')" class="px-3 py-1 rounded-full text-xs font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1.5" title="Side-by-side View">
-          <span class="material-symbols-outlined text-sm">view_sidebar</span>
-          <span class="hidden sm:inline">Split</span>
-        </button>
+      <!-- Center: QUESTION NAVIGATION PILLS (0/4 COMPLETED, 1 2 3 4, Q1 Current) -->
+      <div class="flex items-center gap-3">
+        <!-- Progress Counter & Pills -->
+        <div class="flex items-center gap-2">
+          <span id="stage-progress-label" class="text-[11px] font-mono font-bold text-slate-400">0/4 COMPLETED</span>
+          <div class="flex items-center gap-1" id="stage-question-pills">
+            <!-- Dynamic clickable pills 1, 2, 3, 4 -->
+          </div>
+          <span id="stage-current-pill" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#AA7000] text-white shadow-sm">Q1 of 4 - Current</span>
+        </div>
+
+        <!-- Google Meet Focus Mode Switcher (Tech only) -->
+        <div id="stage-focus-switcher" class="hidden sm:flex items-center p-0.5 bg-[#1A1208] border border-[#3D2E15] rounded-full shadow-inner ml-2">
+          <button id="focus-btn-code" onclick="setFocus('code')" class="px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1" title="Focus on Code & Problem">
+            <span class="material-symbols-outlined text-xs">code</span>
+            <span class="hidden md:inline">Code</span>
+          </button>
+          <button id="focus-btn-interviewer" onclick="setFocus('interviewer')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1" title="Spotlight Interviewer Video">
+            <span class="material-symbols-outlined text-xs">person</span>
+            <span class="hidden md:inline">Interviewer</span>
+          </button>
+          <button id="focus-btn-candidate" onclick="setFocus('candidate')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1" title="Spotlight Your Camera">
+            <span class="material-symbols-outlined text-xs">account_circle</span>
+            <span class="hidden md:inline">You</span>
+          </button>
+          <button id="focus-btn-split" onclick="setFocus('split')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1" title="Side-by-side View">
+            <span class="material-symbols-outlined text-xs">view_sidebar</span>
+            <span class="hidden md:inline">Split</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Right: Fullscreen Toggle, Timer, Exit & Submit -->
+      <!-- Right: Fullscreen Toggle, Timer, Exit & Submit Code -->
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="toggleFullscreen()" id="btn-fullscreen-toggle" class="p-1.5 rounded-lg bg-[#1A1208] hover:bg-[#2A1D0B] border border-[#3D2E15] text-slate-300 hover:text-white transition-all flex items-center justify-center" title="Toggle Fullscreen">
           <span class="material-symbols-outlined text-base" id="fullscreen-icon">fullscreen</span>
@@ -462,7 +475,7 @@
           <span>Exit</span>
         </button>
         <button id="stage-submit-btn" type="button" onclick="submitCurrentAnswer()" class="px-4 py-1.5 rounded-lg bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1 shadow-sm">
-          <span>Submit</span>
+          <span id="stage-submit-btn-text">Submit Code</span>
         </button>
       </div>
     </header>
@@ -475,30 +488,58 @@
       
       <!-- 1. CODE & PROBLEM PANE (Visible only for Tech coding rounds) -->
       <div id="workspace-code-pane" class="flex-1 flex overflow-hidden transition-all duration-300">
-        <!-- Left: Question & Problem -->
-        <div class="w-[40%] min-w-[320px] max-w-[480px] border-r border-[#2A1C0A] flex flex-col bg-[#140D05]">
+        <!-- Left: Question & Problem with Code / Instructions Tabs -->
+        <div class="w-[42%] min-w-[340px] max-w-[500px] border-r border-[#2A1C0A] flex flex-col bg-[#140D05]">
+          <!-- Question Header & Repeat Button -->
           <div class="p-4 border-b border-[#2A1C0A] flex items-center justify-between">
             <div>
-              <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider" id="code-pane-q-number">QUESTION 1 OF 3</div>
-              <h2 class="text-xs sm:text-sm font-semibold text-white mt-0.5">Write a code solution for the situation below.</h2>
+              <div class="text-[10px] uppercase font-bold text-[#AA7000] tracking-wider" id="code-pane-q-number">QUESTION 1 OF 4</div>
+              <h2 class="text-xs sm:text-sm font-bold text-white mt-0.5" id="code-pane-instruction-title">Write a code solution for the situation described below.</h2>
             </div>
-            <button type="button" onclick="repeatCurrentQuestion()" class="w-7 h-7 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 flex items-center justify-center transition-all shadow-sm" title="Repeat Question Audio">
-              <span class="material-symbols-outlined text-sm">replay</span>
+            <button type="button" onclick="repeatCurrentQuestion()" class="w-8 h-8 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 flex items-center justify-center transition-all shadow-sm" title="Repeat Question Audio">
+              <span class="material-symbols-outlined text-base">replay</span>
             </button>
           </div>
 
-          <div class="p-4 flex-1 overflow-y-auto custom-scroll space-y-3">
+          <!-- Code / Instructions Tabs -->
+          <div class="flex items-center gap-4 px-4 pt-3 border-b border-[#2A1C0A] bg-[#110A03]">
+            <button type="button" onclick="switchProblemTab('code')" id="tab-prob-code" class="pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all">Code</button>
+            <button type="button" onclick="switchProblemTab('instructions')" id="tab-prob-instructions" class="pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all">Instructions</button>
+          </div>
+
+          <!-- Tab Content 1: Code Problem Description -->
+          <div id="tab-content-prob-code" class="p-4 flex-1 overflow-y-auto custom-scroll space-y-3">
             <div id="tech-problem-card" class="p-4 rounded-xl bg-[#1B1207] border border-[#2E200E] text-xs text-slate-200 font-mono leading-relaxed space-y-3 shadow-inner">
               <p id="tech-problem-description" class="text-white font-medium">
                 Write a function to remove the minimum number of invalid parentheses to make the input string valid. Return all possible results.
               </p>
-              <div class="bg-[#120B04] p-3 rounded-lg border border-[#2A1C0A] space-y-1 text-slate-300">
-                <div><strong class="text-[#E8A338]">Input:</strong> <span>"a)bc(d)"</span></div>
-                <div><strong class="text-[#4F6B2D]">Output:</strong> <span>"abc(d)"</span></div>
+              <div class="bg-[#120B04] p-3 rounded-lg border border-[#2A1C0A] space-y-1.5 text-slate-300">
+                <div><strong class="text-[#E8A338]">Input:</strong> <span id="tech-problem-input">"a)bc(d)"</span></div>
+                <div><strong class="text-[#4F6B2D]">Output:</strong> <span id="tech-problem-output">"abc(d)"</span></div>
+                <div id="tech-problem-constraints-wrap" class="pt-1 text-[11px] text-slate-400">
+                  <strong class="text-slate-300">Constraints:</strong> <span id="tech-problem-constraints">1 &lt;= s.length &lt;= 10^4</span>
+                </div>
               </div>
             </div>
           </div>
 
+          <!-- Tab Content 2: Instructions & Rubrics -->
+          <div id="tab-content-prob-instructions" class="hidden p-4 flex-1 overflow-y-auto custom-scroll space-y-3">
+            <div class="p-4 rounded-xl bg-[#1B1207] border border-[#2E200E] text-xs text-slate-300 leading-relaxed space-y-3">
+              <h3 class="font-bold text-white text-sm">Evaluation Criteria &amp; Guidelines</h3>
+              <p id="tech-instructions-text">
+                Your code is evaluated on correctness, time/space complexity, modularity, and adherence to production coding standards.
+              </p>
+              <ul class="list-disc pl-4 space-y-1 text-[11px] text-slate-400">
+                <li>Optimize for asymptotic runtime complexity.</li>
+                <li>Handle edge cases (empty inputs, single character, extremes).</li>
+                <li>Write clean, readable variable names and modular helper functions.</li>
+                <li>Click <strong>Execute</strong> to test your code against standard validation test suites.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Left Pane Footer: Audio Wave + Execute Button -->
           <div class="p-3 border-t border-[#2A1C0A] bg-[#100A03] flex items-center justify-between text-[11px] text-slate-400">
             <div class="flex items-center gap-1.5">
               <div class="stage-wave-bar"></div>
@@ -643,7 +684,7 @@
 
 
   <!-- ========================================================================
-       APPLICATION LOGIC & DATA SCRIPT
+       APPLICATION LOGIC & QUESTION REPOSITORY ENGINE
        ======================================================================== -->
   <script>
     const rolesData = [{"title": "Software Engineer", "category": "Tech", "focus": "Core Backend & API Services", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Distributed Systems Engineer", "category": "Tech", "focus": "Consensus & High Availability", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Cloud Solutions Architect", "category": "Tech", "focus": "Multi-Region Cloud Topologies", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Site Reliability Engineer (SRE)", "category": "Tech", "focus": "Incident Recovery & SLOs", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Database Kernel Engineer", "category": "Tech", "focus": "Storage Engines & WAL Compaction", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "DevOps & Platform Engineer", "category": "Tech", "focus": "Kubernetes & Infrastructure as Code", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Frontend Architect", "category": "Tech", "focus": "High-Performance SPA & Micro-Frontends", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Full Stack Engineer", "category": "Tech", "focus": "End-to-End Modern Web Architecture", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Machine Learning Infrastructure Engineer", "category": "Tech", "focus": "Distributed Training & NCCL", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Security & Cryptography Engineer", "category": "Tech", "focus": "Zero Trust & Transport Encryption", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Network Systems Engineer", "category": "Tech", "focus": "eBPF, Kernel Bypass & High-Bandwidth routing", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Distributed Cache Specialist", "category": "Tech", "focus": "Redis, Memcached & Invalidation Strategies", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Microservices Architecture Lead", "category": "Tech", "focus": "gRPC, Event-Driven Sharding & Decoupling", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "API Platform Architect", "category": "Tech", "focus": "Rate Limiting, Gateways & Idempotency", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Performance Optimization Engineer", "category": "Tech", "focus": "Low Latency Profiling & Memory Compaction", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Backend Systems Engineer (Go)", "category": "Tech", "focus": "Goroutines, Concurrency & High Throughput", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Backend Systems Engineer (Java/Spring)", "category": "Tech", "focus": "JVM Tuning, Concurrency & Reactive Streams", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Backend Systems Engineer (Rust)", "category": "Tech", "focus": "Zero-Cost Abstractions & Memory Safety", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Backend Systems Engineer (Python/FastAPI)", "category": "Tech", "focus": "Async I/O & High Scale Distributed APIs", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Cloud Native Developer", "category": "Tech", "focus": "Serverless, EventBridge & Containerization", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Search & Retrieval Engineer", "category": "Tech", "focus": "Elasticsearch, Lucene & Vector Embeddings", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Streaming Data Platform Engineer", "category": "Tech", "focus": "Apache Kafka, Flink & Exactly-Once Semantics", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Big Data Processing Engineer", "category": "Tech", "focus": "Spark, Hadoop & Lakehouse Partitioning", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Graph Database Engineer", "category": "Tech", "focus": "Neo4j, Cypher & Social Topology Traversal", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Observability & Telemetry Engineer", "category": "Tech", "focus": "OpenTelemetry, Prometheus & Distributed Tracing", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Identity & Access Management Architect", "category": "Tech", "focus": "OAuth2, OpenID Connect & SAML SSO", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Container Security Engineer", "category": "Tech", "focus": "Docker Hardening, Seccomp & CIS Benchmarks", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Edge Computing Software Engineer", "category": "Tech", "focus": "Wasm at Edge, Cloudflare Workers & CDN caching", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Mobile Infrastructure Engineer (iOS)", "category": "Tech", "focus": "Swift, CoreData & High Concurrency", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Mobile Infrastructure Engineer (Android)", "category": "Tech", "focus": "Kotlin, Jetpack Compose & Coroutines", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Web Performance Engineer", "category": "Tech", "focus": "Core Web Vitals, Hydration & Asset Delivery", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Messaging Middleware Engineer", "category": "Tech", "focus": "RabbitMQ, NATS & Dead Letter Topologies", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Reliability & Chaos Engineer", "category": "Tech", "focus": "Fault Injection, Resilience4j & Redundancy", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Infrastructure Automation Lead", "category": "Tech", "focus": "Terraform, Ansible & Immutable Deployment", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Storage SRE", "category": "Tech", "focus": "Ceph, GlusterFS & Distributed Block Storage", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Data Pipeline Infrastructure Lead", "category": "Tech", "focus": "Airflow, Dagster & DAG Resilience", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Distributed Messaging Architect", "category": "Tech", "focus": "Partitioning Keys, Log Replay & Mirroring", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "CI/CD Pipeline Security Specialist", "category": "Tech", "focus": "Supply Chain Security & SLSA Compliance", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "RPC & IPC Protocols Developer", "category": "Tech", "focus": "FlatBuffers, Protobuf & Serialization Efficiency", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Virtualization & Hypervisor Engineer", "category": "Tech", "focus": "KVM, QEMU & Xen Virtualization", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Linux Kernel Developer", "category": "Tech", "focus": "Memory Management, System Calls & Cgroups", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Real-Time Systems Developer", "category": "Tech", "focus": "RTOS, Embedded C & Deterministic Schedulers", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "High-Frequency Trading Software Engineer", "category": "Tech", "focus": "Sub-microsecond Execution & FPGA interfacing", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Distributed Consensus Researcher", "category": "Tech", "focus": "Paxos, Raft & Byzantine Fault Tolerance", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Microservices Mesh Engineer", "category": "Tech", "focus": "Istio, Linkerd & Mutual TLS Traffic Management", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Cloud FinOps & Capacity Architect", "category": "Tech", "focus": "Resource Auto-scaling & Compute Optimization", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Application Security Engineer", "category": "Tech", "focus": "DAST, SAST & Secure Code Reviews", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Disaster Recovery Specialist", "category": "Tech", "focus": "RPO/RTO Invariants & Multi-Cloud Failover", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "WebRTC Video & Voice Engineer", "category": "Tech", "focus": "STUN/TURN, SFU & Low-Latency Audio Streaming", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Applied NLP Systems Engineer", "category": "Tech", "focus": "Transformer Serving, TensorRT & vLLM Optimization", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Vector Database Engineer", "category": "Tech", "focus": "Milvus, Pinecone & HNSW Indexing", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Technical Product Manager", "category": "Management", "focus": "API Platforms & Developer Tools", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Engineering Manager", "category": "Management", "focus": "High-Throughput Backend & Distributed Systems", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Technical Program Manager (TPM)", "category": "Management", "focus": "Infrastructure & Cross-Functional Delivery", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Director of Engineering", "category": "Management", "focus": "Platform Architecture & Talent Scaling", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Group Product Manager (GPM)", "category": "Management", "focus": "Enterprise Cloud & SaaS Products", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Agile Delivery Lead", "category": "Management", "focus": "Scrum, Kanban & Scaled Agile Frameworks", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "VP of Engineering", "category": "Management", "focus": "Technology Strategy, Budgeting & Board Reporting", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Product Operations Manager", "category": "Management", "focus": "Feedback Loops & GTM Alignment", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Release & Deployment Manager", "category": "Management", "focus": "Zero-Downtime Pipeline Governance", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "IT Infrastructure Manager", "category": "Management", "focus": "Enterprise Architecture & Tier-3 Support", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Security Program Manager", "category": "Management", "focus": "SOC 2, ISO 27001 & Compliance Roadmaps", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Scrum Master", "category": "Management", "focus": "Team Velocity & Blocker Resolution", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Chief Technology Officer (CTO)", "category": "Management", "focus": "Executive Tech Vision & Architecture Oversight", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Platform Product Manager", "category": "Management", "focus": "Developer Experience & SDK Ecosystems", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Cloud Delivery Manager", "category": "Management", "focus": "SLA Fulfillment & Vendor Cost Management", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Lead Product Owner", "category": "Management", "focus": "Backlog Prioritization & User Story Mapping", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Software Quality Manager", "category": "Management", "focus": "Automated QA & Test Engineering Standards", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Data Governance Manager", "category": "Management", "focus": "GDPR, Data Lineage & Access Policies", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Site Reliability Manager", "category": "Management", "focus": "On-Call Rotations, Error Budgets & Post-Mortems", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Developer Relations Manager", "category": "Management", "focus": "Open Source Strategy & Community Advocacy", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Customer Engineering Manager", "category": "Management", "focus": "Post-Sales Technical Architecture & Integrations", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Solutions Architecture Manager", "category": "Management", "focus": "Client Engagement & Pre-Sales Engineering", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "AI Product Manager", "category": "Management", "focus": "LLM Applications & Machine Learning Governance", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "FinOps Delivery Manager", "category": "Management", "focus": "Cloud Spend Allocation & Reserved Capacity", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Technical Agile Coach", "category": "Management", "focus": "XP, Pair Programming & TDD Transformation", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Product Growth Manager", "category": "Management", "focus": "Retention Funnels & Product-Led Growth", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Enterprise Integration Lead", "category": "Management", "focus": "ERP, CRM & Legacy Modernization", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Core Systems Program Manager", "category": "Management", "focus": "Large-Scale Data Center Migrations", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Risk & Compliance Operations Manager", "category": "Management", "focus": "Audit Defense & Vulnerability Lifecycle", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "DevOps Practice Lead", "category": "Management", "focus": "DevSecOps Maturity & Tooling Consolidation", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Senior Delivery Consultant", "category": "Management", "focus": "Client Roadmaps & Milestone Governance", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Technical Operations Director", "category": "Management", "focus": "Global Support Centers & Escalation Routing", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Product Lifecycle Specialist", "category": "Management", "focus": "Sunset Strategies & Deprecation Plans", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Engineering Operations Lead", "category": "Management", "focus": "Hiring Rubrics & Performance Management", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Strategic Portfolio Manager", "category": "Management", "focus": "OKRs, Capital Allocation & Resource Balancing", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Chief Information Security Officer (CISO)", "category": "Management", "focus": "Threat Modeling & Enterprise Risk Defense", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "API Product Owner", "category": "Management", "focus": "Monetization, Developer Portals & Rate Plans", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Global Systems Deployment Lead", "category": "Management", "focus": "International Rollouts & Localization", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Vendor Engineering Manager", "category": "Management", "focus": "SaaS Procurement & Contract Negotiation", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Core Infrastructure TPM", "category": "Management", "focus": "Hardware Procurement & Data Center Topologies", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Mobile Product Manager", "category": "Management", "focus": "App Store Optimization & Mobile UX Funnels", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Data Platform Product Manager", "category": "Management", "focus": "Self-Serve Analytics & ETL Tooling", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Customer Experience Manager", "category": "Management", "focus": "Net Promoter Score & SLA Compliance", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Change Management Director", "category": "Management", "focus": "Enterprise Organizational Restructuring", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Quality Engineering Director", "category": "Management", "focus": "Chaos Engineering & Resiliency Programs", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Design Systems Manager", "category": "Management", "focus": "Component Libraries & Cross-Platform Consistency", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Security Operations Lead (SecOps)", "category": "Management", "focus": "SIEM, SOC & Incident Response Protocol", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Payments Product Manager", "category": "Management", "focus": "PCI-DSS, Payment Gateways & Fraud Mitigation", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Billing & Monetization Manager", "category": "Management", "focus": "Subscription Engines & Invoicing Pipelines", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Enterprise Program Director", "category": "Management", "focus": "Multi-Year Transformation Programs", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Technical Strategy Lead", "category": "Management", "focus": "Build vs Buy Analysis & Tech Due Diligence", "levels": ["Associate", "Manager", "Senior Manager", "Director"]}, {"title": "Software Engineering Intern", "category": "Intern", "focus": "Data Structures & Core Algorithms", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Backend Development Intern", "category": "Intern", "focus": "REST APIs, Node.js & PostgreSQL", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Frontend Development Intern", "category": "Intern", "focus": "React, TypeScript & Tailwind CSS", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Full Stack Intern", "category": "Intern", "focus": "CRUD Applications & Modern Web Frameworks", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Data Science Intern", "category": "Intern", "focus": "Pandas, Scikit-Learn & Feature Engineering", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Machine Learning Intern", "category": "Intern", "focus": "PyTorch, Model Training & Evaluation", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Cloud & DevOps Intern", "category": "Intern", "focus": "Docker, Linux & AWS Basics", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Mobile App Development Intern (iOS)", "category": "Intern", "focus": "Swift, SwiftUI & Interface Design", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Mobile App Development Intern (Android)", "category": "Intern", "focus": "Kotlin, Android Studio & Room DB", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Data Analyst Intern", "category": "Intern", "focus": "SQL Queries, Excel & Tableau Dashboards", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Quality Assurance & Automation Intern", "category": "Intern", "focus": "Selenium, Cypress & Integration Testing", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Cybersecurity Intern", "category": "Intern", "focus": "Vulnerability Scanning & Network Security Basics", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Site Reliability Engineering Intern", "category": "Intern", "focus": "Monitoring, Grafana & Shell Scripting", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Systems Programming Intern", "category": "Intern", "focus": "C/C++, Memory Allocation & Pointer Arithmetic", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Database Administration Intern", "category": "Intern", "focus": "Indexing, Schema Design & Backups", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Artificial Intelligence Research Intern", "category": "Intern", "focus": "Paper Implementation & Benchmark Testing", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Natural Language Processing Intern", "category": "Intern", "focus": "Tokenization, HuggingFace & Fine-Tuning", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Computer Vision Intern", "category": "Intern", "focus": "OpenCV, Object Detection & Image Augmentation", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Developer Tools Intern", "category": "Intern", "focus": "CLI Applications, Git Hooks & Scripting", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "API Platform Intern", "category": "Intern", "focus": "Documentation, Swagger/OpenAPI & Testing", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Embedded Software Intern", "category": "Intern", "focus": "Microcontrollers, Arduino & C Programming", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Network Engineering Intern", "category": "Intern", "focus": "TCP/IP, Routing & Packet Capture Analysis", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Business Intelligence Intern", "category": "Intern", "focus": "Power BI, Dashboard Layouts & Metrics", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Product Management Intern", "category": "Intern", "focus": "User Research, PRD Drafting & Competitive Audits", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "UI/UX Design & Frontend Intern", "category": "Intern", "focus": "Figma, CSS Grid & Accessibility", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Technical Documentation Intern", "category": "Intern", "focus": "Markdown, API Guides & Tutorial Creation", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Open Source Contributor Intern", "category": "Intern", "focus": "Issue Triaging, Pull Requests & Code Review", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Distributed Storage Intern", "category": "Intern", "focus": "KV Stores, File Systems & Consistency Basics", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Infrastructure Automation Intern", "category": "Intern", "focus": "Terraform, Bash & CloudFormation", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Game Development Intern", "category": "Intern", "focus": "Unity, C# & Physics Simulations", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Robotics Software Intern", "category": "Intern", "focus": "ROS, Kinematics & Sensor Fusion", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Information Security Intern", "category": "Intern", "focus": "Penetration Testing, OWASP Top 10 Basics", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Web Scraping & Data Pipeline Intern", "category": "Intern", "focus": "BeautifulSoup, Scrapy & Data Cleaning", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Distributed Systems Intern", "category": "Intern", "focus": "Client-Server Architecture & RPC Protocols", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Blockchain Developer Intern", "category": "Intern", "focus": "Solidity, Smart Contracts & EVM Basics", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Compiler & Languages Intern", "category": "Intern", "focus": "Abstract Syntax Trees & Parser Generation", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Audio & Signal Processing Intern", "category": "Intern", "focus": "FFT, Audio Filters & DSP Fundamentals", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Bioinformatics Computing Intern", "category": "Intern", "focus": "Genomic Data Processing & Python Algorithms", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Search & Recommendation Intern", "category": "Intern", "focus": "TF-IDF, Collaborative Filtering & Similarity", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Quantum Computing Intern", "category": "Intern", "focus": "Qiskit, Quantum Circuits & Linear Algebra", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Spatial & AR/VR Computing Intern", "category": "Intern", "focus": "WebGL, Three.js & 3D Math", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Microservices Architecture Intern", "category": "Intern", "focus": "Docker Compose, Reverse Proxies & Nginx", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Financial Analytics Intern", "category": "Intern", "focus": "Time Series Analysis, Backtesting & Python", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Marketing Analytics Intern", "category": "Intern", "focus": "A/B Testing, Conversion Rate Analysis & SQL", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Operations Research Intern", "category": "Intern", "focus": "Linear Programming, Optimization & NumPy", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Cloud Security Intern", "category": "Intern", "focus": "IAM Roles, Least Privilege & Security Groups", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Linux Systems Intern", "category": "Intern", "focus": "Process Management, Systemd & Bash Automation", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Performance Benchmarking Intern", "category": "Intern", "focus": "JMeter, Load Testing & Throughput Metrics", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "DevSecOps Intern", "category": "Intern", "focus": "SonarQube, GitGuardian & Secret Management", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Applied Math & Statistics Intern", "category": "Intern", "focus": "Monte Carlo Simulations & Hypothesis Testing", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Healthcare Tech Intern", "category": "Intern", "focus": "FHIR Standards, Health Data ETL & Python", "levels": ["Summer Intern", "Graduate Intern", "Co-Op"]}, {"title": "Embedded Systems Engineer", "category": "Engineering", "focus": "ARM Cortex, RTOS & Low-Power Firmware", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Firmware Architecture Specialist", "category": "Engineering", "focus": "Bootloaders, SPI/I2C & Hardware Bring-Up", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Hardware Systems Architect", "category": "Engineering", "focus": "PCB Design, Signal Integrity & System Topologies", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Robotics Software Engineer", "category": "Engineering", "focus": "ROS2, SLAM, Motion Planning & C++", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Autonomous Vehicles Navigation Lead", "category": "Engineering", "focus": "Kalman Filters, Lidar/Radar Sensor Fusion", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "IoT Solutions Architect", "category": "Engineering", "focus": "MQTT, BLE, Edge Gateways & Device Shadows", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Distributed Storage Engineer", "category": "Engineering", "focus": "Ceph, Distributed Block Devices & Erasure Coding", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Industrial Automation Engineer", "category": "Engineering", "focus": "SCADA, PLC Programming & Modbus", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Computer Architecture Engineer", "category": "Engineering", "focus": "RISC-V, CPU Pipeline Design & Verilog", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "FPGA Acceleration Engineer", "category": "Engineering", "focus": "VHDL, High-Level Synthesis & PCIe DMA", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Digital Signal Processing (DSP) Engineer", "category": "Engineering", "focus": "Audio/RF Filtering & MatLab Simulation", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Telecommunications Systems Engineer", "category": "Engineering", "focus": "5G NR, Baseband Processing & LTE Protocol", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Avionics Software Engineer", "category": "Engineering", "focus": "DO-178C Certification, Safety-Critical Systems", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Automotive Systems Engineer", "category": "Engineering", "focus": "AUTOSAR, CAN Bus & Functional Safety (ISO 26262)", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Medical Devices Software Engineer", "category": "Engineering", "focus": "IEC 62304 Standards & Biosensor Firmware", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Kernel Driver Engineer", "category": "Engineering", "focus": "Linux Device Drivers, DMA Buffers & Interrupt Handlers", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "High-Voltage Systems Engineer", "category": "Engineering", "focus": "Battery Management Systems (BMS) & Power Electronics", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Thermal Systems & Mechanical Architect", "category": "Engineering", "focus": "Heatsink Optimization & Computational Fluid Dynamics", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Optical & Photonic Systems Engineer", "category": "Engineering", "focus": "Transceivers, DWDM & High-Speed Interconnects", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Semiconductor Physical Design Lead", "category": "Engineering", "focus": "ASIC Synthesis, Place-and-Route & Timing Closure", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "FPGA High-Frequency Trading Engineer", "category": "Engineering", "focus": "Ultra-Low-Latency Order Books & Kernel Bypass", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Wireless Network Protocol Engineer", "category": "Engineering", "focus": "Wi-Fi 7 Standards, 802.11 Protocols & RF Design", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Satellite Communications Engineer", "category": "Engineering", "focus": "LEO Constellations, Orbital Mechanics & Uplinks", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Power Systems & Microgrid Engineer", "category": "Engineering", "focus": "Inverter Control, Grid Tie & Energy Storage", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Sensor Systems Specialist", "category": "Engineering", "focus": "IMU Calibration, MEMS Sensors & Noise Filtering", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Electronic Hardware Validation Lead", "category": "Engineering", "focus": "Oscilloscopes, EMI/EMC Testing & Stress Tests", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Flight Control Systems Engineer", "category": "Engineering", "focus": "PID Controllers, Aerodynamic Flight Dynamics", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Drone Fleet Software Architect", "category": "Engineering", "focus": "Swarm Coordination, Geofencing & Cellular Telemetry", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Subsea & Marine Robotics Engineer", "category": "Engineering", "focus": "Acoustic Modems, Sonar Processing & High Pressure", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Railway Signaling & Control Engineer", "category": "Engineering", "focus": "CBTC, Fail-Safe Interlocking & Safety Invariants", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Microfluidics & Bio-Instruments Engineer", "category": "Engineering", "focus": "Precision Actuation & Automated Fluid Handling", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Spacecraft Ground Systems Software Engineer", "category": "Engineering", "focus": "CCSDS Packet Telemetry & Command Sequencing", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Chip Verification Engineer (UVM)", "category": "Engineering", "focus": "SystemVerilog, Functional Coverage & Formal Verification", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Precision Motion Control Engineer", "category": "Engineering", "focus": "Stepper Motors, Servo Loops & Optical Encoders", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Acoustics & Audio Hardware Engineer", "category": "Engineering", "focus": "Microphone Arrays, Beamforming & Noise Suppression", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Antenna & RF Design Engineer", "category": "Engineering", "focus": "Phased Arrays, S-Parameters & High-Frequency EM", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Robotic Arm Manipulation Engineer", "category": "Engineering", "focus": "Inverse Kinematics, Trajectory Optimization & Grippers", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Smart Wearables Systems Engineer", "category": "Engineering", "focus": "Ultra-Low Energy Profiles, PPG Sensors & Accelerometry", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Battery Systems Validation Lead", "category": "Engineering", "focus": "Cycle Life Testing, Thermal Runaway Mitigation", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Automated Optical Inspection Engineer", "category": "Engineering", "focus": "High-Resolution Cameras & Machine Vision Lights", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Hydraulic & Pneumatic Systems Engineer", "category": "Engineering", "focus": "Proportional Valves & Fluid Power Logic", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Laser & Optoelectronics Specialist", "category": "Engineering", "focus": "Diode Lasers, Fiber Optics & Beam Alignment", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Metrology & Sensor Fusion Engineer", "category": "Engineering", "focus": "Coordinate Measuring Machines & Sub-micron Inspection", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Instrumentation & Controls Engineer", "category": "Engineering", "focus": "Industrial Transducers, 4-20mA Loops & PID", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Radiation-Hardened Systems Engineer", "category": "Engineering", "focus": "Single-Event Upsets (SEU) & Space Environment Hardening", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Cleanroom Process Integration Engineer", "category": "Engineering", "focus": "Semiconductor Wafer Fabrication & Lithography", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Power Supply Design Engineer", "category": "Engineering", "focus": "Buck/Boost Converters, LLC Resonant Topologies", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Electric Powertrain Architect", "category": "Engineering", "focus": "Traction Inverters, Permanent Magnet Synchronous Motors", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Safety-Critical Software Auditor", "category": "Engineering", "focus": "MISRA C Compliance, Formal Proofs & Static Analysis", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Hardware Security Specialist", "category": "Engineering", "focus": "Physical Unclonable Functions (PUF) & Side-Channel Defense", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Display & Graphics Hardware Engineer", "category": "Engineering", "focus": "MIPI DSI, DisplayPort Protocol & OLED Panel Drivers", "levels": ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"]}, {"title": "Data Analyst", "category": "Analyst", "focus": "SQL Queries, Dashboarding & KPI Definition", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Senior Business Analyst", "category": "Analyst", "focus": "Requirements Engineering & Business Process Modeling", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Financial Quantitative Analyst", "category": "Analyst", "focus": "Derivatives Pricing, Stochastic Calculus & Python", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Product Analytics Specialist", "category": "Analyst", "focus": "Cohort Retention, Churn Modeling & A/B Experimentation", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Business Intelligence Architect", "category": "Analyst", "focus": "Data Warehouse Modeling, Star Schema & Power BI", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Risk & Compliance Analyst", "category": "Analyst", "focus": "Credit Risk Modeling, Fraud Detection & Basel III", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Marketing & Growth Analyst", "category": "Analyst", "focus": "Multi-Touch Attribution, LTV:CAC & Ad Performance", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Operations Research Analyst", "category": "Analyst", "focus": "Supply Chain Optimization & Linear Programming", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Cybersecurity Threat Analyst", "category": "Analyst", "focus": "SOC Log Analysis, SIEM Dashboards & Threat Hunting", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Revenue Operations Analyst", "category": "Analyst", "focus": "Pipeline Forecasting, Salesforce Analytics & Win-Loss", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Supply Chain Data Analyst", "category": "Analyst", "focus": "Demand Forecasting, Inventory Turns & Safety Stock", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Healthcare Data Analyst", "category": "Analyst", "focus": "EHR Datasets, Clinical Outcomes & Epidemiological Models", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Customer Experience (CX) Analyst", "category": "Analyst", "focus": "Net Promoter Score, CSAT Trends & Sentiment Analysis", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "People & HR Analytics Lead", "category": "Analyst", "focus": "Attrition Prediction, Compensation Benchmarking & Surveys", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "E-commerce Category Analyst", "category": "Analyst", "focus": "Basket Analysis, Price Elasticity & Markdown Modeling", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Fraud & Anti-Money Laundering Analyst", "category": "Analyst", "focus": "Transaction Monitoring & Suspicious Activity Reports", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Equity Research Analyst", "category": "Analyst", "focus": "Discounted Cash Flow (DCF), Industry Reports & Valuation", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Credit Risk Scoring Analyst", "category": "Analyst", "focus": "Logistic Regression, FICO Scoring & Default Probability", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Algorithmic Trading Performance Analyst", "category": "Analyst", "focus": "Sharpe Ratio, Alpha Attribution & Slippage Profiling", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Web Traffic & SEO Analyst", "category": "Analyst", "focus": "Google Analytics 4, Crawl Budgets & Funnel Drop-offs", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Cloud Cost & FinOps Analyst", "category": "Analyst", "focus": "AWS Cost Explorer, EC2 Spot Utilization & Unit Economics", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Logistics & Route Optimization Analyst", "category": "Analyst", "focus": "Vehicle Routing Problem (VRP) & Mileage Variance", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Pricing Strategy Analyst", "category": "Analyst", "focus": "Dynamic Pricing Models, Competitor Scraping & Margins", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Asset Management Analyst", "category": "Analyst", "focus": "Portfolio Rebalancing, Tracking Error & Risk Parity", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Treasury & Liquidity Analyst", "category": "Analyst", "focus": "Cash Flow Forecasting, FX Hedging & Interest Rate Risk", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Mergers & Acquisitions (M&A) Analyst", "category": "Analyst", "focus": "LBO Modeling, Quality of Earnings & Synergies", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Telecom Network Traffic Analyst", "category": "Analyst", "focus": "Call Detail Records (CDR), Tower Congestion & QoS", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "SaaS Metrics & Net Retention Analyst", "category": "Analyst", "focus": "ARR, MRR, Quick Ratio & Magic Number Diagnostics", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Gaming Economy & LiveOps Analyst", "category": "Analyst", "focus": "In-Game Currency Inflation, Player Progression & Gacha", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Media & Entertainment Analytics Lead", "category": "Analyst", "focus": "Content Viewer Drop-Off & Streaming Bitrate Analysis", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Energy & Carbon Emissions Analyst", "category": "Analyst", "focus": "Scope 1/2/3 Accounting, ESG Reporting & Renewables", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Real Estate Market Valuation Analyst", "category": "Analyst", "focus": "Cap Rate Analysis, Rent Rolls & Spatial Regression", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Voice of Customer (VoC) Analyst", "category": "Analyst", "focus": "NLP Topic Modeling on Support Tickets & Reviews", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Customer Lifetime Value (LTV) Specialist", "category": "Analyst", "focus": "Survival Analysis, Beta-Geometric NBD Models", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Ad Tech Yield Optimization Analyst", "category": "Analyst", "focus": "Header Bidding, eCPM Floors & Programmatic Fill Rates", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Clinical Trial Data Analyst", "category": "Analyst", "focus": "CDISC Standards, Biostatistics & Protocol Deviations", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Supply Vendor Performance Analyst", "category": "Analyst", "focus": "On-Time In-Full (OTIF) & Scorecard Governance", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Insurance Actuarial Analyst", "category": "Analyst", "focus": "Loss Ratios, Catastrophe Modeling & Reserving", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Search Ranking Relevance Analyst", "category": "Analyst", "focus": "NDCG Evaluation, Precision@K & Query Intent Audits", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Experimentation & Statistics Specialist", "category": "Analyst", "focus": "Sample Size Calculation, P-Hacking Defense & CUPED", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Procurement Analytics Specialist", "category": "Analyst", "focus": "Spend Categorization, Contract Compliance & Savings", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Brand Reputation & Sentiment Analyst", "category": "Analyst", "focus": "Social Listening, Brand Affinity & Crisis Detection", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "API Platform Usage Analyst", "category": "Analyst", "focus": "Endpoint Latency Percentiles & Developer Churn", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Retail Store Footprint Analyst", "category": "Analyst", "focus": "Store Heatmaps, Cannibalization & Gravity Models", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Mobile App Store Engagement Analyst", "category": "Analyst", "focus": "Keyword Rankings, App Store Conversions & SDK Health", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Data Lineage & Quality Analyst", "category": "Analyst", "focus": "Data Freshness Alerts, Schema Drift & Great Expectations", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Macroeconomic Research Analyst", "category": "Analyst", "focus": "Inflation Indicators, Yield Curve Modeling & Central Banks", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Patent & Intellectual Property Analyst", "category": "Analyst", "focus": "Prior Art Searches, Citation Networks & White Spaces", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Workforce Planning Analyst", "category": "Analyst", "focus": "Headcount Modeling, Ramp Time & Capacity Planning", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "Enterprise CRM Data Analyst", "category": "Analyst", "focus": "Lead Velocity Rate, MQL-to-SQL Conversion & Attribution", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}, {"title": "SLA Performance & Reliability Analyst", "category": "Analyst", "focus": "MTTR, MTBF & Uptime Penalties Modeling", "levels": ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"]}];
@@ -712,6 +753,7 @@
     let pendingTitle = 'Software Engineer';
     let pendingTrack = 'Tech';
     let pendingLevel = 'SDE 2';
+    let pendingCompany = null;
     let selectedCodingLanguage = 'C++ (GCC 14)';
     let selectedRound = 'Coding';
     let selectedInterviewerIdx = 0;
@@ -721,9 +763,404 @@
     let timerInterval = null;
     let remainingSeconds = 4 * 60;
 
-    // Focus View Mode: 'code' | 'interviewer' | 'candidate' | 'split'
     let currentFocusMode = 'code';
     let isCurrentSessionTech = true;
+
+    // ========================================================================
+    // COMPREHENSIVE ROLE-BASED & COMPANY-BASED QUESTION REPOSITORY ENGINE
+    // Generates authentic questions for any selected role, company, round & level
+    // ========================================================================
+    function generateQuestionBank(roleTitle, companyName, track, level, round, lang) {
+      const titleLower = (roleTitle || '').toLowerCase();
+      const compLower = (companyName || '').toLowerCase();
+      const isTech = (track === 'Tech' || track === 'Engineering');
+
+      // 1. Check for Company-Specific Questions first (Google, Amazon, Meta, Apple, Microsoft, Netflix, etc.)
+      if (compLower.includes('google')) {
+        return [
+          {
+            title: "Trie-Based Autocomplete Prefix Engine",
+            type: "Coding",
+            prompt: "Implement an autocomplete search trie with frequency weighting and Top-K prefix query caching suitable for Google Search queries.",
+            input: 'queries = ["google", "golang", "good", "gold"], prefix = "go", k = 3',
+            output: '["google", "golang", "good"]',
+            constraints: "1 <= queries.length <= 10^5, prefix.length <= 50",
+            instructions: "Optimize query lookup latency to sub-millisecond. Memory overhead of the prefix trie should be minimized using compressed nodes.",
+            starterCode: getStarterCodeForProblem("autocomplete", lang)
+          },
+          {
+            title: "Google Spanner External Consistency",
+            type: "System Design",
+            prompt: "How does Google Spanner utilize the TrueTime API with bounded clock uncertainty to guarantee strict external consistency (linearizability) across multi-continent shards?",
+            input: "N/A (System Architecture)",
+            output: "Architectural blueprint & latency tradeoff bounds",
+            constraints: "P99 transaction commit latency < 50ms under cross-region failover",
+            instructions: "Detail the commit wait rule, atomic clock drift mitigation, and 2-Phase Locking paired with Paxos state machine consensus."
+          },
+          {
+            title: "Distributed Shuffle & PageRank Processing",
+            type: "Algorithms",
+            prompt: "Explain how MapReduce or FlumeJava optimizes the distributed shuffle phase when calculating PageRank across a 50-billion-node web graph with skewed node degrees.",
+            input: "Graph adjacency list with high in-degree celebrity nodes",
+            output: "Combiner execution plan and partition hash distribution",
+            constraints: "Zero Out-Of-Memory spills on worker nodes"
+          },
+          {
+            title: "Googliness & Cross-Functional Conflict",
+            type: "Behavioral",
+            prompt: "Describe how you navigate consensus-driven technical decisions when multiple Google infrastructure teams have competing architectural priorities.",
+            input: "Qualitative scenario",
+            output: "Structured STAR response demonstrating collaborative influence",
+            constraints: "Focus on blameless post-mortem culture and data-driven consensus"
+          }
+        ];
+      }
+
+      if (compLower.includes('amazon')) {
+        return [
+          {
+            title: "LRU Cache with TTL Expiration",
+            type: "Coding",
+            prompt: "Design and implement an in-memory Least Recently Used (LRU) Cache supporting constant-time O(1) get, put, and automatic TTL expiration for Amazon product inventory.",
+            input: 'capacity = 3, put("itemA", 100, ttl=5s), put("itemB", 200, ttl=10s), get("itemA")',
+            output: "100 (valid within 5s window)",
+            constraints: "1 <= capacity <= 10^5, all operations strictly O(1)",
+            instructions: "Use a doubly-linked list combined with a hash map. Handle thread-safe concurrent reads and writes gracefully.",
+            starterCode: getStarterCodeForProblem("lru_cache", lang)
+          },
+          {
+            title: "DynamoDB Consistent Hashing & Hot Partitions",
+            type: "System Design",
+            prompt: "How does Amazon DynamoDB distribute item partitions using consistent hashing with virtual nodes, and how do you mitigate partition throttling during Prime Day traffic surges?",
+            input: "Partition key distribution with 100x traffic skew",
+            output: "Adaptive capacity auto-partitioning design",
+            constraints: "Single-digit millisecond latency at 10 million reads/second"
+          },
+          {
+            title: "Customer Obsession & Urgent Delivery Hotfix",
+            type: "Behavioral",
+            prompt: "Tell me about a time you had to dive deep and work backwards from a customer pain point under intense delivery pressure, adhering to Amazon Leadership Principles.",
+            input: "STAR format situation",
+            output: "Customer impact outcome with quantifiable metrics",
+            constraints: "Highlight Customer Obsession, Ownership, and Bias for Action"
+          },
+          {
+            title: "Disagree and Commit on System Redesign",
+            type: "Behavioral",
+            prompt: "Describe an architectural decision where you strongly disagreed with your leadership or tech lead. How did you advocate your perspective and subsequently execute the chosen path?",
+            input: "Leadership principle trade-off scenario",
+            output: "Constructive pushback and unified execution",
+            constraints: "Must embody 'Have Backbone; Disagree and Commit'"
+          }
+        ];
+      }
+
+      if (compLower.includes('meta') || compLower.includes('facebook')) {
+        return [
+          {
+            title: "Bidirectional Graph Shortest Connection",
+            type: "Coding",
+            prompt: "Given a billion-node social graph, implement an efficient bidirectional Breadth-First Search (BFS) algorithm to calculate the degree of separation between two users.",
+            input: "source_user = 101, target_user = 809, graph = AdjacencyStream",
+            output: "[101, 304, 712, 809] (Length = 3 hops)",
+            constraints: "Node count up to 10^9, average degree = 300",
+            instructions: "Alternate BFS frontier expansion from both source and target sets to drastically reduce visited state space.",
+            starterCode: getStarterCodeForProblem("graph_bfs", lang)
+          },
+          {
+            title: "TAO Distributed Graph Cache Architecture",
+            type: "System Design",
+            prompt: "How does Meta's TAO distributed graph store cache social graph associations and ensure master-slave replication consistency under 100M read queries/sec?",
+            input: "High read/write ratio on social associations",
+            output: "Follower cache invalidation and write-through protocol",
+            constraints: "Sub-5ms read latency globally"
+          },
+          {
+            title: "Stories & Feed Real-Time Ranking Fanout",
+            type: "Architecture",
+            prompt: "Design the real-time fanout-on-write versus fanout-on-read pipeline for Instagram Stories impression delivery for users with 10M+ followers.",
+            input: "Celebrity posts with 50,000 requests/second fanout burst",
+            output: "Hybrid fanout architecture with tiered caching",
+            constraints: "P95 feed generation latency < 80ms"
+          },
+          {
+            title: "Move Fast With High Infrastructure Stability",
+            type: "Behavioral",
+            prompt: "Tell me about a time you took a calculated technical risk to ship rapidly that resulted in unexpected production fallout. How did you restore trust and safeguard systems?",
+            input: "High-velocity deployment scenario",
+            output: "Root cause analysis, remediation, and preventative tooling",
+            constraints: "Showcase continuous learning and blameless retrospective"
+          }
+        ];
+      }
+
+      // 2. Role-Based Question Banks
+      if (titleLower.includes('data scientist') || titleLower.includes('machine learning') || titleLower.includes('ai ')) {
+        return [
+          {
+            title: "Sparse Vector Cosine Similarity Top-K",
+            type: "Coding",
+            prompt: "Implement an efficient vectorized function to compute the Top-K cosine similarity neighbors from a high-dimensional sparse embedding matrix without memory overflow.",
+            input: 'query_vector = [0.8, 0.0, 0.6], embeddings = [[0.8, 0.0, 0.6], [0.1, 0.9, 0.2]], k = 1',
+            output: '[[0, 1.000]] (index 0, similarity 1.0)',
+            constraints: "Dimension d up to 1024, dataset N up to 10^6",
+            instructions: "Avoid full dense matrix materialization. Use dot product normalization and max-heap pruning for Top-K extraction.",
+            starterCode: getStarterCodeForProblem("ml_similarity", lang)
+          },
+          {
+            title: "Feature Store & Real-Time Drift Detection",
+            type: "System Design",
+            prompt: "Architect a production ML feature store supporting sub-10ms point-in-time online inference lookup and synchronized offline batch training drift calculation.",
+            input: "100,000 inference requests/sec with continuous tabular stream",
+            output: "Dual-storage Redis + Parquet Delta Lake architecture",
+            constraints: "Zero train-serve data leakage; PSI drift threshold alert"
+          },
+          {
+            title: "Stratified Multi-Label Split Under Extreme Imbalance",
+            type: "Algorithms",
+            prompt: "Write an algorithm to partition multi-label samples into stratified training and validation folds when rare tail classes comprise less than 0.1% of items.",
+            input: "samples = 50,000, labels_per_sample = 1 to 5, n_folds = 5",
+            output: "Fold indices preserving exact label distribution ratios",
+            constraints: "Greedy iterative stratification algorithm"
+          },
+          {
+            title: "Model Offline Accuracy vs Online Business Drop",
+            type: "Behavioral",
+            prompt: "Describe an ML model rollout where validation AUROC/NDCG improved significantly in offline benchmarks, but online conversion or engagement metrics regressed. How did you diagnose the root cause?",
+            input: "A/B test diagnostic scenario",
+            output: "Investigation of user behavior shift, latency impact, or feedback loop",
+            constraints: "Focus on rigorous statistical experimentation"
+          }
+        ];
+      }
+
+      if (titleLower.includes('devops') || titleLower.includes('site reliability') || titleLower.includes('sre') || titleLower.includes('cloud')) {
+        return [
+          {
+            title: "Log Ingestion 5xx Spike Rate Analyzer",
+            type: "Coding",
+            prompt: "Write a high-throughput parser to analyze real-time streaming web server access logs and identify the top 5 client IPs generating 5xx server errors within a sliding 60-second window.",
+            input: 'log_stream = ["10.0.0.1 502 /checkout", "10.0.0.2 200 /home", "10.0.0.1 500 /pay"], window = 60s',
+            output: '[{"ip": "10.0.0.1", "errors": 2}]',
+            constraints: "Throughput 100,000 log lines/second, memory capped at 64MB",
+            instructions: "Use circular buffer sliding windows and hash aggregations. Avoid storing raw log payloads in memory.",
+            starterCode: getStarterCodeForProblem("log_parser", lang)
+          },
+          {
+            title: "Multi-Region Kubernetes Disaster Recovery Failover",
+            type: "System Design",
+            prompt: "Architect an automated active-active multi-region Kubernetes topology with zero data loss (RPO=0) and recovery time under 30 seconds (RTO<30s) under complete cloud region outage.",
+            input: "Dual cloud regions (US-East and US-West)",
+            output: "BGP Anycast + external-dns + Ceph/Rook state replication",
+            constraints: "Guarantee zero split-brain during trans-continental fiber cut"
+          },
+          {
+            title: "Circuit Breaker State Machine Implementation",
+            type: "Algorithms",
+            prompt: "Implement a thread-safe Circuit Breaker with sliding error rate percentage threshold, half-open trial request counters, and exponential backoff retry cooldown.",
+            input: "failure_rate_threshold = 0.5, sample_size = 20, cooldown = 5s",
+            output: "State transition sequence: CLOSED -> OPEN -> HALF_OPEN -> CLOSED",
+            constraints: "Lock-free atomic state transitions preferred"
+          },
+          {
+            title: "Critical Production SEV-1 Outage Leadership",
+            type: "Behavioral",
+            prompt: "Walk me through the most severe production outage you led as incident commander. How did you isolate root cause, communicate with executives, and structure the post-incident remediation?",
+            input: "Incident response scenario",
+            output: "Incident command framework, blameless timeline, and preventative action items",
+            constraints: "Emphasize systematic fault isolation and MTTR reduction"
+          }
+        ];
+      }
+
+      if (titleLower.includes('product manager') || titleLower.includes('product lead') || track === 'Management') {
+        return [
+          {
+            title: "Enterprise Onboarding Retention Drop Diagnosis",
+            type: "Product Execution",
+            prompt: "Our Day-30 enterprise workspace activation dropped from 64% to 48% over the past two quarters following a redesign. Outline your hypothesis tree and diagnostic investigation plan.",
+            input: "Funnel drop across invitation, integration, and first collaboration phases",
+            output: "Cohort segmentation, telemetry audit, and rapid remediation plan",
+            constraints: "Formulate at least 3 distinct falsifiable hypotheses"
+          },
+          {
+            title: "API Platform Monetization & Pricing Tier Design",
+            type: "Product Strategy",
+            prompt: "Design the packaging, rate limit quotas, and usage-based billing tiers for an enterprise AI inference API competing against entrenched cloud providers.",
+            input: "Developer tier ($0), Growth tier (usage), Enterprise tier (annual commitments)",
+            output: "Unit economics, gross margin modeling, and expansion loops",
+            constraints: "Balance self-serve developer adoption against enterprise ACV expansion"
+          },
+          {
+            title: "Engineering Technical Debt vs Feature Roadmap Tradeoff",
+            type: "Technical Tradeoff",
+            prompt: "Engineering demands 2 full sprints to refactor a monolithic database that poses catastrophic scaling risk, while sales needs an enterprise SSO feature to close a $2M contract. How do you resolve this?",
+            input: "High-stakes executive and engineering conflict",
+            output: "Compromise framework, incremental refactoring milestones, and stakeholder alignment",
+            constraints: "Protect technical platform health while advancing company revenue"
+          },
+          {
+            title: "Sunset of a Cherished Legacy Feature",
+            type: "Behavioral",
+            prompt: "Tell me about a feature or product line you decided to deprecate that had a passionate, vocal minority of daily active users. How did you communicate the sunset and manage customer sentiment?",
+            input: "Customer communication scenario",
+            output: "Migration path, customer empathy, and long-term strategic focus",
+            constraints: "Demonstrate strategic courage and customer transparency"
+          }
+        ];
+      }
+
+      if (titleLower.includes('ux') || titleLower.includes('designer') || titleLower.includes('design')) {
+        return [
+          {
+            title: "B2B Billing Reconciliation Flow Simplification",
+            type: "Interaction Design",
+            prompt: "Redesign a complex financial reconciliation and invoice exception workflow to reduce customer support clarification tickets by 40% while preserving audit compliance.",
+            input: "Table with 50+ columns, disparate tax codes, and manual overrides",
+            output: "Information hierarchy redesign, smart defaults, and inline progressive disclosure",
+            constraints: "Comply with international accounting audit trail mandates"
+          },
+          {
+            title: "Accessible Multi-Brand Design Token Architecture",
+            type: "Design Systems",
+            prompt: "How do you architect dynamic design tokens across semantic color, typography, and spacing to guarantee automated WCAG 2.1 AAA contrast across both web and native mobile?",
+            input: "White-label enterprise app with 12 distinct tenant brand palettes",
+            output: "Token schema (Global, Alias, Component) with automated contrast validation",
+            constraints: "Sub-second runtime theme switching without layout recalculation jank"
+          },
+          {
+            title: "Rapid Usability Testing on Low-Fi Prototypes",
+            type: "User Research",
+            prompt: "Walk me through your methodology for conducting rapid, unmoderated usability benchmarks on paper or wireframe prototypes before committing engineering resources to development.",
+            input: "5 task completion scenarios with remote international participants",
+            output: "SUS score benchmarking, task completion metrics, and qualitative synthesis",
+            constraints: "Turnaround research findings within a 3-day sprint cycle"
+          },
+          {
+            title: "Defending UX Principles Against Business Pushback",
+            type: "Behavioral",
+            prompt: "Tell me about a time a business stakeholder requested deceptive patterns or intrusive marketing popups that compromised the user experience. How did you advocate for the user using measurable data?",
+            input: "Stakeholder pushback scenario",
+            output: "Quantitative user retention argument and alternative non-intrusive design",
+            constraints: "Highlight user advocacy and data-backed product conviction"
+          }
+        ];
+      }
+
+      if (titleLower.includes('analyst') || titleLower.includes('finance') || titleLower.includes('quant') || track === 'Analyst') {
+        return [
+          {
+            title: "Cohort Retention & LTV Calculation SQL Query",
+            type: "Coding / SQL",
+            prompt: "Write a high-performance SQL query using window functions and CTEs to calculate monthly customer acquisition cohort retention rates and cumulative LTV across a trailing 12-month period.",
+            input: "transactions(user_id, amount, timestamp), users(user_id, signup_date)",
+            output: "Cohort matrix: [signup_month, cohort_size, m1_retention, m2_retention, cumulative_ltv]",
+            constraints: "Optimize query plan to avoid full table scans on 100M rows",
+            instructions: "Use standard SQL with DATE_TRUNC, ROW_NUMBER(), and SUM() OVER window constructs.",
+            starterCode: getStarterCodeForProblem("sql_cohort", lang)
+          },
+          {
+            title: "Interest Rate Shock Sensitivity & Working Capital Model",
+            type: "Financial Modeling",
+            prompt: "Build an analytical sensitivity framework assessing how a 150 basis point interest rate increase impacts variable debt service, supplier payment cycles, and free cash flow runway.",
+            input: "$500M enterprise balance sheet with $180M floating-rate credit facility",
+            output: "Sensitivity matrix across rate variations and working capital turns",
+            constraints: "Account for vendor cash discount tradeoffs and DSO/DPO shifts"
+          },
+          {
+            title: "Detecting Metric Anomalies in High-Variance Funnels",
+            type: "Quantitative Analysis",
+            prompt: "How do you separate genuine algorithmic signal from seasonal noise and macro volatility when daily active user metrics fluctuate by +/- 15% week-over-week?",
+            input: "Daily time-series with weekend periodicity and promotional spikes",
+            output: "STL decomposition, z-score anomaly thresholds, and causal impact modeling",
+            constraints: "Reduce false-positive alert notifications by 80%"
+          },
+          {
+            title: "Presenting Uncomfortable Insights to Executives",
+            type: "Behavioral",
+            prompt: "Describe an analysis you performed where the empirical data directly contradicted the CEO or Vice President's cherished growth thesis. How did you present your findings diplomatically and persuasively?",
+            input: "Executive presentation scenario",
+            output: "Data storytelling, risk mitigation framing, and constructive alternative paths",
+            constraints: "Demonstrate objectivity, integrity, and poise under scrutiny"
+          }
+        ];
+      }
+
+      // Default Standard Software Engineering & Technical Question Bank
+      return [
+        {
+          title: "Minimum Invalid Parentheses Removal",
+          type: "Coding",
+          prompt: "Write a function to remove the minimum number of invalid parentheses to make the input string valid. Return all possible unique valid results.",
+          input: 's = "a)bc(d)"',
+          output: '["abc(d)"]',
+          constraints: "1 <= s.length <= 10^4. Input contains lowercase letters and parentheses.",
+          instructions: "Generate valid strings using Breadth-First Search (BFS) to guarantee minimum removals, or an optimized two-pass depth-first scan.",
+          starterCode: getStarterCodeForProblem("parentheses", lang)
+        },
+        {
+          title: "Merge Overlapping Interval Sets",
+          type: "Coding",
+          prompt: "Given an array of intervals where intervals[i] = [start, end], merge all overlapping intervals and return an array of non-overlapping intervals covering all original ranges.",
+          input: "intervals = [[1,3],[2,6],[8,10],[15,18]]",
+          output: "[[1,6],[8,10],[15,18]]",
+          constraints: "1 <= intervals.length <= 10^5, start_i <= end_i",
+          instructions: "Sort intervals by start timestamp in O(N log N) time and merge consecutively in a single linear pass.",
+          starterCode: getStarterCodeForProblem("intervals", lang)
+        },
+        {
+          title: "Distributed Consensus & Partition Minority Recovery",
+          type: "System Design",
+          prompt: "Under an asymmetric network partition in a 5-node quorum cluster, how does a minority leader detect isolation, prevent stale reads, and recover safely upon partition healing?",
+          input: "5-node Raft/Paxos cluster partitioned into 2-node and 3-node components",
+          output: "Quorum lease checks, write rejection, and pre-vote election protocol",
+          constraints: "Zero dirty reads or split-brain commits under any partition topology"
+        },
+        {
+          title: "Architectural Tradeoffs Under Strict Deadline",
+          type: "Behavioral",
+          prompt: "Tell me about a high-concurrency production project where you had to make significant compromises between data consistency and system availability under an immovable delivery deadline.",
+          input: "Engineering delivery scenario",
+          output: "Linearizability vs availability boundaries, monitoring safeguards, and follow-up debt remediation",
+          constraints: "Demonstrate staff-level technical ownership and pragmatic business alignment"
+        }
+      ];
+    }
+
+    // Helper: Code Starters by Language & Problem
+    function getStarterCodeForProblem(problemId, lang) {
+      const l = (lang || '').toLowerCase();
+      
+      if (problemId === "autocomplete") {
+        if (l.includes("python")) return `class AutocompleteSystem:\n    def __init__(self, queries: list[str]):\n        pass\n\n    def search(self, prefix: str, k: int = 3) -> list[str]:\n        # Return top-k queries matching prefix\n        return []\n`;
+        if (l.includes("java")) return `import java.util.*;\n\nclass AutocompleteSystem {\n    public AutocompleteSystem(String[] queries) {}\n\n    public List<String> search(String prefix, int k) {\n        return new ArrayList<>();\n    }\n}\n`;
+        return `#include <iostream>\n#include <vector>\n#include <string>\n\nclass AutocompleteSystem {\npublic:\n    AutocompleteSystem(std::vector<std::string>& queries) {}\n    std::vector<std::string> search(std::string prefix, int k = 3) {\n        return {};\n    }\n};\n`;
+      }
+
+      if (problemId === "lru_cache") {
+        if (l.includes("python")) return `class LRUCache:\n    def __init__(self, capacity: int):\n        self.capacity = capacity\n\n    def get(self, key: str) -> int:\n        return -1\n\n    def put(self, key: str, value: int, ttl_seconds: int = 0) -> None:\n        pass\n`;
+        if (l.includes("java")) return `import java.util.*;\n\nclass LRUCache {\n    public LRUCache(int capacity) {}\n    public int get(String key) { return -1; }\n    public void put(String key, int value, int ttl) {}\n}\n`;
+        return `#include <iostream>\n#include <string>\n#include <unordered_map>\n\nclass LRUCache {\npublic:\n    LRUCache(int capacity) {}\n    int get(std::string key) { return -1; }\n    void put(std::string key, int value, int ttl = 0) {}\n};\n`;
+      }
+
+      if (problemId === "sql_cohort") {
+        return `-- Write SQL query for Monthly Cohort Retention & Cumulative LTV\nWITH user_cohorts AS (\n    SELECT user_id, DATE_TRUNC('month', signup_date) AS cohort_month\n    FROM users\n)\nSELECT * FROM user_cohorts;\n`;
+      }
+
+      if (problemId === "intervals") {
+        if (l.includes("python")) return `def merge(intervals: list[list[int]]) -> list[list[int]]:\n    # Write your solution here\n    return []\n`;
+        if (l.includes("java")) return `import java.util.*;\n\nclass Solution {\n    public int[][] merge(int[][] intervals) {\n        return new int[0][0];\n    }\n}\n`;
+        return `#include <vector>\n#include <algorithm>\n\nstd::vector<std::vector<int>> merge(std::vector<std::vector<int>>& intervals) {\n    return {};\n}\n`;
+      }
+
+      // Default Parentheses Problem
+      if (l.includes("python")) return `def minRemoveToMakeValid(s: str) -> list[str]:\n    # Write your solution here\n    return []\n`;
+      if (l.includes("java")) return `import java.util.*;\n\nclass Solution {\n    public List<String> minRemoveToMakeValid(String s) {\n        return new ArrayList<>();\n    }\n}\n`;
+      if (l.includes("go")) return `package main\n\nfunc minRemoveToMakeValid(s string) []string {\n    return []string{}\n}\n`;
+      if (l.includes("typescript") || l.includes("javascript")) return `function minRemoveToMakeValid(s: string): string[] {\n  return [];\n}\n`;
+      if (l.includes("rust")) return `pub fn min_remove_to_make_valid(s: String) -> Vec<String> {\n    vec![]\n}\n`;
+      return `#include <iostream>\n#include <string>\n#include <vector>\n\nstd::vector<std::string> minRemoveToMakeValid(std::string s) {\n    return {};\n}\n`;
+    }
 
     function switchMode(mode) {
       const tabs = ['role', 'company', 'jd', 'custom'];
@@ -742,6 +1179,7 @@
       });
     }
 
+    // Render Roles with Question Counts & Topics
     function renderRoles(category = activeRoleCategory, query = '') {
       const grid = document.getElementById('roles-grid');
       grid.innerHTML = '';
@@ -758,13 +1196,20 @@
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-[10px] font-bold uppercase tracking-wider text-[#AA7000]">${role.category}</span>
-              <span class="material-symbols-outlined text-sm text-slate-300 group-hover:text-[#AA7000] group-hover:translate-x-0.5 transition-all">arrow_forward</span>
+              <span class="text-[10px] font-bold bg-[#FAF6EE] text-[#7F766C] border border-[#E8DFD0] px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span class="material-symbols-outlined text-[11px] text-[#AA7000]">quiz</span>
+                <span>4 Questions</span>
+              </span>
             </div>
             <h3 class="text-sm font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors">${role.title}</h3>
             <p class="text-xs text-[#7F766C] mt-1.5 line-clamp-1">${role.focus}</p>
           </div>
+          <div class="mt-4 pt-2.5 border-t border-[#E8DFD0]/60 flex items-center justify-between text-xs">
+            <span class="text-[11px] text-[#8C7B6B]">Levels: <strong>${(role.levels || []).slice(0, 2).join(', ')}...</strong></span>
+            <span class="text-[#AA7000] font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">Practice <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
+          </div>
         `;
-        card.onclick = () => openInterviewConfig(role.title, role.category, role.levels);
+        card.onclick = () => openInterviewConfig(role.title, role.category, role.levels, null);
         grid.appendChild(card);
       });
     }
@@ -806,6 +1251,10 @@
             <h3 class="text-xs font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors truncate">${comp.name}</h3>
             <p class="text-[10px] text-[#8C7B6B] truncate">${comp.headquarters}</p>
           </div>
+          <div class="mt-2.5 pt-2 border-t border-[#E8DFD0]/60 flex items-center justify-between text-[10px] text-[#8C7B6B]">
+            <span>Questions</span>
+            <span class="text-[#AA7000] font-bold">Curated &rarr;</span>
+          </div>
         `;
         card.onclick = () => openCompanyRoles(comp);
         grid.appendChild(card);
@@ -835,7 +1284,7 @@
 
       document.getElementById('company-detail-logo').textContent = comp.name.charAt(0);
       document.getElementById('company-detail-name').textContent = comp.name;
-      document.getElementById('company-detail-sector').textContent = comp.sector + " • " + comp.headquarters + " • 10 Standardized Tracks";
+      document.getElementById('company-detail-sector').textContent = comp.sector + " • " + comp.headquarters + " • 10 Standardized Tracks with Curated Questions";
 
       const grid = document.getElementById('company-roles-grid');
       grid.innerHTML = '';
@@ -849,14 +1298,14 @@
               <span class="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[#FAF6EE] text-[#7F766C] border border-[#E8DFD0]">${sub.level}</span>
             </div>
             <h3 class="text-sm font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors">${sub.title}</h3>
-            <p class="text-xs text-[#7F766C] mt-1">${comp.name} Specific Rubric</p>
+            <p class="text-xs text-[#7F766C] mt-1">${comp.name} Standardized Evaluation Rubric</p>
           </div>
           <div class="mt-4 pt-2.5 border-t border-[#E8DFD0]/60 flex items-center justify-between text-xs">
-            <span class="text-[#8C7B6B]">Round: <strong>${sub.track === 'Tech' ? 'Coding' : 'Role Related'}</strong></span>
+            <span class="text-[#8C7B6B] text-[11px]">Round: <strong>${sub.track === 'Tech' ? 'Coding' : 'Role Related'}</strong></span>
             <span class="text-[#AA7000] font-bold flex items-center gap-1">Practice <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
           </div>
         `;
-        card.onclick = () => openInterviewConfig(comp.name + " " + sub.title, sub.track, [sub.level]);
+        card.onclick = () => openInterviewConfig(comp.name + " " + sub.title, sub.track, [sub.level], comp.name);
         grid.appendChild(card);
       });
     }
@@ -891,10 +1340,11 @@
       });
     }
 
-    // Modal Opening: STRICTLY ONLY SHOW CODING LANGUAGE WHEN TECH ROUND IS CHOSEN
-    function openInterviewConfig(title, track, levels = null) {
+    // Modal Opening: ONLY SHOW CODING LANGUAGE WHEN TECH ROUND IS CHOSEN
+    function openInterviewConfig(title, track, levels = null, company = null) {
       pendingTitle = title;
       pendingTrack = track;
+      pendingCompany = company;
 
       let availableLevels = levels;
       if (!availableLevels || !availableLevels.length) {
@@ -922,13 +1372,13 @@
         btn.onclick = () => {
           pendingLevel = lvl;
           document.getElementById('modal-role-title').textContent = pendingTitle + " (" + pendingLevel + ")";
-          openInterviewConfig(pendingTitle, pendingTrack, availableLevels);
+          openInterviewConfig(pendingTitle, pendingTrack, availableLevels, pendingCompany);
         };
         levelContainer.appendChild(btn);
       });
 
       document.getElementById('modal-role-title').textContent = title + " (" + pendingLevel + ")";
-      document.getElementById('modal-role-subtitle').textContent = track + " Track • Standardized Evaluator";
+      document.getElementById('modal-role-subtitle').textContent = (company ? company + " • " : "") + track + " Track • Standardized Evaluator";
 
       // Select initial round
       if (track === 'Tech') {
@@ -960,7 +1410,6 @@
     }
 
     function updateLanguageSelectorVisibility() {
-      // ONLY SHOW LANGUAGE SELECTOR WHEN: Track is Tech AND Round is Coding or Role Related
       const isTechRound = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related'));
       const langWrap = document.getElementById('modal-coding-language-wrapper');
       if (isTechRound) {
@@ -977,7 +1426,6 @@
       }
     }
 
-    // Toggle Fullscreen
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         if (document.documentElement.requestFullscreen) {
@@ -1014,29 +1462,24 @@
       document.getElementById('stage-role-title').textContent = pendingTitle;
       document.getElementById('stage-role-level').textContent = pendingLevel;
 
-      // Determine if technical code interface is required
       isCurrentSessionTech = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related'));
 
       const langBadge = document.getElementById('stage-lang-badge');
       const focusSwitcher = document.getElementById('stage-focus-switcher');
       const codeCta = document.getElementById('spotlight-switch-code-cta');
+      const submitBtnText = document.getElementById('stage-submit-btn-text');
 
       if (isCurrentSessionTech) {
         langBadge.textContent = selectedCodingLanguage.split(' ')[0];
         langBadge.classList.remove('hidden');
-        if (focusSwitcher) {
-          document.getElementById('focus-btn-code').classList.remove('hidden');
-          document.getElementById('focus-btn-split').classList.remove('hidden');
-        }
+        if (focusSwitcher) focusSwitcher.classList.remove('hidden');
         if (codeCta) codeCta.classList.remove('hidden');
+        if (submitBtnText) submitBtnText.textContent = "Submit Code";
       } else {
         langBadge.classList.add('hidden');
-        // For non-tech, hide Code and Split focus buttons
-        if (focusSwitcher) {
-          document.getElementById('focus-btn-code').classList.add('hidden');
-          document.getElementById('focus-btn-split').classList.add('hidden');
-        }
+        if (focusSwitcher) focusSwitcher.classList.add('hidden');
         if (codeCta) codeCta.classList.add('hidden');
+        if (submitBtnText) submitBtnText.textContent = "Submit Answer";
       }
 
       // Populate Interviewer and Candidate in PiP Tiles & Spotlight
@@ -1045,28 +1488,11 @@
       document.getElementById('spotlight-img').src = chosenInterviewer.avatar;
       document.getElementById('spotlight-name-tag').textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
 
-      // Setup questions based on track
-      if (isCurrentSessionTech) {
-        currentQuestions = [
-          "Write a function to remove the minimum number of invalid parentheses to make the input string valid. Return all possible results.",
-          "Given an array of intervals, merge all overlapping intervals and return an array of non-overlapping intervals.",
-          "How would you design a distributed consensus replication layer to guarantee high availability across multi-region clusters?"
-        ];
-      } else if (pendingTrack === 'Management') {
-        currentQuestions = [
-          "Describe a situation where engineering priorities conflicted with product release deadlines. How did you resolve the trade-off?",
-          "How do you evaluate and develop low-performing senior engineers while maintaining team delivery momentum?",
-          "Walk me through your framework for calculating engineering ROI on major technical debt refactor initiatives."
-        ];
-      } else {
-        currentQuestions = [
-          "Tell me about a project where you had to quickly master an unfamiliar domain or technology under a tight deadline.",
-          "Describe a time when you received constructive feedback that changed your working methodology.",
-          "How do you approach prioritizing multiple competing deliverables when stakeholders have conflicting urgency?"
-        ];
-      }
+      // GENERATE AUTHENTIC QUESTIONS FOR THIS ROLE & COMPANY
+      currentQuestions = generateQuestionBank(pendingTitle, pendingCompany, pendingTrack, pendingLevel, selectedRound, selectedCodingLanguage);
 
       currentQIndex = 0;
+      renderQuestionNavigationPills();
       updateQuestionView(0);
 
       document.getElementById('setup-screen').classList.add('hidden');
@@ -1074,26 +1500,19 @@
       stage.classList.remove('hidden');
       stage.classList.add('flex');
 
-      // Request Fullscreen automatically on start
       try {
         if (document.documentElement.requestFullscreen) {
           document.documentElement.requestFullscreen().catch(() => {});
         }
       } catch(e) {}
 
-      // CONDITIONAL START VIEW:
-      // Non-tech opens directly into 1-on-1 full-screen video call!
-      // Tech opens in Code Focus
       if (isCurrentSessionTech) {
         setFocus('code');
       } else {
         setFocus('interviewer');
       }
 
-      initCodeEditorContent();
       initHardwareMedia();
-
-      // Reset PiP positions to defaults
       resetPipPositions();
 
       remainingSeconds = 4 * 60;
@@ -1106,7 +1525,92 @@
       }, 1000);
     }
 
-    // Google Meet Focus Switching: 'code' | 'interviewer' | 'candidate' | 'split'
+    // Render Question Navigation Pills in Stage Header (0/4 COMPLETED, 1, 2, 3, 4, Q1 of 4 Current)
+    function renderQuestionNavigationPills() {
+      const container = document.getElementById('stage-question-pills');
+      container.innerHTML = '';
+      const total = currentQuestions.length;
+
+      currentQuestions.forEach((q, idx) => {
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        const isCurrent = idx === currentQIndex;
+        pill.className = "w-6 h-6 rounded text-xs font-bold flex items-center justify-center transition-all cursor-pointer " + 
+          (isCurrent ? "bg-[#AA7000] text-white shadow-sm ring-1 ring-[#AA7000]" : "bg-[#1F160A] hover:bg-[#2C1F0E] text-slate-400 border border-[#3D2E15]");
+        pill.textContent = idx + 1;
+        pill.onclick = () => updateQuestionView(idx);
+        container.appendChild(pill);
+      });
+
+      document.getElementById('stage-progress-label').textContent = currentQIndex + "/" + total + " COMPLETED";
+      document.getElementById('stage-current-pill').textContent = "Q" + (currentQIndex + 1) + " of " + total + " - Current";
+    }
+
+    // Update Live Question View across Split IDE and Spotlight Call
+    function updateQuestionView(idx) {
+      currentQIndex = idx;
+      const q = currentQuestions[idx];
+      if (!q) return;
+
+      const total = currentQuestions.length;
+      renderQuestionNavigationPills();
+
+      const qNumText = "QUESTION " + (idx + 1) + " OF " + total;
+      
+      // Update Split Pane
+      const codeQNum = document.getElementById('code-pane-q-number');
+      const techDesc = document.getElementById('tech-problem-description');
+      const techInput = document.getElementById('tech-problem-input');
+      const techOutput = document.getElementById('tech-problem-output');
+      const techConstraints = document.getElementById('tech-problem-constraints');
+      const techInstructionTitle = document.getElementById('code-pane-instruction-title');
+      const techInstructionsText = document.getElementById('tech-instructions-text');
+
+      if (codeQNum) codeQNum.textContent = qNumText;
+      if (techInstructionTitle) techInstructionTitle.textContent = q.title || "Write a code solution for the situation described below.";
+      if (techDesc) techDesc.textContent = q.prompt;
+      if (techInput) techInput.textContent = q.input || "Standard I/O stream";
+      if (techOutput) techOutput.textContent = q.output || "Standard I/O format";
+      if (techConstraints) techConstraints.textContent = q.constraints || "Optimal time & space complexity constraints";
+      if (techInstructionsText) techInstructionsText.textContent = q.instructions || "Your solution will be compiled and evaluated on test cases.";
+
+      // Update Spotlight Pane
+      const spotQTitle = document.getElementById('spotlight-q-title');
+      const spotQ = document.getElementById('spotlight-question-text');
+      if (spotQTitle) spotQTitle.textContent = qNumText + " • " + (q.type ? q.type.toUpperCase() : "INTERVIEW QUESTION");
+      if (spotQ) spotQ.textContent = '"' + q.prompt + '"';
+
+      // Load specific starter code for this question
+      if (q.starterCode) {
+        document.getElementById('code-editor-textarea').value = q.starterCode;
+        updateLineNumbers();
+      } else {
+        initCodeEditorContent(q.title);
+      }
+
+      speakQuestion(q.prompt);
+    }
+
+    // Switch between Code and Instructions tabs on Left Pane
+    function switchProblemTab(tab) {
+      const codeTabBtn = document.getElementById('tab-prob-code');
+      const instTabBtn = document.getElementById('tab-prob-instructions');
+      const codeContent = document.getElementById('tab-content-prob-code');
+      const instContent = document.getElementById('tab-content-prob-instructions');
+
+      if (tab === 'code') {
+        codeTabBtn.className = "pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all";
+        instTabBtn.className = "pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all";
+        codeContent.classList.remove('hidden');
+        instContent.classList.add('hidden');
+      } else {
+        instTabBtn.className = "pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all";
+        codeTabBtn.className = "pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all";
+        instContent.classList.remove('hidden');
+        codeContent.classList.add('hidden');
+      }
+    }
+
     function setFocus(mode) {
       if (!isCurrentSessionTech && (mode === 'code' || mode === 'split')) {
         mode = 'interviewer';
@@ -1125,14 +1629,13 @@
 
       const chosenInterviewer = interviewers[selectedInterviewerIdx] || interviewers[0];
 
-      // Update switcher buttons UI
       ['code', 'interviewer', 'candidate', 'split'].forEach(m => {
         const b = document.getElementById('focus-btn-' + m);
         if (b) {
           if (m === mode) {
-            b.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1.5 shadow-sm";
+            b.className = "px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1 shadow-sm";
           } else {
-            b.className = "px-3 py-1 rounded-full text-xs font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1.5";
+            b.className = "px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1";
           }
         }
       });
@@ -1141,8 +1644,6 @@
         codePane.classList.remove('hidden');
         codePane.classList.add('flex');
         spotlightPane.classList.add('hidden');
-
-        // Show both floating draggable PiP tiles
         tileInterviewer.classList.remove('hidden');
         tileCandidate.classList.remove('hidden');
       } 
@@ -1158,7 +1659,6 @@
         spotImg.src = chosenInterviewer.avatar;
         spotTag.textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
 
-        // In interviewer spotlight: hide interviewer PiP, candidate PiP stays draggable
         tileInterviewer.classList.add('hidden');
         tileCandidate.classList.remove('hidden');
       }
@@ -1180,7 +1680,6 @@
         }
         spotTag.textContent = "You (Candidate Stream)";
 
-        // In candidate spotlight: hide candidate PiP, interviewer PiP stays draggable
         tileInterviewer.classList.remove('hidden');
         tileCandidate.classList.add('hidden');
       }
@@ -1188,7 +1687,6 @@
         codePane.classList.remove('hidden');
         codePane.classList.add('flex');
         spotlightPane.classList.add('hidden');
-
         tileInterviewer.classList.remove('hidden');
         tileCandidate.classList.remove('hidden');
       }
@@ -1198,39 +1696,22 @@
       setFocus(target);
     }
 
-    function updateQuestionView(idx) {
-      currentQIndex = idx;
-      const q = currentQuestions[idx] || "";
-      const qNum = "QUESTION " + (idx + 1) + " OF " + currentQuestions.length;
-      
-      const codeQNum = document.getElementById('code-pane-q-number');
-      const techDesc = document.getElementById('tech-problem-description');
-      const spotQTitle = document.getElementById('spotlight-q-title');
-      const spotQ = document.getElementById('spotlight-question-text');
-
-      if (codeQNum) codeQNum.textContent = qNum;
-      if (techDesc) techDesc.textContent = q;
-      if (spotQTitle) spotQTitle.textContent = qNum + " • " + (isCurrentSessionTech ? "TECHNICAL" : "INTERVIEW");
-      if (spotQ) spotQ.textContent = '"' + q + '"';
-      speakQuestion(q);
-    }
-
-    function initCodeEditorContent() {
+    function initCodeEditorContent(problemTitle = "") {
       const lang = selectedCodingLanguage;
       let filename = "solution.cpp";
       let code = "";
 
       if (lang.includes("Python")) {
         filename = "solution.py";
-        code = `def minRemoveToMakeValid(s: str) -> str:
+        code = `def solution() -> None:
     # Write your solution here
     pass
 `;
       } else if (lang.includes("Java")) {
         filename = "Solution.java";
         code = `class Solution {
-    public String minRemoveToMakeValid(String s) {
-        return "";
+    public void solution() {
+        // Write code here
     }
 }
 `;
@@ -1238,36 +1719,34 @@
         filename = "solution.go";
         code = `package main
 
-func minRemoveToMakeValid(s string) string {
-    return ""
+func solution() {
+    // Write code here
 }
 `;
       } else if (lang.includes("TypeScript") || lang.includes("JavaScript")) {
         filename = "solution.ts";
-        code = `function minRemoveToMakeValid(s: string): string {
-  return "";
+        code = `function solution(): void {
+  // Write code here
 }
 `;
       } else if (lang.includes("Rust")) {
         filename = "solution.rs";
-        code = `pub fn min_remove_to_make_valid(s: String) -> String {
-    String::new()
+        code = `pub fn solution() {
+    // Write code here
 }
 `;
       } else if (lang.includes("SQL")) {
         filename = "query.sql";
         code = `-- Write SQL Query below
-SELECT id, name
-FROM candidate_logs
-ORDER BY timestamp DESC;
+SELECT * FROM data;
 `;
       } else {
         filename = "solution.cpp";
         code = `#include <iostream>
-#include <string>
 
-std::string minRemoveToMakeValid(std::string s) {
-    return "";
+int main() {
+    // Write code here
+    return 0;
 }
 `;
       }
@@ -1280,7 +1759,6 @@ std::string minRemoveToMakeValid(std::string s) {
       updateLineNumbers();
     }
 
-    // Dynamic Line Numbers & Scroll Sync
     function updateLineNumbers() {
       const textarea = document.getElementById('code-editor-textarea');
       const lineNumbers = document.getElementById('editor-line-numbers');
@@ -1300,7 +1778,6 @@ std::string minRemoveToMakeValid(std::string s) {
         if (lineNumbers) lineNumbers.scrollTop = editorTextarea.scrollTop;
       });
 
-      // Tab indentation support
       editorTextarea.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') {
           e.preventDefault();
@@ -1320,8 +1797,8 @@ std::string minRemoveToMakeValid(std::string s) {
 
       setTimeout(() => {
         consoleOut.innerHTML += `<div class="text-white">Compilation successful. Running test cases:</div>`;
-        consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 1: input="a)bc(d)" -> expected="abc(d)" (Passed, 2ms)</div>`;
-        consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 2: input="((a)" -> expected="(a)" (Passed, 1ms)</div>`;
+        consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 1: Standard case passed (2ms)</div>`;
+        consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 2: Edge condition passed (1ms)</div>`;
         consoleOut.innerHTML += `<div class="text-white font-bold mt-1">Status: 2/2 Test Cases Passed. Memory: 11.8 MB.</div>`;
         consoleOut.scrollTop = consoleOut.scrollHeight;
       }, 500);
@@ -1340,7 +1817,7 @@ std::string minRemoveToMakeValid(std::string s) {
 
     function repeatCurrentQuestion() {
       const q = currentQuestions[currentQIndex];
-      if (q) speakQuestion(q);
+      if (q && q.prompt) speakQuestion(q.prompt);
     }
 
     function speakQuestion(text) {
@@ -1352,7 +1829,6 @@ std::string minRemoveToMakeValid(std::string s) {
       }
     }
 
-    // Audio Mandatory, Video Optional Media Initialization
     function initHardwareMedia() {
       const wantVideo = document.getElementById('setting-video').checked;
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -1392,24 +1868,17 @@ std::string minRemoveToMakeValid(std::string s) {
       document.getElementById('setup-screen').classList.remove('hidden');
     }
 
-    // ========================================================================
-    // DRAGGABLE PICTURE-IN-PICTURE (PiP) CONTROLLER
-    // Allows moving tiles anywhere on screen with boundary clamping
-    // ========================================================================
     function makePipDraggable(el) {
       let isDragging = false;
       let startX = 0, startY = 0;
       let initialLeft = 0, initialTop = 0;
-      let hasMovedSignificantly = false;
 
       const handle = el.querySelector('.pip-drag-handle') || el;
 
       handle.addEventListener('pointerdown', (e) => {
-        // Ignore if clicking on button inside handle
         if (e.target.closest('button')) return;
 
         isDragging = true;
-        hasMovedSignificantly = false;
         startX = e.clientX;
         startY = e.clientY;
 
@@ -1432,17 +1901,12 @@ std::string minRemoveToMakeValid(std::string s) {
         const deltaX = e.clientX - startX;
         const deltaY = e.clientY - startY;
 
-        if (Math.hypot(deltaX, deltaY) > 5) {
-          hasMovedSignificantly = true;
-        }
-
         const workspace = document.getElementById('stage-main-workspace') || document.body;
         const wsRect = workspace.getBoundingClientRect();
 
         let newLeft = initialLeft + deltaX;
         let newTop = initialTop + deltaY;
 
-        // Clamp inside workspace
         const minLeft = wsRect.left + 8;
         const maxLeft = wsRect.right - el.offsetWidth - 8;
         const minTop = wsRect.top + 8;
@@ -1485,7 +1949,6 @@ std::string minRemoveToMakeValid(std::string s) {
       }
     }
 
-    // Initialize Draggability
     const tileInterviewer = document.getElementById('tile-interviewer');
     const tileCandidate = document.getElementById('tile-candidate');
     if (tileInterviewer) makePipDraggable(tileInterviewer);
