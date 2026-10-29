@@ -73,7 +73,7 @@
           Account
         </div>
 
-        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+        <a href="settings.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
           <span class="material-symbols-outlined text-xl">settings</span>
           <span>Settings</span>
         </a>
@@ -104,71 +104,40 @@
        ======================================================================== -->
   <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
     
-    <!-- Top Action Bar -->
-    <header class="h-20 bg-white border-b border-[#E8DFD0] px-6 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
-      <div class="flex items-center gap-4">
-        <button id="mobile-sidebar-toggle" class="md:hidden text-[#2C1F0E] hover:text-[#AA7000] p-1">
-          <span class="material-symbols-outlined text-2xl">menu</span>
-        </button>
-        <div class="relative w-64 sm:w-80">
-          <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#7F766C] text-lg">search</span>
-          <input type="text" placeholder="Search sessions, topics..." class="w-full pl-9 pr-4 py-2 rounded-full bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] placeholder:text-[#7F766C] focus:outline-none focus:ring-2 focus:ring-[#AA7000]/20 focus:border-[#AA7000]" />
-        </div>
-      </div>
-
-      <div class="flex items-center gap-4">
-        <button class="w-9 h-9 rounded-full bg-[#FAF6EE] border border-[#E8DFD0] flex items-center justify-center text-[#8C7B6B] hover:text-[#2C1F0E] relative">
-          <span class="material-symbols-outlined text-lg">notifications</span>
-          <span class="w-2 h-2 rounded-full bg-[#AA7000] absolute top-2 right-2"></span>
-        </button>
-        <a href="mock-interview.html" class="bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-pill transition-all flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-base">mic</span>
-          <span class="hidden sm:inline">Start New Interview</span>
-        </a>
-      </div>
-    </header>
-
-    <!-- Dashboard Content Body -->
-    <main class="p-6 sm:p-8 space-y-8 max-w-7xl mx-auto w-full">
+    <!-- Dashboard Content Body (Centered & Well Spaced) -->
+    <main class="flex-1 p-6 sm:p-10 space-y-8 max-w-5xl mx-auto w-full flex flex-col justify-center">
       
-      <!-- Welcome Header -->
+      <!-- Mobile Sidebar Toggle -->
+      <div class="md:hidden flex items-center justify-between pb-2">
+        <button id="mobile-sidebar-toggle" class="flex items-center gap-2 text-xs font-bold text-[#2C1F0E] bg-white border border-[#E8DFD0] px-3.5 py-2 rounded-full shadow-sm">
+          <span class="material-symbols-outlined text-lg">menu</span>
+          <span>Menu</span>
+        </button>
+      </div>
+
+      <!-- Welcome Header (Clean & Uncluttered) -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2C1F0E]">
             Welcome back, Alex.
           </h1>
-          <p class="text-xs sm:text-sm text-[#8C7B6B] mt-1">
-            Your technical performance benchmark has improved <span class="text-[#4F6B2D] font-bold">+4.2%</span> over the past 7 days.
-          </p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="px-3.5 py-1.5 rounded-full bg-white border border-[#E8DFD0] text-xs font-semibold text-[#8C7B6B] flex items-center gap-1.5 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-[#4F6B2D]"></span> Target Role: Staff Backend Architect
-          </span>
         </div>
       </div>
 
-      <!-- PRIMARY HERO CARD: "Start New Interview" (Large, Prominent, First Seen) -->
-      <div class="bg-gradient-to-r from-[#FBF3E0] via-white to-[#FBF3E0] border-2 border-[#E8C97A] rounded-3xl p-8 sm:p-10 shadow-card flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
-        <!-- Soft ambient glow -->
-        <div class="absolute -right-12 -top-12 w-56 h-56 bg-[#AA7000]/15 rounded-full blur-3xl pointer-events-none"></div>
+      <!-- PRIMARY HERO CARD: Clean, Simple & Balanced -->
+      <div class="bg-gradient-to-r from-[#FBF3E0] via-white to-[#FBF3E0] border border-[#E8C97A] rounded-3xl p-7 sm:p-9 shadow-card flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
         <div class="relative z-10 max-w-xl">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E8C97A] text-xs font-bold text-[#AA7000] uppercase tracking-wider mb-3 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-[#AA7000] animate-ping"></span>
-            <span>AI Practice Arena</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2C1F0E] tracking-tight mb-2">
-            Start New Technical Mock Interview
+          <h2 class="text-xl sm:text-2xl font-extrabold text-[#2C1F0E] tracking-tight mb-2">
+            Start Technical Mock Interview
           </h2>
-          <p class="text-sm text-[#8C7B6B] leading-relaxed">
-            Experience accent-agnostic speech evaluation. Practice distributed systems, storage engine invariants, and architectural trade-offs with instant feedback.
+          <p class="text-xs sm:text-sm text-[#7F766C] leading-relaxed">
+            Practice distributed systems, algorithms, and architectural trade-offs with objective, dialect-neutral scoring.
           </p>
         </div>
         <div class="relative z-10 flex-shrink-0">
-          <a href="mock-interview.html" class="inline-flex items-center gap-3 bg-[#AA7000] hover:bg-[#917247] text-white text-base font-bold px-8 py-4 rounded-full shadow-pill hover:shadow-xl transition-all transform hover:-translate-y-0.5">
-            <span class="material-symbols-outlined text-xl">mic</span>
+          <a href="mock-interview.html" class="inline-flex items-center gap-2 bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs sm:text-sm font-bold px-7 py-3.5 rounded-full shadow-sm hover:shadow-md transition-all transform hover:-translate-y-0.5">
+            <span class="material-symbols-outlined text-lg">play_arrow</span>
             <span>Launch Interview</span>
-            <span class="material-symbols-outlined text-lg">arrow_forward</span>
           </a>
         </div>
       </div>

@@ -24,6 +24,7 @@ export default defineConfig({
         accentAgnostic: resolve(__dirname, 'pages/accent-agnostic.html'),
         zeroRetention: resolve(__dirname, 'pages/zero-retention.html'),
         endToEnd: resolve(__dirname, 'pages/end-to-end.html'),
+        settings: resolve(__dirname, 'pages/settings.html'),
       },
     },
   },

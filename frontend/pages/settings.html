@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings &amp; Profile | IMAIRA+</title>
+  <meta name="description" content="Manage candidate profile, career interests, resume artifacts, skills, and interview evaluation preferences." />
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="../js/tailwind-config.js"></script>
+
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <style>
+    /* Custom Scrollbar */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #F2EBD8;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #D8CEB8;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #AA7000;
+    }
+  </style>
+</head>
+
+<body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased selection:bg-[#AA7000] selection:text-white flex h-screen overflow-hidden">
+
+  <!-- ========================================================================
+       SIDEBAR NAVIGATION
+       ======================================================================== -->
+  <aside id="app-sidebar" class="w-64 bg-white border-r border-[#E8DFD0] flex flex-col justify-between shrink-0 transition-transform -translate-x-full md:translate-x-0 fixed md:static z-40 h-full">
+    <div>
+      <!-- Brand Logo Header -->
+      <div class="h-20 px-6 flex items-center justify-between border-b border-[#E8DFD0]">
+        <a href="../index.html" class="flex items-center gap-1.5">
+          <span class="text-2xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
+        </a>
+        <button id="close-sidebar-btn" class="md:hidden text-[#7F766C] hover:text-[#2C1F0E]">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-4 space-y-1.5">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="mock-interview.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">record_voice_over</span>
+          <span>Mock Interview</span>
+        </a>
+
+        <a href="assessment.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">quiz</span>
+          <span>Assessments</span>
+        </a>
+
+        <a href="history.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">history</span>
+          <span>History</span>
+        </a>
+
+        <a href="resume.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">description</span>
+          <span>Resume Analyzer</span>
+        </a>
+
+        <a href="prep-plan.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
+          <span class="material-symbols-outlined text-xl">checklist</span>
+          <span>Prep Plan</span>
+        </a>
+
+        <div class="pt-4 pb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">
+          Account
+        </div>
+
+        <a href="settings.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-sm transition-all shadow-sm">
+          <span class="material-symbols-outlined text-xl">settings</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Candidate Footer Profile -->
+    <div class="p-4 border-t border-[#E8DFD0]">
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2.5">
+          <div id="sidebar-avatar-initials" class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
+            AM
+          </div>
+          <div>
+            <div id="sidebar-user-name" class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
+            <div id="sidebar-user-role" class="text-[11px] text-[#7F766C]">Staff Candidate</div>
+          </div>
+        </div>
+        <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
+          <span class="material-symbols-outlined text-lg">logout</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================
+       MAIN SETTINGS & PROFILE CONTENT
+       ======================================================================== -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto custom-scroll">
+    <main class="flex-1 p-6 sm:p-10 max-w-4xl mx-auto w-full space-y-10">
+      
+      <!-- Mobile Sidebar Toggle -->
+      <div class="md:hidden flex items-center justify-between pb-2">
+        <button id="mobile-sidebar-toggle" class="flex items-center gap-2 text-xs font-bold text-[#2C1F0E] bg-white border border-[#E8DFD0] px-3.5 py-2 rounded-full shadow-sm">
+          <span class="material-symbols-outlined text-lg">menu</span>
+          <span>Menu</span>
+        </button>
+      </div>
+
+      <!-- Page Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8DFD0]">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-[#2C1F0E]">Profile &amp; Settings</h1>
+          <p class="text-xs sm:text-sm text-[#7F766C] mt-1">Manage your candidate credentials, skills, target role, and interview preferences.</p>
+        </div>
+        <button type="button" onclick="saveProfile()" class="px-6 py-2.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 self-start sm:self-auto">
+          <span class="material-symbols-outlined text-sm">check</span>
+          <span>Save Changes</span>
+        </button>
+      </div>
+
+      <!-- Notification Toast (Hidden by default) -->
+      <div id="save-toast" class="hidden p-4 rounded-2xl bg-[#EFF4E8] border border-[#4F6B2D]/40 text-[#4F6B2D] text-xs font-bold flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">check_circle</span>
+          <span>Profile &amp; preferences saved successfully.</span>
+        </div>
+        <button onclick="document.getElementById('save-toast').classList.add('hidden')" class="text-[#4F6B2D] hover:opacity-75">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+
+      <!-- SECTION 1: PERSONAL INFORMATION -->
+      <section class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-soft space-y-6">
+        <div class="flex items-center gap-2.5 pb-4 border-b border-[#E8DFD0]">
+          <span class="material-symbols-outlined text-[#AA7000]">account_circle</span>
+          <h2 class="text-base font-bold text-[#2C1F0E]">Personal Information</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Full Name <span class="text-[#AA7000]">*</span></label>
+            <input type="text" id="prof-name" value="Alex Morgan" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-medium focus:outline-none focus:border-[#AA7000] transition-all" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Age</label>
+            <input type="number" id="prof-age" value="28" min="18" max="99" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-medium focus:outline-none focus:border-[#AA7000] transition-all" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Professional Headline</label>
+          <input type="text" id="prof-headline" value="Staff Systems Engineer &amp; Distributed Backend Architect" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-medium focus:outline-none focus:border-[#AA7000] transition-all" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Candidate Bio (Open-Ended)</label>
+          <textarea id="prof-bio" rows="4" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-medium focus:outline-none focus:border-[#AA7000] transition-all custom-scroll leading-relaxed" placeholder="Share your professional story, values, and engineering approach...">Staff-level engineer specializing in high-throughput distributed state management and consensus engines. Passionate about fault-tolerant systems, zero-copy data pipelines, and pragmatic architectural trade-offs under high scale.</textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Technical Interests &amp; Passions (Open-Ended)</label>
+          <textarea id="prof-interests" rows="3" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-medium focus:outline-none focus:border-[#AA7000] transition-all custom-scroll leading-relaxed" placeholder="Which technical topics or architectures excite you most?">Distributed consensus (Raft/Paxos), LSM storage engines, low-latency microservices, telemetry kernel architectures, and zero-allocation networking.</textarea>
+        </div>
+      </section>
+
+      <!-- SECTION 2: TARGET ROLE & SKILLS -->
+      <section class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-soft space-y-6">
+        <div class="flex items-center gap-2.5 pb-4 border-b border-[#E8DFD0]">
+          <span class="material-symbols-outlined text-[#AA7000]">target</span>
+          <h2 class="text-base font-bold text-[#2C1F0E]">Career Target &amp; Primary Skills</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Preferred / Target Role <span class="text-[#AA7000]">*</span></label>
+            <input type="text" id="prof-target-role" value="Staff Backend Architect" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-medium focus:outline-none focus:border-[#AA7000] transition-all" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Seniority Level</label>
+            <select id="prof-level" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-semibold focus:outline-none focus:border-[#AA7000] transition-all cursor-pointer">
+              <option value="SDE 1">SDE 1 (Junior)</option>
+              <option value="SDE 2">SDE 2 (Mid-Level)</option>
+              <option value="Senior SDE">Senior SDE</option>
+              <option value="Staff SDE" selected>Staff SDE / Lead Architect</option>
+              <option value="Principal Engineer">Principal Engineer / Director</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Primary Skills Tags -->
+        <div>
+          <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Primary Skills &amp; Competencies</label>
+          <div id="skills-tag-container" class="flex flex-wrap items-center gap-2 p-3 bg-[#FAF6EE] rounded-xl border border-[#E8DFD0]">
+            <span class="skill-tag px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5">
+              <span>Go</span>
+              <button onclick="removeSkillTag(this)" class="text-[#7F766C] hover:text-red-500 text-xs">✕</button>
+            </span>
+            <span class="skill-tag px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5">
+              <span>Distributed Systems</span>
+              <button onclick="removeSkillTag(this)" class="text-[#7F766C] hover:text-red-500 text-xs">✕</button>
+            </span>
+            <span class="skill-tag px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5">
+              <span>PostgreSQL</span>
+              <button onclick="removeSkillTag(this)" class="text-[#7F766C] hover:text-red-500 text-xs">✕</button>
+            </span>
+            <span class="skill-tag px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5">
+              <span>Rust</span>
+              <button onclick="removeSkillTag(this)" class="text-[#7F766C] hover:text-red-500 text-xs">✕</button>
+            </span>
+            <span class="skill-tag px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5">
+              <span>System Design</span>
+              <button onclick="removeSkillTag(this)" class="text-[#7F766C] hover:text-red-500 text-xs">✕</button>
+            </span>
+            <span class="skill-tag px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5">
+              <span>Kubernetes</span>
+              <button onclick="removeSkillTag(this)" class="text-[#7F766C] hover:text-red-500 text-xs">✕</button>
+            </span>
+
+            <input type="text" id="add-skill-input" onkeydown="handleSkillAdd(event)" placeholder="+ Add skill & enter" class="border-0 bg-transparent text-xs text-[#2C1F0E] placeholder:text-[#8C7B6B] focus:outline-none focus:ring-0 px-2 py-1" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Standout Engineering Accomplishment (Open-Ended)</label>
+          <textarea id="prof-accomplishment" rows="3" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-medium focus:outline-none focus:border-[#AA7000] transition-all custom-scroll leading-relaxed" placeholder="Describe a high-leverage project or technical milestone you engineered...">Architected and led migration of core transaction log from monolithic DB to an event-sourced Raft consensus pipeline, reducing p99 tail latency from 420ms to 28ms while servicing 120,000 ops/sec.</textarea>
+        </div>
+      </section>
+
+      <!-- SECTION 3: RESUME & ATTACHMENTS -->
+      <section class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-soft space-y-5">
+        <div class="flex items-center gap-2.5 pb-4 border-b border-[#E8DFD0]">
+          <span class="material-symbols-outlined text-[#AA7000]">description</span>
+          <h2 class="text-base font-bold text-[#2C1F0E]">Resume &amp; Credentials</h2>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-[#FAF6EE] border-2 border-dashed border-[#E8DFD0] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-[#FFFDF8] border border-[#E8DFD0] flex items-center justify-center text-[#AA7000]">
+              <span class="material-symbols-outlined text-2xl">picture_as_pdf</span>
+            </div>
+            <div>
+              <div id="resume-filename-label" class="text-xs font-bold text-[#2C1F0E]">Alex_Morgan_Staff_Resume_2026.pdf</div>
+              <div class="text-[11px] text-[#7F766C]">Uploaded Oct 2026 • 248 KB • 7+ Years Experience Parsed</div>
+            </div>
+          </div>
+          <label class="px-4 py-2 rounded-full border border-[#AA7000]/50 bg-[#FFFDF8] hover:bg-[#F2EBD8] text-[#AA7000] text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">upload_file</span>
+            <span>Upload New Resume</span>
+            <input type="file" class="hidden" accept=".pdf,.docx,.txt" onchange="handleResumeFile(event)" />
+          </label>
+        </div>
+      </section>
+
+      <!-- SECTION 4: INTERVIEW EVALUATION PREFERENCES -->
+      <section class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-soft space-y-6">
+        <div class="flex items-center gap-2.5 pb-4 border-b border-[#E8DFD0]">
+          <span class="material-symbols-outlined text-[#AA7000]">tune</span>
+          <h2 class="text-base font-bold text-[#2C1F0E]">Evaluation &amp; Audio/Video Preferences</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Default Voice Evaluator</label>
+            <select id="pref-evaluator" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-semibold focus:outline-none focus:border-[#AA7000] transition-all cursor-pointer">
+              <option value="Kabir">Kabir (IN English - North)</option>
+              <option value="Payal">Payal (IN English - Standard)</option>
+              <option value="Charlotte">Charlotte (UK English - Standard)</option>
+              <option value="John">John (US English - General)</option>
+              <option value="Sarah">Sarah (US English - Standard)</option>
+              <option value="Kenji">Kenji (Japanese English - Male)</option>
+              <option value="Aoi">Aoi (Japanese English - Female)</option>
+              <option value="Karthik">Karthik (IN South English)</option>
+              <option value="Vikram">Vikram (IN Central English)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">Default Coding Language</label>
+            <select id="pref-lang" class="w-full px-4 py-2.5 rounded-xl bg-[#FAF6EE] border border-[#E8DFD0] text-xs text-[#2C1F0E] font-semibold focus:outline-none focus:border-[#AA7000] transition-all cursor-pointer">
+              <option value="C++ (GCC 14)">C++ (GCC 14 / C++20)</option>
+              <option value="Python (3.11)">Python (3.11 Standard)</option>
+              <option value="Java (OpenJDK 21)">Java (OpenJDK 21)</option>
+              <option value="Go (1.22)" selected>Go (1.22 Runtime)</option>
+              <option value="TypeScript / JavaScript">TypeScript (5.4) / JavaScript</option>
+              <option value="Rust (1.78)">Rust (1.78 Stable)</option>
+              <option value="SQL (PostgreSQL 16)">SQL (PostgreSQL 16 Engine)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="space-y-3.5 pt-2">
+          <label class="flex items-center justify-between p-3.5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] cursor-pointer">
+            <div>
+              <div class="text-xs font-bold text-[#2C1F0E]">Dialect-Neutral Acoustic Normalization</div>
+              <div class="text-[11px] text-[#7F766C]">Evaluate technical logic and articulation structure with 0% pronunciation deduction.</div>
+            </div>
+            <input type="checkbox" id="pref-normalization" checked class="rounded border-[#E8DFD0] text-[#2C1F0E] focus:ring-[#AA7000]" />
+          </label>
+
+          <label class="flex items-center justify-between p-3.5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] cursor-pointer">
+            <div>
+              <div class="text-xs font-bold text-[#2C1F0E]">Zero Biometric Audio Retention</div>
+              <div class="text-[11px] text-[#7F766C]">Candidate audio and video streams are processed in memory and purged immediately after report generation.</div>
+            </div>
+            <input type="checkbox" id="pref-zero-retention" checked class="rounded border-[#E8DFD0] text-[#2C1F0E] focus:ring-[#AA7000]" />
+          </label>
+        </div>
+      </section>
+
+      <!-- Bottom Save Action Bar -->
+      <div class="flex items-center justify-end gap-3 pt-4 pb-12">
+        <a href="dashboard.html" class="px-5 py-2.5 rounded-full border border-[#E8DFD0] hover:bg-white text-[#7F766C] hover:text-[#2C1F0E] text-xs font-bold transition-all">
+          Cancel
+        </a>
+        <button type="button" onclick="saveProfile()" class="px-7 py-2.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">save</span>
+          <span>Save Profile &amp; Preferences</span>
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Profile & Settings Logic -->
+  <script>
+    // 1. Load Stored Profile
+    function loadProfile() {
+      const saved = localStorage.getItem('imaira_profile');
+      if (saved) {
+        try {
+          const p = JSON.parse(saved);
+          if (p.name) document.getElementById('prof-name').value = p.name;
+          if (p.age) document.getElementById('prof-age').value = p.age;
+          if (p.headline) document.getElementById('prof-headline').value = p.headline;
+          if (p.bio) document.getElementById('prof-bio').value = p.bio;
+          if (p.interests) document.getElementById('prof-interests').value = p.interests;
+          if (p.targetRole) document.getElementById('prof-target-role').value = p.targetRole;
+          if (p.level) document.getElementById('prof-level').value = p.level;
+          if (p.accomplishment) document.getElementById('prof-accomplishment').value = p.accomplishment;
+          if (p.evaluator) document.getElementById('pref-evaluator').value = p.evaluator;
+          if (p.lang) document.getElementById('pref-lang').value = p.lang;
+
+          updateSidebarProfile(p.name, p.targetRole || p.level);
+        } catch (e) {
+          console.log("Error loading profile", e);
+        }
+      }
+    }
+
+    // 2. Save Profile
+    function saveProfile() {
+      const name = document.getElementById('prof-name').value || "Alex Morgan";
+      const age = document.getElementById('prof-age').value;
+      const headline = document.getElementById('prof-headline').value;
+      const bio = document.getElementById('prof-bio').value;
+      const interests = document.getElementById('prof-interests').value;
+      const targetRole = document.getElementById('prof-target-role').value;
+      const level = document.getElementById('prof-level').value;
+      const accomplishment = document.getElementById('prof-accomplishment').value;
+      const evaluator = document.getElementById('pref-evaluator').value;
+      const lang = document.getElementById('pref-lang').value;
+
+      const profileData = {
+        name,
+        age,
+        headline,
+        bio,
+        interests,
+        targetRole,
+        level,
+        accomplishment,
+        evaluator,
+        lang
+      };
+
+      localStorage.setItem('imaira_profile', JSON.stringify(profileData));
+      updateSidebarProfile(name, targetRole);
+
+      const toast = document.getElementById('save-toast');
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 4000);
+    }
+
+    function updateSidebarProfile(name, role) {
+      const nameEl = document.getElementById('sidebar-user-name');
+      const roleEl = document.getElementById('sidebar-user-role');
+      const initialsEl = document.getElementById('sidebar-avatar-initials');
+
+      if (nameEl) nameEl.textContent = name;
+      if (roleEl && role) roleEl.textContent = role;
+      if (initialsEl && name) {
+        const parts = name.trim().split(' ');
+        const inits = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
+        initialsEl.textContent = inits || 'AM';
+      }
+    }
+
+    // 3. Skill Tags Manipulation
+    function removeSkillTag(btn) {
+      btn.parentElement.remove();
+    }
+
+    function handleSkillAdd(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = document.getElementById('add-skill-input');
+        const val = input.value.trim();
+        if (val) {
+          const container = document.getElementById('skills-tag-container');
+          const span = document.createElement('span');
+          span.className = "skill-tag px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#E8DFD0] text-[#2C1F0E] flex items-center gap-1.5";
+          span.innerHTML = `<span>${val}</span><button onclick="removeSkillTag(this)" class="text-[#7F766C] hover:text-red-500 text-xs">✕</button>`;
+          container.insertBefore(span, input);
+          input.value = '';
+        }
+      }
+    }
+
+    function handleResumeFile(e) {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById('resume-filename-label').textContent = file.name;
+        alert("Resume '" + file.name + "' attached successfully.");
+      }
+    }
+
+    // 4. Mobile Sidebar
+    const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+    const appSidebar = document.getElementById('app-sidebar');
+
+    if (mobileSidebarToggle && appSidebar) {
+      mobileSidebarToggle.addEventListener('click', () => {
+        appSidebar.classList.remove('-translate-x-full');
+      });
+    }
+
+    if (closeSidebarBtn && appSidebar) {
+      closeSidebarBtn.addEventListener('click', () => {
+        appSidebar.classList.add('-translate-x-full');
+      });
+    }
+
+    // Initialize
+    loadProfile();
+  </script>
+</body>
+</html>
