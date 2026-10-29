@@ -1,9 +1,41 @@
+# Dependencies
 node_modules/
 frontend/node_modules/
 backend/node_modules/
+
+# Production build outputs
 dist/
 frontend/dist/
+
+# Environment and sensitive keys
 .env
+.env.local
 *.log
+
+# OS & Editor generated files
 .DS_Store
 Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Temporary and cache files
+*.tmp
+*.temp
+__pycache__/
+*.pyc
+
+# Unwanted image dumps & screenshots in root and subfolders
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+
+# Whitelist ONLY essential UI illustration assets used in code
+!frontend/assets/images/boy_sketch_aligned.png
+!frontend/assets/images/boy_color_aligned.png
+
+# Unwanted reference drafts & test dumps
+stitch_imaira_ai_mock_interviews/
