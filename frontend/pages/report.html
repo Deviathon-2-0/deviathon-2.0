@@ -173,61 +173,100 @@
         </div>
       </div>
 
-      <!-- 3 SCORE GAUGES (Content, Structure, Communication) -->
+      <!-- PERSONALIZED EVALUATION METRICS: BODY LANGUAGE, TECHNICAL DEPTH & SPEECH CLARITY -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- Score 1: Content Depth -->
+        <!-- Metric 1: Body Language & Non-Verbal Presence -->
         <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft flex flex-col justify-between">
-          <div class="flex items-center justify-between mb-4">
-            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Technical Depth</span>
-            <span class="material-symbols-outlined text-[#AA7000]">memory</span>
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Body Language</span>
+              <span class="material-symbols-outlined text-[#AA7000]">visibility</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-3">
+              <span class="text-4xl font-black text-[#2C1F0E]">78</span>
+              <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+              <span class="ml-auto text-[11px] font-bold text-[#AA7000] bg-[#FBF3E0] px-2.5 py-0.5 rounded-full">Good Presence</span>
+            </div>
+            <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
+              <div class="bg-[#AA7000] h-full rounded-full" style="width: 78%"></div>
+            </div>
+            <p class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
+              Eye contact maintained for <strong>78%</strong> of the evaluation. Occasional downward gaze detected during complex architectural formulation in Questions 2 and 4.
+            </p>
           </div>
-          <div class="flex items-baseline gap-2 mb-3">
-            <span class="text-4xl font-black text-[#2C1F0E]">92</span>
-            <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+          <div class="pt-3 border-t border-[#E8DFD0] space-y-2 text-[11px] text-[#7F766C]">
+            <div class="flex items-start gap-1.5">
+              <span class="material-symbols-outlined text-xs text-[#AA7000] mt-0.5">check_circle</span>
+              <span><strong>Posture:</strong> Upright and steady with minimal fidgeting (stability 92%).</span>
+            </div>
+            <div class="flex items-start gap-1.5">
+              <span class="material-symbols-outlined text-xs text-[#AA7000] mt-0.5">lightbulb</span>
+              <span><strong>Tip:</strong> Look directly at camera lens during trade-off explanations.</span>
+            </div>
           </div>
-          <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
-            <div class="bg-[#AA7000] h-full rounded-full" style="width: 92%"></div>
-          </div>
-          <p class="text-xs text-[#8C7B6B] leading-relaxed">
-            Strong coverage of quorum requirements, log compaction, and leader lease mechanics under asymmetric partitions.
-          </p>
         </div>
 
-        <!-- Score 2: Structural Logic -->
+        <!-- Metric 2: Technical Depth & System Invariants -->
         <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft flex flex-col justify-between">
-          <div class="flex items-center justify-between mb-4">
-            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Structural Flow</span>
-            <span class="material-symbols-outlined text-[#2C1F0E]">schema</span>
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Technical Depth</span>
+              <span class="material-symbols-outlined text-[#2C1F0E]">memory</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-3">
+              <span class="text-4xl font-black text-[#2C1F0E]">92</span>
+              <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+              <span class="ml-auto text-[11px] font-bold text-[#4F6B2D] bg-[#EFF4E8] px-2.5 py-0.5 rounded-full">Staff Level</span>
+            </div>
+            <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
+              <div class="bg-[#2C1F0E] h-full rounded-full" style="width: 92%"></div>
+            </div>
+            <p class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
+              Covered <strong>4 of 6</strong> core architectural layers. Excellent mastery of Write-Ahead Logs (WAL) and consensus state machines under asymmetric partitions.
+            </p>
           </div>
-          <div class="flex items-baseline gap-2 mb-3">
-            <span class="text-4xl font-black text-[#2C1F0E]">88</span>
-            <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+          <div class="pt-3 border-t border-[#E8DFD0] space-y-2 text-[11px] text-[#7F766C]">
+            <div class="flex items-start gap-1.5">
+              <span class="material-symbols-outlined text-xs text-rose-500 mt-0.5">error</span>
+              <span><strong>Gap:</strong> Omitted Raft pre-vote check during reconnect recovery.</span>
+            </div>
+            <div class="flex items-start gap-1.5">
+              <span class="material-symbols-outlined text-xs text-[#AA7000] mt-0.5">lightbulb</span>
+              <span><strong>Tip:</strong> Quantify storage growth and QPS before hardware topology.</span>
+            </div>
           </div>
-          <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
-            <div class="bg-[#2C1F0E] h-full rounded-full" style="width: 88%"></div>
-          </div>
-          <p class="text-xs text-[#8C7B6B] leading-relaxed">
-            Logical progression: problem constraints scoped first before detailing storage engines and recovery strategies.
-          </p>
         </div>
 
-        <!-- Score 3: Communication & Clarity -->
+        <!-- Metric 3: Speech Clarity & Articulation -->
         <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft flex flex-col justify-between">
-          <div class="flex items-center justify-between mb-4">
-            <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Speech Clarity</span>
-            <span class="material-symbols-outlined text-[#4F6B2D]">record_voice_over</span>
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Speech Clarity</span>
+              <span class="material-symbols-outlined text-[#4F6B2D]">record_voice_over</span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-3">
+              <span class="text-4xl font-black text-[#2C1F0E]">95</span>
+              <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+              <span class="ml-auto text-[11px] font-bold text-[#4F6B2D] bg-[#EFF4E8] px-2.5 py-0.5 rounded-full">Exemplary</span>
+            </div>
+            <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
+              <div class="bg-[#4F6B2D] h-full rounded-full" style="width: 95%"></div>
+            </div>
+            <p class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
+              Pacing was steady at <strong>142 words/minute</strong> (ideal 120–160 wpm). Filler word rate low at <strong>2.1%</strong> with 96% sentence completion rate.
+            </p>
           </div>
-          <div class="flex items-baseline gap-2 mb-3">
-            <span class="text-4xl font-black text-[#2C1F0E]">95</span>
-            <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+          <div class="pt-3 border-t border-[#E8DFD0] space-y-2 text-[11px] text-[#7F766C]">
+            <div class="flex items-start gap-1.5">
+              <span class="material-symbols-outlined text-xs text-[#4F6B2D] mt-0.5">verified</span>
+              <span><strong>Acoustics:</strong> Dialect-neutral engine scored zero phoneme deduction.</span>
+            </div>
+            <div class="flex items-start gap-1.5">
+              <span class="material-symbols-outlined text-xs text-[#4F6B2D] mt-0.5">lightbulb</span>
+              <span><strong>Tip:</strong> Use deliberate 1-second pauses instead of fillers like "um".</span>
+            </div>
           </div>
-          <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
-            <div class="bg-[#4F6B2D] h-full rounded-full" style="width: 95%"></div>
-          </div>
-          <p class="text-xs text-[#8C7B6B] leading-relaxed">
-            Accent-agnostic model verified zero phonetic penalty. Pacing was steady at 138 words/minute with minimal hesitation.
-          </p>
         </div>
 
       </div>

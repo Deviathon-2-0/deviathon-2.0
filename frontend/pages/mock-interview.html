@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mock Interview | IMAIRA+</title>
-  <meta name="description" content="Technical and behavioral mock interview platform with Google Meet style video pin controls, code focus, and verified evaluators." />
+  <meta name="description" content="Technical and behavioral mock interview platform with Google Meet style video controls, draggable PiP frames, and verified evaluators." />
 
   <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -69,6 +69,24 @@
       -moz-tab-size: 2;
       font-family: 'JetBrains Mono', monospace;
     }
+
+    /* Draggable PiP styling */
+    .draggable-pip {
+      position: absolute;
+      touch-action: none;
+      user-select: none;
+      transition: box-shadow 0.2s ease;
+    }
+    .draggable-pip.is-dragging {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      cursor: grabbing !important;
+    }
+    .pip-drag-handle {
+      cursor: grab;
+    }
+    .pip-drag-handle:active {
+      cursor: grabbing;
+    }
   </style>
 </head>
 
@@ -128,7 +146,7 @@
         </button>
       </div>
 
-      <!-- MODE 1: ROLE BASED (Seniority inside modal) -->
+      <!-- MODE 1: ROLE BASED -->
       <section id="mode-role-container" class="flex flex-col flex-1">
         <div class="flex items-center justify-between flex-wrap gap-4 mb-6 pb-4 border-b border-[#E8DFD0]">
           <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full custom-scroll" id="role-category-pills">
@@ -282,7 +300,7 @@
       <div class="p-3.5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] flex items-center justify-between mb-5">
         <div>
           <div class="text-xs font-bold text-[#2C1F0E]">Resume-Based Questions (Optional)</div>
-          <div class="text-[11px] text-[#7F766C]">Personalize technical questions to your work experience</div>
+          <div class="text-[11px] text-[#7F766C]">Personalize questions to your career history</div>
         </div>
         <label class="px-3.5 py-1.5 rounded-full border border-[#AA7000]/40 bg-[#FFFDF8] hover:bg-[#F2EBD8] text-[#AA7000] text-xs font-bold cursor-pointer transition-all flex items-center gap-1">
           <span class="material-symbols-outlined text-sm">upload_file</span>
@@ -299,11 +317,11 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="round-selector">
           <button type="button" onclick="selectRound('Warm Up')" class="round-btn text-left p-3 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000] bg-[#FFFDF8] transition-all cursor-pointer" data-round="Warm Up">
             <div class="text-xs font-bold text-[#2C1F0E]">Warm Up</div>
-            <div class="text-[10px] text-[#8C7B6B] uppercase font-semibold mt-0.5">Non Tech</div>
+            <div class="text-[10px] text-[#8C7B6B] uppercase font-semibold mt-0.5">Non Technical</div>
           </button>
           <button type="button" onclick="selectRound('Coding')" class="round-btn text-left p-3 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000] bg-[#FFFDF8] transition-all cursor-pointer" data-round="Coding">
             <div class="text-xs font-bold text-[#2C1F0E]">Coding</div>
-            <div class="text-[10px] text-[#8C7B6B] uppercase font-semibold mt-0.5">Code Editor</div>
+            <div class="text-[10px] text-[#8C7B6B] uppercase font-semibold mt-0.5">Programming</div>
           </button>
           <button type="button" onclick="selectRound('Role Related')" class="round-btn active text-left p-3 rounded-2xl border-2 border-[#2C1F0E] bg-[#F2EBD8] transition-all cursor-pointer" data-round="Role Related">
             <div class="text-xs font-bold text-[#2C1F0E]">Role Related</div>
@@ -311,12 +329,12 @@
           </button>
           <button type="button" onclick="selectRound('Behavioral')" class="round-btn text-left p-3 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000] bg-[#FFFDF8] transition-all cursor-pointer" data-round="Behavioral">
             <div class="text-xs font-bold text-[#2C1F0E]">Behavioral</div>
-            <div class="text-[10px] text-[#8C7B6B] uppercase font-semibold mt-0.5">HR &amp; Video</div>
+            <div class="text-[10px] text-[#8C7B6B] uppercase font-semibold mt-0.5">HR &amp; Soft Skills</div>
           </button>
         </div>
       </div>
 
-      <!-- Select Coding Language: STRICTLY ONLY SHOWN WHEN TECH INTERVIEW IS CHOSEN -->
+      <!-- Select Coding Language: STRICTLY ONLY SHOWN WHEN TECH ROUND IS CHOSEN -->
       <div id="modal-coding-language-wrapper" class="hidden mb-5">
         <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2">
           Select Coding Language <span class="text-[#AA7000]">*</span>
@@ -345,25 +363,36 @@
         </div>
       </div>
 
-      <!-- Practice Settings -->
+      <!-- Practice Settings: Audio Mandatory, Video Optional -->
       <div class="mb-5 pb-5 border-b border-[#E8DFD0]">
-        <div class="flex items-center gap-6">
-          <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#2C1F0E]">
-            <input type="checkbox" id="setting-audio" checked class="rounded border-[#E8DFD0] text-[#2C1F0E] focus:ring-[#AA7000]" />
+        <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-2.5">
+          Hardware Permissions <span class="text-[#AA7000]">*</span>
+        </label>
+        <div class="flex items-center flex-wrap gap-3">
+          <!-- Audio: Mandatory -->
+          <div class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#EFF4E8] border border-[#4F6B2D]/30 text-xs font-bold text-[#2C1F0E]">
+            <span class="material-symbols-outlined text-base text-[#4F6B2D]">mic</span>
             <span>Audio Microphone</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#2C1F0E]">
+            <span class="text-[10px] bg-[#4F6B2D] text-white px-2 py-0.5 rounded-full font-bold ml-1">Mandatory</span>
+          </div>
+
+          <!-- Video: Optional Toggle -->
+          <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#2C1F0E] px-3.5 py-2 rounded-xl border border-[#E8DFD0] hover:bg-[#FAF6EE] transition-all">
             <input type="checkbox" id="setting-video" checked class="rounded border-[#E8DFD0] text-[#2C1F0E] focus:ring-[#AA7000]" />
-            <span>Video Camera</span>
+            <span class="material-symbols-outlined text-base text-[#8C7B6B]">videocam</span>
+            <span>Video Camera (Optional)</span>
           </label>
         </div>
+        <p class="text-[11px] text-[#7F766C] mt-2">
+          Audio is required for acoustic and speech scoring. Video camera is optional.
+        </p>
       </div>
 
       <!-- Terms Confirmation -->
       <div class="flex items-center gap-2.5 mb-5">
         <input type="checkbox" id="setting-terms" checked class="rounded border-[#E8DFD0] text-[#2C1F0E] focus:ring-[#AA7000]" />
         <label for="setting-terms" class="text-xs text-[#7F766C] cursor-pointer">
-          I agree to the practice evaluation terms. Zero biometric recordings retained.
+          I agree with the practice session conditions. Zero biometric recordings retained.
         </label>
       </div>
 
@@ -382,12 +411,11 @@
 
 
   <!-- ========================================================================
-       SCREEN 2: LIVE INTERVIEW STAGE (Google Meet Architecture)
-       Uncluttered, with Pin/Focus Switching: Code, Interviewer, Candidate
+       SCREEN 2: LIVE INTERVIEW STAGE (Full-Screen, Draggable PiP, Google Meet Style)
        ======================================================================== -->
-  <div id="interview-stage" class="hidden h-full flex flex-col bg-[#120B04] text-white overflow-hidden">
+  <div id="interview-stage" class="hidden h-full flex flex-col bg-[#120B04] text-white overflow-hidden relative select-none">
     
-    <!-- Top Header Bar (Clean, Minimal, No Crammed Video Tiles) -->
+    <!-- Top Header Bar (Clean, Minimal) -->
     <header class="h-16 border-b border-[#2A1C0A] px-4 sm:px-6 flex items-center justify-between shrink-0 bg-[#120B04] z-30">
       <!-- Left: Role & Seniority -->
       <div class="flex items-center gap-3">
@@ -398,8 +426,8 @@
         </div>
       </div>
 
-      <!-- Center: Google Meet Focus Layout Switcher -->
-      <div class="flex items-center p-1 bg-[#1A1208] border border-[#3D2E15] rounded-full shadow-inner">
+      <!-- Center: Layout Switcher (Conditionally displayed) -->
+      <div id="stage-focus-switcher" class="flex items-center p-1 bg-[#1A1208] border border-[#3D2E15] rounded-full shadow-inner">
         <button id="focus-btn-code" onclick="setFocus('code')" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1.5" title="Focus on Code & Problem">
           <span class="material-symbols-outlined text-sm">code</span>
           <span class="hidden sm:inline">Code Focus</span>
@@ -418,12 +446,17 @@
         </button>
       </div>
 
-      <!-- Right: Timer, Exit & Submit Button -->
-      <div class="flex items-center gap-3">
+      <!-- Right: Fullscreen Toggle, Timer, Exit & Submit -->
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="toggleFullscreen()" id="btn-fullscreen-toggle" class="p-1.5 rounded-lg bg-[#1A1208] hover:bg-[#2A1D0B] border border-[#3D2E15] text-slate-300 hover:text-white transition-all flex items-center justify-center" title="Toggle Fullscreen">
+          <span class="material-symbols-outlined text-base" id="fullscreen-icon">fullscreen</span>
+        </button>
+
         <div class="px-3 py-1 rounded-lg bg-[#1A1208] border border-[#3D2E15] font-mono text-xs font-bold text-slate-200 flex items-center gap-1.5">
           <span class="material-symbols-outlined text-xs text-[#AA7000]">timer</span>
           <span id="stage-session-timer">03:55</span>
         </div>
+
         <button type="button" onclick="exitToSetup()" class="px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-200 text-xs font-bold transition-all flex items-center gap-1">
           <span class="w-1.5 h-1.5 rounded-sm bg-red-500"></span>
           <span>Exit</span>
@@ -436,18 +469,18 @@
 
 
     <!-- ======================================================================
-         MAIN STAGE: DYNAMIC GOOGLE MEET LAYOUT
+         MAIN STAGE: DYNAMIC WORKSPACE (Split IDE or Full Video Call)
          ====================================================================== -->
     <main class="flex-1 relative flex overflow-hidden w-full h-full" id="stage-main-workspace">
       
-      <!-- 1. CODE & PROBLEM PANE -->
+      <!-- 1. CODE & PROBLEM PANE (Visible only for Tech coding rounds) -->
       <div id="workspace-code-pane" class="flex-1 flex overflow-hidden transition-all duration-300">
         <!-- Left: Question & Problem -->
         <div class="w-[40%] min-w-[320px] max-w-[480px] border-r border-[#2A1C0A] flex flex-col bg-[#140D05]">
           <div class="p-4 border-b border-[#2A1C0A] flex items-center justify-between">
             <div>
-              <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">QUESTION 1 OF 3</div>
-              <h2 class="text-xs sm:text-sm font-semibold text-white mt-0.5">Write a solution for the situation below.</h2>
+              <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider" id="code-pane-q-number">QUESTION 1 OF 3</div>
+              <h2 class="text-xs sm:text-sm font-semibold text-white mt-0.5">Write a code solution for the situation below.</h2>
             </div>
             <button type="button" onclick="repeatCurrentQuestion()" class="w-7 h-7 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 flex items-center justify-center transition-all shadow-sm" title="Repeat Question Audio">
               <span class="material-symbols-outlined text-sm">replay</span>
@@ -467,8 +500,13 @@
           </div>
 
           <div class="p-3 border-t border-[#2A1C0A] bg-[#100A03] flex items-center justify-between text-[11px] text-slate-400">
-            <span>Acoustic speech normalization: Active</span>
-            <button onclick="executeCurrentCode()" class="px-3 py-1 rounded bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 font-bold flex items-center gap-1">
+            <div class="flex items-center gap-1.5">
+              <div class="stage-wave-bar"></div>
+              <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
+              <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+              <span class="text-[11px] text-slate-400 ml-1">Live Audio Channel</span>
+            </div>
+            <button onclick="executeCurrentCode()" class="px-3.5 py-1.5 rounded-lg bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 font-bold flex items-center gap-1 shadow-sm transition-all">
               <span class="material-symbols-outlined text-xs">play_arrow</span>
               <span>Execute</span>
             </button>
@@ -483,7 +521,8 @@
           </div>
 
           <div class="flex-1 flex overflow-hidden relative">
-            <div class="w-10 bg-[#120B04] border-r border-[#2A1C0A] py-3 text-right pr-2 text-xs font-mono text-[#5A452B] select-none">
+            <!-- Dynamic Line Numbers -->
+            <div id="editor-line-numbers" class="w-10 bg-[#120B04] border-r border-[#2A1C0A] py-3 text-right pr-2 text-xs font-mono text-[#5A452B] select-none overflow-hidden">
               1<br/>2<br/>3<br/>4<br/>5<br/>6<br/>7<br/>8<br/>9<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15
             </div>
             <textarea id="code-editor-textarea" spellcheck="false" class="flex-1 bg-transparent text-[#F0E6D2] p-3 text-xs sm:text-sm font-mono leading-relaxed border-0 focus:outline-none focus:ring-0 resize-none editor-textarea custom-scroll"></textarea>
@@ -497,92 +536,106 @@
       </div>
 
 
-      <!-- 2. GOOGLE MEET VIDEO CALL SPOTLIGHT PANE (Shown for Interviewer or Candidate Focus) -->
-      <div id="workspace-spotlight-pane" class="hidden flex-1 relative bg-[#120B04] flex flex-col items-center justify-center overflow-hidden p-6">
-        <!-- Spotlight Video Tile (Interviewer or Candidate) -->
-        <div class="relative w-full max-w-4xl h-[70%] max-h-[520px] rounded-3xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
+      <!-- 2. FULL-SCREEN 1-ON-1 VIDEO CALL PANE (Interviewer or Candidate Spotlight) -->
+      <div id="workspace-spotlight-pane" class="hidden flex-1 relative bg-[#120B04] flex items-center justify-center overflow-hidden p-3 sm:p-6">
+        
+        <!-- Video Container: Takes maximum comfortable viewport space -->
+        <div id="spotlight-frame-container" class="relative w-full max-w-5xl h-full max-h-[82vh] rounded-3xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
+          
           <img id="spotlight-img" src="" alt="Spotlight" class="w-full h-full object-cover object-top natural-face-anim" />
           <video id="spotlight-video" autoplay muted playsinline class="w-full h-full object-cover hidden"></video>
-          <div id="spotlight-video-fallback" class="hidden w-full h-full flex flex-col items-center justify-center text-slate-400">
-            <span class="material-symbols-outlined text-4xl mb-2 text-slate-500">account_circle</span>
-            <span class="text-sm font-semibold">Your Camera (Candidate)</span>
+          
+          <div id="spotlight-video-fallback" class="hidden w-full h-full flex flex-col items-center justify-center text-slate-400 bg-[#140D05]">
+            <span class="material-symbols-outlined text-6xl mb-3 text-slate-500">account_circle</span>
+            <span class="text-base font-semibold text-slate-300">Candidate Camera Feed</span>
+            <span class="text-xs text-slate-500 mt-1">Audio stream active</span>
           </div>
 
-          <!-- Spotlight Name Tag & Pin status -->
-          <div class="absolute bottom-4 left-4 px-3.5 py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2">
+          <!-- Top-Left Evaluator Tag -->
+          <div class="absolute top-5 left-5 px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20">
             <span class="w-2 h-2 rounded-full bg-[#4F6B2D] animate-ping"></span>
-            <span id="spotlight-name-tag">Kabir (Interviewer)</span>
+            <span id="spotlight-name-tag">Interviewer</span>
           </div>
-        </div>
 
-        <!-- Translucent Down Question Sheet -->
-        <div class="w-full max-w-4xl bg-[#1A1208]/90 backdrop-blur-xl border border-[#3D2E15] rounded-3xl p-5 shadow-2xl mt-4 z-20">
-          <div class="flex items-center justify-between text-xs mb-1.5">
-            <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="spotlight-q-title">QUESTION 1 • TECHNICAL</span>
-            <button type="button" onclick="repeatCurrentQuestion()" class="px-3.5 py-1 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/40 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
-              <span class="material-symbols-outlined text-sm">replay</span>
-              <span>Repeat Question</span>
-            </button>
-          </div>
-          <p id="spotlight-question-text" class="text-sm sm:text-base text-white font-semibold leading-relaxed mb-3">
-            "Write a function to remove the minimum number of invalid parentheses to make the input string valid."
-          </p>
-          <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-[#3D2E15]">
-            <div class="flex items-center gap-1.5">
-              <div class="stage-wave-bar"></div>
-              <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-              <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
-              <span class="text-[11px] ml-1">Candidate audio channel active</span>
+          <!-- FLOATING TRANSLUCENT QUESTION BOX HOVERING AT BOTTOM OF VIDEO (Inside the Video) -->
+          <div id="spotlight-question-overlay" class="absolute bottom-5 left-5 right-5 bg-black/75 backdrop-blur-xl border border-white/15 rounded-2xl p-4 sm:p-5 shadow-2xl z-20 transition-all duration-300">
+            <div class="flex items-center justify-between text-xs mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
+                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="spotlight-q-title">QUESTION 1 • WARM UP</span>
+              </div>
+              <button type="button" onclick="repeatCurrentQuestion()" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-semibold transition-all flex items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined text-sm">replay</span>
+                <span>Repeat Question</span>
+              </button>
             </div>
-            <button onclick="setFocus('code')" class="text-xs font-bold text-[#AA7000] hover:text-white flex items-center gap-1">
-              <span>Switch to Code View</span>
-              <span class="material-symbols-outlined text-xs">arrow_forward</span>
-            </button>
+            <p id="spotlight-question-text" class="text-sm sm:text-base text-white font-medium leading-relaxed mb-3">
+              "Tell me about a challenging distributed system failure you diagnosed and resolved."
+            </p>
+            <div class="flex items-center justify-between text-xs text-slate-300 pt-2 border-t border-white/10">
+              <div class="flex items-center gap-1.5">
+                <div class="stage-wave-bar"></div>
+                <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
+                <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+                <span class="text-[11px] ml-1 text-slate-300">Voice channel active • Zero pronunciation bias</span>
+              </div>
+              <div id="spotlight-switch-code-cta" class="hidden">
+                <button onclick="setFocus('code')" class="text-xs font-bold text-[#AA7000] hover:text-white flex items-center gap-1">
+                  <span>Open Code Editor</span>
+                  <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
 
-      <!-- 3. GOOGLE MEET FLOATING VIDEO TILES (Docked in corner during Code Focus, or Side Rail in Split) -->
-      <div id="meet-video-dock" class="absolute top-4 right-4 z-25 flex flex-col gap-2.5 transition-all duration-300">
-        
-        <!-- Interviewer Google Meet Tile -->
-        <div id="tile-interviewer" class="relative w-44 h-28 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl group cursor-pointer" onclick="setFocus('interviewer')" title="Click to spotlight interviewer">
-          <img id="dock-interviewer-img" src="" alt="Interviewer" class="w-full h-full object-cover object-top natural-face-anim" />
-          <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
-          
-          <!-- Name & Pin Icon in Google Meet Style -->
-          <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between">
-            <span id="dock-interviewer-name" class="truncate font-semibold">Kabir</span>
-            <div class="flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D]"></span>
-              <button onclick="event.stopPropagation(); setFocus('interviewer')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Spotlight Interviewer">
-                <span class="material-symbols-outlined text-xs">push_pin</span>
-              </button>
-            </div>
-          </div>
+      <!-- ======================================================================
+           3. DRAGGABLE PICTURE-IN-PICTURE (PiP) VIDEO TILES
+           Freely movable anywhere on screen; grab-and-drop
+           ====================================================================== -->
+      <!-- Interviewer PiP Frame -->
+      <div id="tile-interviewer" class="draggable-pip w-48 h-32 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl z-40 group" style="top: 20px; right: 24px;">
+        <div class="pip-drag-handle absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between px-2 text-[10px] text-slate-300 opacity-60 group-hover:opacity-100 transition-opacity">
+          <span class="font-bold tracking-tight">Interviewer</span>
+          <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
         </div>
-
-        <!-- Candidate Google Meet Tile -->
-        <div id="tile-candidate" class="relative w-44 h-28 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl group cursor-pointer" onclick="setFocus('candidate')" title="Click to spotlight yourself">
-          <video id="dock-candidate-video" autoplay muted playsinline class="w-full h-full object-cover hidden"></video>
-          <div id="dock-candidate-fallback" class="w-full h-full flex flex-col items-center justify-center bg-[#170F06] text-slate-400">
-            <span class="material-symbols-outlined text-2xl text-slate-500 mb-0.5">account_circle</span>
-            <span class="text-[10px] font-medium text-slate-300">Candidate (You)</span>
-          </div>
-
-          <!-- Red Recording Badge & Pin -->
-          <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between">
-            <div class="flex items-center gap-1 text-[9px] text-red-400 font-bold">
-              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-              <span>REC</span>
-            </div>
-            <button onclick="event.stopPropagation(); setFocus('candidate')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Spotlight Your Camera">
+        <img id="dock-interviewer-img" src="" alt="Interviewer" class="w-full h-full object-cover object-top natural-face-anim pointer-events-none" />
+        <div class="absolute inset-0 bg-black/15 group-hover:bg-transparent transition-colors pointer-events-none"></div>
+        
+        <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
+          <span id="dock-interviewer-name" class="truncate font-semibold">Kabir</span>
+          <div class="flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D]"></span>
+            <button onclick="pinTile('interviewer')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Interviewer Fullscreen">
               <span class="material-symbols-outlined text-xs">push_pin</span>
             </button>
           </div>
         </div>
+      </div>
 
+      <!-- Candidate PiP Frame -->
+      <div id="tile-candidate" class="draggable-pip w-48 h-32 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl z-40 group" style="top: 165px; right: 24px;">
+        <div class="pip-drag-handle absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between px-2 text-[10px] text-slate-300 opacity-60 group-hover:opacity-100 transition-opacity">
+          <span class="font-bold tracking-tight">You (Candidate)</span>
+          <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
+        </div>
+        <video id="dock-candidate-video" autoplay muted playsinline class="w-full h-full object-cover hidden pointer-events-none"></video>
+        <div id="dock-candidate-fallback" class="w-full h-full flex flex-col items-center justify-center bg-[#170F06] text-slate-400 pointer-events-none">
+          <span class="material-symbols-outlined text-3xl text-slate-500 mb-0.5">account_circle</span>
+          <span class="text-[10px] font-medium text-slate-300">You (Candidate)</span>
+        </div>
+
+        <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
+          <div class="flex items-center gap-1 text-[9px] text-red-400 font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+            <span>REC</span>
+          </div>
+          <button onclick="pinTile('candidate')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Your Camera Fullscreen">
+            <span class="material-symbols-outlined text-xs">push_pin</span>
+          </button>
+        </div>
       </div>
 
     </main>
@@ -670,6 +723,7 @@
 
     // Focus View Mode: 'code' | 'interviewer' | 'candidate' | 'split'
     let currentFocusMode = 'code';
+    let isCurrentSessionTech = true;
 
     function switchMode(mode) {
       const tabs = ['role', 'company', 'jd', 'custom'];
@@ -795,7 +849,7 @@
               <span class="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[#FAF6EE] text-[#7F766C] border border-[#E8DFD0]">${sub.level}</span>
             </div>
             <h3 class="text-sm font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors">${sub.title}</h3>
-            <p class="text-xs text-[#7F766C] mt-1">${comp.name} Specific Technical &amp; System Rubric</p>
+            <p class="text-xs text-[#7F766C] mt-1">${comp.name} Specific Rubric</p>
           </div>
           <div class="mt-4 pt-2.5 border-t border-[#E8DFD0]/60 flex items-center justify-between text-xs">
             <span class="text-[#8C7B6B]">Round: <strong>${sub.track === 'Tech' ? 'Coding' : 'Role Related'}</strong></span>
@@ -813,7 +867,6 @@
       document.getElementById('company-catalog-view').classList.remove('hidden');
     }
 
-    // Sleek Circular Evaluator Cards with Authentic Ethnicity Portraits
     function renderEvaluators() {
       const grid = document.getElementById('evaluator-grid');
       grid.innerHTML = '';
@@ -838,7 +891,7 @@
       });
     }
 
-    // Modal Opening: ONLY SHOW CODING LANGUAGE WHEN TECH IS CHOSEN
+    // Modal Opening: STRICTLY ONLY SHOW CODING LANGUAGE WHEN TECH ROUND IS CHOSEN
     function openInterviewConfig(title, track, levels = null) {
       pendingTitle = title;
       pendingTrack = track;
@@ -885,14 +938,7 @@
       }
 
       renderEvaluators();
-
-      // STRICT CHECK: ONLY SHOW LANGUAGE OPTION IF TECH IS CHOSEN!
-      const langWrap = document.getElementById('modal-coding-language-wrapper');
-      if (pendingTrack === 'Tech') {
-        langWrap.classList.remove('hidden');
-      } else {
-        langWrap.classList.add('hidden');
-      }
+      updateLanguageSelectorVisibility();
 
       document.getElementById('interview-config-modal').classList.remove('hidden');
     }
@@ -910,10 +956,14 @@
           btn.className = "round-btn text-left p-3 rounded-2xl border border-[#E8DFD0] hover:border-[#AA7000] bg-[#FFFDF8] transition-all cursor-pointer";
         }
       });
+      updateLanguageSelectorVisibility();
+    }
 
-      // Maintain strict check: Only show language if pendingTrack is Tech
+    function updateLanguageSelectorVisibility() {
+      // ONLY SHOW LANGUAGE SELECTOR WHEN: Track is Tech AND Round is Coding or Role Related
+      const isTechRound = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related'));
       const langWrap = document.getElementById('modal-coding-language-wrapper');
-      if (pendingTrack === 'Tech') {
+      if (isTechRound) {
         langWrap.classList.remove('hidden');
       } else {
         langWrap.classList.add('hidden');
@@ -927,10 +977,32 @@
       }
     }
 
+    // Toggle Fullscreen
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+        document.getElementById('fullscreen-icon').textContent = 'fullscreen_exit';
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+        document.getElementById('fullscreen-icon').textContent = 'fullscreen';
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      const icon = document.getElementById('fullscreen-icon');
+      if (icon) {
+        icon.textContent = document.fullscreenElement ? 'fullscreen_exit' : 'fullscreen';
+      }
+    });
+
     // Start Practice Session
     function confirmStartPractice() {
       if (!document.getElementById('setting-terms').checked) {
-        alert("Please accept the evaluation guidelines to proceed.");
+        alert("Please accept the terms to proceed.");
         return;
       }
 
@@ -942,26 +1014,58 @@
       document.getElementById('stage-role-title').textContent = pendingTitle;
       document.getElementById('stage-role-level').textContent = pendingLevel;
 
+      // Determine if technical code interface is required
+      isCurrentSessionTech = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related'));
+
       const langBadge = document.getElementById('stage-lang-badge');
-      if (pendingTrack === 'Tech') {
+      const focusSwitcher = document.getElementById('stage-focus-switcher');
+      const codeCta = document.getElementById('spotlight-switch-code-cta');
+
+      if (isCurrentSessionTech) {
         langBadge.textContent = selectedCodingLanguage.split(' ')[0];
         langBadge.classList.remove('hidden');
+        if (focusSwitcher) {
+          document.getElementById('focus-btn-code').classList.remove('hidden');
+          document.getElementById('focus-btn-split').classList.remove('hidden');
+        }
+        if (codeCta) codeCta.classList.remove('hidden');
       } else {
         langBadge.classList.add('hidden');
+        // For non-tech, hide Code and Split focus buttons
+        if (focusSwitcher) {
+          document.getElementById('focus-btn-code').classList.add('hidden');
+          document.getElementById('focus-btn-split').classList.add('hidden');
+        }
+        if (codeCta) codeCta.classList.add('hidden');
       }
 
-      // Populate Interviewer and Candidate in Google Meet Dock & Spotlight
+      // Populate Interviewer and Candidate in PiP Tiles & Spotlight
       document.getElementById('dock-interviewer-img').src = chosenInterviewer.avatar;
       document.getElementById('dock-interviewer-name').textContent = chosenInterviewer.name;
       document.getElementById('spotlight-img').src = chosenInterviewer.avatar;
       document.getElementById('spotlight-name-tag').textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
 
-      // Setup questions
-      currentQuestions = [
-        "Write a function to remove the minimum number of invalid parentheses to make the input string valid. Return all possible results.",
-        "Given an array of intervals, merge all overlapping intervals and return an array of non-overlapping intervals.",
-        "How would you design a distributed consensus replication layer to guarantee high availability across multi-region clusters?"
-      ];
+      // Setup questions based on track
+      if (isCurrentSessionTech) {
+        currentQuestions = [
+          "Write a function to remove the minimum number of invalid parentheses to make the input string valid. Return all possible results.",
+          "Given an array of intervals, merge all overlapping intervals and return an array of non-overlapping intervals.",
+          "How would you design a distributed consensus replication layer to guarantee high availability across multi-region clusters?"
+        ];
+      } else if (pendingTrack === 'Management') {
+        currentQuestions = [
+          "Describe a situation where engineering priorities conflicted with product release deadlines. How did you resolve the trade-off?",
+          "How do you evaluate and develop low-performing senior engineers while maintaining team delivery momentum?",
+          "Walk me through your framework for calculating engineering ROI on major technical debt refactor initiatives."
+        ];
+      } else {
+        currentQuestions = [
+          "Tell me about a project where you had to quickly master an unfamiliar domain or technology under a tight deadline.",
+          "Describe a time when you received constructive feedback that changed your working methodology.",
+          "How do you approach prioritizing multiple competing deliverables when stakeholders have conflicting urgency?"
+        ];
+      }
+
       currentQIndex = 0;
       updateQuestionView(0);
 
@@ -970,15 +1074,27 @@
       stage.classList.remove('hidden');
       stage.classList.add('flex');
 
-      // Start in Code Focus if Tech, or Interviewer Focus if Non-Tech
-      if (pendingTrack === 'Tech') {
+      // Request Fullscreen automatically on start
+      try {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } catch(e) {}
+
+      // CONDITIONAL START VIEW:
+      // Non-tech opens directly into 1-on-1 full-screen video call!
+      // Tech opens in Code Focus
+      if (isCurrentSessionTech) {
         setFocus('code');
       } else {
         setFocus('interviewer');
       }
 
       initCodeEditorContent();
-      startWebcam();
+      initHardwareMedia();
+
+      // Reset PiP positions to defaults
+      resetPipPositions();
 
       remainingSeconds = 4 * 60;
       clearInterval(timerInterval);
@@ -992,11 +1108,15 @@
 
     // Google Meet Focus Switching: 'code' | 'interviewer' | 'candidate' | 'split'
     function setFocus(mode) {
+      if (!isCurrentSessionTech && (mode === 'code' || mode === 'split')) {
+        mode = 'interviewer';
+      }
       currentFocusMode = mode;
 
       const codePane = document.getElementById('workspace-code-pane');
       const spotlightPane = document.getElementById('workspace-spotlight-pane');
-      const meetDock = document.getElementById('meet-video-dock');
+      const tileInterviewer = document.getElementById('tile-interviewer');
+      const tileCandidate = document.getElementById('tile-candidate');
 
       const spotImg = document.getElementById('spotlight-img');
       const spotVideo = document.getElementById('spotlight-video');
@@ -1018,18 +1138,15 @@
       });
 
       if (mode === 'code') {
-        // Main view: Code Editor & Problem
         codePane.classList.remove('hidden');
         codePane.classList.add('flex');
-        codePane.className = "flex-1 flex overflow-hidden";
         spotlightPane.classList.add('hidden');
 
-        // Meet dock: Compact floating tiles in top right
-        meetDock.className = "absolute top-4 right-4 z-25 flex flex-col gap-2.5";
-        meetDock.classList.remove('hidden');
+        // Show both floating draggable PiP tiles
+        tileInterviewer.classList.remove('hidden');
+        tileCandidate.classList.remove('hidden');
       } 
       else if (mode === 'interviewer') {
-        // Main view: Interviewer Video Spotlight
         codePane.classList.add('hidden');
         codePane.classList.remove('flex');
         spotlightPane.classList.remove('hidden');
@@ -1041,13 +1158,11 @@
         spotImg.src = chosenInterviewer.avatar;
         spotTag.textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
 
-        // Meet dock shows candidate thumbnail only in corner
-        meetDock.className = "absolute top-8 right-8 z-25 flex flex-col";
-        document.getElementById('tile-interviewer').classList.add('hidden');
-        document.getElementById('tile-candidate').classList.remove('hidden');
+        // In interviewer spotlight: hide interviewer PiP, candidate PiP stays draggable
+        tileInterviewer.classList.add('hidden');
+        tileCandidate.classList.remove('hidden');
       }
       else if (mode === 'candidate') {
-        // Main view: Candidate Video Spotlight (Self View Practice)
         codePane.classList.add('hidden');
         codePane.classList.remove('flex');
         spotlightPane.classList.remove('hidden');
@@ -1063,32 +1178,39 @@
           spotVideo.classList.add('hidden');
           spotFallback.classList.remove('hidden');
         }
-        spotTag.textContent = "You (Candidate Stream - 720p)";
+        spotTag.textContent = "You (Candidate Stream)";
 
-        // Meet dock shows interviewer thumbnail in corner
-        meetDock.className = "absolute top-8 right-8 z-25 flex flex-col";
-        document.getElementById('tile-interviewer').classList.remove('hidden');
-        document.getElementById('tile-candidate').classList.add('hidden');
+        // In candidate spotlight: hide candidate PiP, interviewer PiP stays draggable
+        tileInterviewer.classList.remove('hidden');
+        tileCandidate.classList.add('hidden');
       }
       else if (mode === 'split') {
-        // Split view: Code pane + Meet video tiles as a vertical column
         codePane.classList.remove('hidden');
         codePane.classList.add('flex');
-        codePane.className = "flex-1 flex overflow-hidden pr-48";
         spotlightPane.classList.add('hidden');
 
-        meetDock.className = "absolute top-4 right-4 bottom-4 z-25 flex flex-col gap-3 justify-center";
-        document.getElementById('tile-interviewer').classList.remove('hidden');
-        document.getElementById('tile-candidate').classList.remove('hidden');
+        tileInterviewer.classList.remove('hidden');
+        tileCandidate.classList.remove('hidden');
       }
+    }
+
+    function pinTile(target) {
+      setFocus(target);
     }
 
     function updateQuestionView(idx) {
       currentQIndex = idx;
       const q = currentQuestions[idx] || "";
+      const qNum = "QUESTION " + (idx + 1) + " OF " + currentQuestions.length;
+      
+      const codeQNum = document.getElementById('code-pane-q-number');
       const techDesc = document.getElementById('tech-problem-description');
+      const spotQTitle = document.getElementById('spotlight-q-title');
       const spotQ = document.getElementById('spotlight-question-text');
+
+      if (codeQNum) codeQNum.textContent = qNum;
       if (techDesc) techDesc.textContent = q;
+      if (spotQTitle) spotQTitle.textContent = qNum + " • " + (isCurrentSessionTech ? "TECHNICAL" : "INTERVIEW");
       if (spotQ) spotQ.textContent = '"' + q + '"';
       speakQuestion(q);
     }
@@ -1100,29 +1222,102 @@
 
       if (lang.includes("Python")) {
         filename = "solution.py";
-        code = `def minRemoveToMakeValid(s: str) -> str:\n    # Write your solution here\n    pass\n`;
+        code = `def minRemoveToMakeValid(s: str) -> str:
+    # Write your solution here
+    pass
+`;
       } else if (lang.includes("Java")) {
         filename = "Solution.java";
-        code = `class Solution {\n    public String minRemoveToMakeValid(String s) {\n        return "";\n    }\n}\n`;
+        code = `class Solution {
+    public String minRemoveToMakeValid(String s) {
+        return "";
+    }
+}
+`;
       } else if (lang.includes("Go")) {
         filename = "solution.go";
-        code = `package main\n\nfunc minRemoveToMakeValid(s string) string {\n    return ""\n}\n`;
+        code = `package main
+
+func minRemoveToMakeValid(s string) string {
+    return ""
+}
+`;
       } else if (lang.includes("TypeScript") || lang.includes("JavaScript")) {
         filename = "solution.ts";
-        code = `function minRemoveToMakeValid(s: string): string {\n  return "";\n}\n`;
+        code = `function minRemoveToMakeValid(s: string): string {
+  return "";
+}
+`;
+      } else if (lang.includes("Rust")) {
+        filename = "solution.rs";
+        code = `pub fn min_remove_to_make_valid(s: String) -> String {
+    String::new()
+}
+`;
+      } else if (lang.includes("SQL")) {
+        filename = "query.sql";
+        code = `-- Write SQL Query below
+SELECT id, name
+FROM candidate_logs
+ORDER BY timestamp DESC;
+`;
       } else {
         filename = "solution.cpp";
-        code = `#include <iostream>\n#include <string>\n\nstd::string minRemoveToMakeValid(std::string s) {\n    return "";\n}\n`;
+        code = `#include <iostream>
+#include <string>
+
+std::string minRemoveToMakeValid(std::string s) {
+    return "";
+}
+`;
       }
 
       document.getElementById('editor-filename').textContent = filename;
       document.getElementById('editor-lang-indicator').textContent = lang;
-      document.getElementById('code-editor-textarea').value = code;
+      
+      const textarea = document.getElementById('code-editor-textarea');
+      textarea.value = code;
+      updateLineNumbers();
+    }
+
+    // Dynamic Line Numbers & Scroll Sync
+    function updateLineNumbers() {
+      const textarea = document.getElementById('code-editor-textarea');
+      const lineNumbers = document.getElementById('editor-line-numbers');
+      if (!textarea || !lineNumbers) return;
+
+      const lines = textarea.value.split('
+').length;
+      const totalCount = Math.max(lines, 15);
+      lineNumbers.innerHTML = Array.from({ length: totalCount }, (_, i) => i + 1).join('<br/>');
+    }
+
+    const editorTextarea = document.getElementById('code-editor-textarea');
+    if (editorTextarea) {
+      editorTextarea.addEventListener('input', updateLineNumbers);
+      editorTextarea.addEventListener('scroll', () => {
+        const lineNumbers = document.getElementById('editor-line-numbers');
+        if (lineNumbers) lineNumbers.scrollTop = editorTextarea.scrollTop;
+      });
+
+      // Tab indentation support
+      editorTextarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = editorTextarea.selectionStart;
+          const end = editorTextarea.selectionEnd;
+          editorTextarea.value = editorTextarea.value.substring(0, start) + "  " + editorTextarea.value.substring(end);
+          editorTextarea.selectionStart = editorTextarea.selectionEnd = start + 2;
+          updateLineNumbers();
+        }
+      });
     }
 
     function executeCurrentCode() {
       const consoleOut = document.getElementById('code-console-output');
       consoleOut.innerHTML += `<div class="text-[#E8A338] mt-1">[Build] Compiling ${selectedCodingLanguage}...</div>`;
+      consoleOut.scrollTop = consoleOut.scrollHeight;
+
       setTimeout(() => {
         consoleOut.innerHTML += `<div class="text-white">Compilation successful. Running test cases:</div>`;
         consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 1: input="a)bc(d)" -> expected="abc(d)" (Passed, 2ms)</div>`;
@@ -1136,6 +1331,9 @@
       if (currentQIndex < currentQuestions.length - 1) {
         updateQuestionView(currentQIndex + 1);
       } else {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
         window.location.href = "report.html";
       }
     }
@@ -1154,20 +1352,31 @@
       }
     }
 
-    function startWebcam() {
+    // Audio Mandatory, Video Optional Media Initialization
+    function initHardwareMedia() {
+      const wantVideo = document.getElementById('setting-video').checked;
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        navigator.mediaDevices.getUserMedia({ audio: true, video: wantVideo })
           .then(stream => {
             const dockVid = document.getElementById('dock-candidate-video');
             const dockFb = document.getElementById('dock-candidate-fallback');
-            if (dockVid) {
-              dockVid.srcObject = stream;
-              dockVid.classList.remove('hidden');
+            if (wantVideo && stream.getVideoTracks().length > 0) {
+              if (dockVid) {
+                dockVid.srcObject = stream;
+                dockVid.classList.remove('hidden');
+              }
               if (dockFb) dockFb.classList.add('hidden');
+            } else {
+              if (dockVid) dockVid.classList.add('hidden');
+              if (dockFb) dockFb.classList.remove('hidden');
             }
           })
           .catch(e => {
-            console.log("Webcam permission optional or simulated", e);
+            console.log("Audio/Video capture notice:", e);
+            const dockVid = document.getElementById('dock-candidate-video');
+            const dockFb = document.getElementById('dock-candidate-fallback');
+            if (dockVid) dockVid.classList.add('hidden');
+            if (dockFb) dockFb.classList.remove('hidden');
           });
       }
     }
@@ -1175,10 +1384,112 @@
     function exitToSetup() {
       clearInterval(timerInterval);
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
       document.getElementById('interview-stage').classList.add('hidden');
       document.getElementById('interview-stage').classList.remove('flex');
       document.getElementById('setup-screen').classList.remove('hidden');
     }
+
+    // ========================================================================
+    // DRAGGABLE PICTURE-IN-PICTURE (PiP) CONTROLLER
+    // Allows moving tiles anywhere on screen with boundary clamping
+    // ========================================================================
+    function makePipDraggable(el) {
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let initialLeft = 0, initialTop = 0;
+      let hasMovedSignificantly = false;
+
+      const handle = el.querySelector('.pip-drag-handle') || el;
+
+      handle.addEventListener('pointerdown', (e) => {
+        // Ignore if clicking on button inside handle
+        if (e.target.closest('button')) return;
+
+        isDragging = true;
+        hasMovedSignificantly = false;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        const rect = el.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        el.style.left = initialLeft + 'px';
+        el.style.top = initialTop + 'px';
+        el.style.right = 'auto';
+        el.style.bottom = 'auto';
+
+        el.classList.add('is-dragging');
+        handle.setPointerCapture(e.pointerId);
+      });
+
+      handle.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+
+        if (Math.hypot(deltaX, deltaY) > 5) {
+          hasMovedSignificantly = true;
+        }
+
+        const workspace = document.getElementById('stage-main-workspace') || document.body;
+        const wsRect = workspace.getBoundingClientRect();
+
+        let newLeft = initialLeft + deltaX;
+        let newTop = initialTop + deltaY;
+
+        // Clamp inside workspace
+        const minLeft = wsRect.left + 8;
+        const maxLeft = wsRect.right - el.offsetWidth - 8;
+        const minTop = wsRect.top + 8;
+        const maxTop = wsRect.bottom - el.offsetHeight - 8;
+
+        newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+        newTop = Math.max(minTop, Math.min(newTop, maxTop));
+
+        el.style.left = newLeft + 'px';
+        el.style.top = newTop + 'px';
+      });
+
+      const stopDrag = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        el.classList.remove('is-dragging');
+        try {
+          handle.releasePointerCapture(e.pointerId);
+        } catch(err) {}
+      };
+
+      handle.addEventListener('pointerup', stopDrag);
+      handle.addEventListener('pointercancel', stopDrag);
+    }
+
+    function resetPipPositions() {
+      const tileInterviewer = document.getElementById('tile-interviewer');
+      const tileCandidate = document.getElementById('tile-candidate');
+      if (tileInterviewer) {
+        tileInterviewer.style.top = '20px';
+        tileInterviewer.style.right = '24px';
+        tileInterviewer.style.left = 'auto';
+        tileInterviewer.style.bottom = 'auto';
+      }
+      if (tileCandidate) {
+        tileCandidate.style.top = '165px';
+        tileCandidate.style.right = '24px';
+        tileCandidate.style.left = 'auto';
+        tileCandidate.style.bottom = 'auto';
+      }
+    }
+
+    // Initialize Draggability
+    const tileInterviewer = document.getElementById('tile-interviewer');
+    const tileCandidate = document.getElementById('tile-candidate');
+    if (tileInterviewer) makePipDraggable(tileInterviewer);
+    if (tileCandidate) makePipDraggable(tileCandidate);
 
     // Initial render
     renderRoles();
