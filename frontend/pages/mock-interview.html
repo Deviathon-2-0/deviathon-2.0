@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mock Interview Session | IMAIRA+</title>
-  <meta name="description" content="Live AI mock interview stage with accent-agnostic evaluation and real-time guidance." />
+  <title>Mock Interview | IMAIRA+</title>
+  <meta name="description" content="AI mock interview selection and live evaluation stage with accent-agnostic scoring." />
 
   <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/style.css" />
 
   <style>
-    /* Waveform Animation on Dark Stage */
+    /* Waveform Animation on Dark Live Stage */
     @keyframes stage-wave {
       0%, 100% { height: 18px; opacity: 0.45; }
       50% { height: 78px; opacity: 1; }
@@ -31,254 +31,854 @@
       background: #AA7000;
       animation: stage-wave 1.1s ease-in-out infinite;
     }
+    /* Custom Scrollbar for Card Grids */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #F2EBD8;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #D8CEB8;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #AA7000;
+    }
   </style>
 </head>
 
-<body class="bg-[#1A1208] text-white font-sans antialiased h-full flex flex-col overflow-hidden selection:bg-[#AA7000] selection:text-white">
+<body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased h-full flex flex-col selection:bg-[#AA7000] selection:text-white">
 
   <!-- ========================================================================
-       TOP HEADER BAR
+       SCREEN 1: SETUP & TRACK SELECTOR (Warm Kinetic Apple-Style Interface)
        ======================================================================== -->
-  <header class="h-16 border-b border-[#3D2E15] px-6 flex items-center justify-between shrink-0 bg-[#1A1208]/90 backdrop-blur-md z-30">
-    <!-- Left: Brand Logo & Session Title -->
-    <div class="flex items-center gap-4">
-      <a href="../index.html" class="flex items-center gap-1.5">
-        <span class="text-xl font-black tracking-tight text-white">IMAIRA<span class="text-[#AA7000]">+</span></span>
-      </a>
-      <div class="h-4 w-px bg-[#3D2E15] hidden sm:block"></div>
-      <div class="hidden sm:flex items-center gap-2 text-xs text-slate-300">
-        <span class="font-bold text-white">Staff Distributed Systems</span>
-        <span class="text-slate-500">•</span>
-        <span class="px-2.5 py-0.5 rounded-full bg-[#4F6B2D]/20 text-[#4F6B2D] border border-[#4F6B2D]/30 font-semibold text-[11px] flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D] animate-pulse"></span>
-          Live Session
-        </span>
-      </div>
-    </div>
-
-    <!-- Right: Timer, Exit Link & End Session -->
-    <div class="flex items-center gap-4">
-      <!-- Session Timer -->
-      <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#251A0A] border border-[#3D2E15] text-xs font-mono font-bold text-slate-200">
-        <span class="material-symbols-outlined text-sm text-[#AA7000]">timer</span>
-        <span id="session-timer">04:23</span>
+  <div id="setup-screen" class="min-h-full flex flex-col w-full">
+    <!-- Top Navigation -->
+    <header class="h-16 border-b border-[#E8DFD0] px-6 lg:px-12 flex items-center justify-between shrink-0 bg-[#FAF6EE]/90 backdrop-blur-md sticky top-0 z-40">
+      <div class="flex items-center gap-6">
+        <a href="../index.html" class="flex items-center gap-1.5 focus:outline-none">
+          <span class="text-xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
+        </a>
+        <div class="h-4 w-px bg-[#E8DFD0] hidden sm:block"></div>
+        <span class="text-xs font-semibold text-[#8C7B6B] hidden sm:inline">Mock Interview Setup</span>
       </div>
 
-      <a href="dashboard.html" class="text-xs text-slate-400 hover:text-white transition-colors hidden md:inline-block">
-        Dashboard
-      </a>
-
-      <!-- End Button -->
-      <a href="report.html" class="px-4 py-1.5 rounded-full bg-[#917247]/20 hover:bg-[#917247]/40 text-[#AA7000] border border-[#AA7000]/40 text-xs font-bold transition-all flex items-center gap-1">
-        <span>End Session</span>
-      </a>
-    </div>
-  </header>
-
-  <!-- ========================================================================
-       MAIN INTERVIEW STAGE (Full-Width Video Area, No Sidebar)
-       ======================================================================== -->
-  <main class="flex-1 relative w-full h-full bg-[#251A0A] flex items-center justify-center overflow-hidden">
-    <!-- Ambient Radial Glow Effects -->
-    <div class="absolute w-[600px] h-[600px] rounded-full bg-[#AA7000]/15 blur-3xl pointer-events-none"></div>
-    <div class="absolute w-[450px] h-[450px] rounded-full bg-[#F5A623]/10 blur-3xl pointer-events-none"></div>
-
-    <!-- AI Interviewer Visual (Abstract Avatar & Waveform Animation) -->
-    <div class="relative z-10 flex flex-col items-center justify-center text-center px-6">
-      <!-- Avatar Glow Ring -->
-      <div class="w-32 h-32 rounded-full bg-gradient-to-tr from-[#AA7000]/30 to-[#F5A623]/20 border border-[#AA7000]/50 flex items-center justify-center shadow-glow-amber relative mb-4">
-        <div class="w-24 h-24 rounded-full bg-[#1A1208] border border-[#AA7000]/60 flex items-center justify-center text-4xl shadow-inner">
-          <span class="material-symbols-outlined text-4xl text-[#AA7000]">graphic_eq</span>
-        </div>
+      <div class="flex items-center gap-4">
+        <a href="dashboard.html" class="px-4 py-1.5 rounded-full border border-[#E8DFD0] bg-[#FFFDF8] hover:bg-[#F2EBD8] text-[#2C1F0E] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-sm text-[#8C7B6B]">dashboard</span>
+          <span>Dashboard</span>
+        </a>
       </div>
+    </header>
 
-      <!-- Waveform Animation Bars (Coral) -->
-      <div class="flex items-center justify-center gap-2 h-20 my-2">
-        <div class="stage-wave-bar" style="animation-delay: 0.1s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.35s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.05s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.45s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.15s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.3s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.1s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.25s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.08s"></div>
-        <div class="stage-wave-bar" style="animation-delay: 0.32s"></div>
-      </div>
-
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A1208]/80 border border-[#3D2E15] text-xs font-semibold text-slate-300 mt-2">
-        <span class="w-2 h-2 rounded-full bg-[#4F6B2D] animate-ping"></span>
-        <span>IMAIRA+ AI Evaluator • Listening actively</span>
-      </div>
-    </div>
-
-    <!-- ======================================================================
-         CURRENT QUESTION OVERLAY (Translucent Frosted Glass Pill at Bottom Center)
-         ====================================================================== -->
-    <div class="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 w-[92%] max-w-4xl z-20">
-      <div class="bg-[#1A1208]/85 backdrop-blur-xl border border-[#3D2E15] rounded-3xl p-5 sm:p-6 shadow-2xl">
-        <div class="flex items-center justify-between text-xs mb-3">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#AA7000] text-base">psychology</span>
-            <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]">Current Question</span>
-          </div>
-          <span id="question-counter" class="font-mono text-slate-300 font-bold bg-white/10 px-3 py-1 rounded-full text-xs">
-            Q 2 of 8
-          </span>
-        </div>
-        <p id="current-question-text" class="text-base sm:text-lg md:text-xl text-white font-semibold leading-relaxed">
-          "Tell me about a distributed system where you handled data replication under network partitions. How did you maintain consistency and avoid split-brain scenarios?"
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 flex flex-col">
+      <!-- Section Title & Subheading -->
+      <div class="text-center max-w-2xl mx-auto mb-8">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#2C1F0E] tracking-tight">
+          Select Interview Track
+        </h1>
+        <p class="text-sm sm:text-base text-[#8C7B6B] mt-2">
+          Choose a role track, benchmark against global enterprise rubrics, parse a job description, or configure a custom evaluation session.
         </p>
       </div>
-    </div>
 
-    <!-- ======================================================================
-         INSIGHT OVERLAY
-         ====================================================================== -->
-    <!-- Live Insight Overlay - 3 Dimensions -->
-    <div class="absolute bottom-[130px] left-6 z-20 w-72">
-      <div class="bg-[#1A1208]/80 backdrop-blur-md rounded-2xl p-4 border border-[#3D2E15]">
-        <p class="text-[10px] font-bold uppercase tracking-wider text-[#AA7000] mb-3">Live Evaluation</p>
-        <div class="space-y-2.5">
-          <!-- Technical Content -->
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-semibold text-white/80">Technical Content</span>
-              <span class="text-xs font-bold text-[#AA7000]">78%</span>
-            </div>
-            <div class="h-1.5 bg-[#3D2E15] rounded-full overflow-hidden">
-              <div class="h-full bg-[#AA7000] rounded-full" style="width: 78%"></div>
-            </div>
-          </div>
-          <!-- Answer Structure -->
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-semibold text-white/80">Answer Structure</span>
-              <span class="text-xs font-bold text-[#4F6B2D]">85%</span>
-            </div>
-            <div class="h-1.5 bg-[#3D2E15] rounded-full overflow-hidden">
-              <div class="h-full bg-[#4F6B2D] rounded-full" style="width: 85%"></div>
-            </div>
-          </div>
-          <!-- Communication -->
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-semibold text-white/80">Communication</span>
-              <span class="text-xs font-bold text-[#8B5CF6]">91%</span>
-            </div>
-            <div class="h-1.5 bg-[#3D2E15] rounded-full overflow-hidden">
-              <div class="h-full bg-[#8B5CF6] rounded-full" style="width: 91%"></div>
-            </div>
-          </div>
-        </div>
-        <p class="text-[10px] text-white/40 mt-3">↗ Add a concrete failure example</p>
-      </div>
-    </div>
-
-    <!-- ======================================================================
-         USER CAMERA PiP (Bottom-Right Corner, 200x150 Box with Rounded Corners)
-         ====================================================================== -->
-    <div class="absolute bottom-8 right-8 z-25 w-[180px] h-[135px] sm:w-[200px] sm:h-[150px] rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-2xl flex flex-col items-center justify-center relative">
-      <div class="w-full h-full bg-[#251A0A] flex flex-col items-center justify-center text-slate-400 relative">
-        <span class="material-symbols-outlined text-3xl mb-1 text-slate-500">videocam</span>
-        <span class="text-[11px] font-semibold text-slate-300">You (Alex M.)</span>
-
-        <!-- Live indicator pill -->
-        <div class="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/60 text-[10px] text-[#4F6B2D] font-bold">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D] animate-pulse"></span>
-          <span>Live</span>
-        </div>
-
-        <div class="absolute bottom-2 right-2 text-[10px] font-medium text-slate-400 bg-black/60 px-1.5 py-0.5 rounded">
-          720p
+      <!-- 4 Top Primary Tabs (Segmented Control) -->
+      <div class="flex justify-center mb-8">
+        <div class="inline-flex p-1 bg-[#F2EBD8] rounded-full border border-[#E8DFD0] shadow-sm max-w-full overflow-x-auto">
+          <button id="tab-btn-role" onclick="switchMode('role')" class="px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all bg-[#2C1F0E] text-white shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+            <span class="material-symbols-outlined text-base">badge</span>
+            <span>Role Based</span>
+          </button>
+          <button id="tab-btn-company" onclick="switchMode('company')" class="px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all text-[#7F766C] hover:text-[#2C1F0E] flex items-center gap-1.5 whitespace-nowrap">
+            <span class="material-symbols-outlined text-base">apartment</span>
+            <span>Company Based</span>
+          </button>
+          <button id="tab-btn-jd" onclick="switchMode('jd')" class="px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all text-[#7F766C] hover:text-[#2C1F0E] flex items-center gap-1.5 whitespace-nowrap">
+            <span class="material-symbols-outlined text-base">description</span>
+            <span>JD Based</span>
+          </button>
+          <button id="tab-btn-custom" onclick="switchMode('custom')" class="px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all text-[#7F766C] hover:text-[#2C1F0E] flex items-center gap-1.5 whitespace-nowrap">
+            <span class="material-symbols-outlined text-base">tune</span>
+            <span>Custom</span>
+          </button>
         </div>
       </div>
-    </div>
-  </main>
+
+      <!-- ====================================================================
+           MODE 1: ROLE BASED
+           ==================================================================== -->
+      <div id="mode-role-container" class="flex flex-col flex-1">
+        <!-- Sub-filter Pills (Only 5 Categories: Tech, Management, Intern, Engineering, Analyst) -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-pills">
+            <button onclick="filterRoleCategory('Tech')" class="cat-pill active px-4 py-1.5 rounded-full text-xs font-semibold bg-[#2C1F0E] text-white border border-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Tech">
+              Tech
+            </button>
+            <button onclick="filterRoleCategory('Management')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Management">
+              Management
+            </button>
+            <button onclick="filterRoleCategory('Intern')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Intern">
+              Intern
+            </button>
+            <button onclick="filterRoleCategory('Engineering')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Engineering">
+              Engineering
+            </button>
+            <button onclick="filterRoleCategory('Analyst')" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-cat="Analyst">
+              Analyst
+            </button>
+          </div>
+
+          <!-- Instant Search Box -->
+          <div class="relative w-full sm:w-72 shrink-0">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">search</span>
+            <input
+              type="text"
+              id="role-search-input"
+              oninput="renderRoles()"
+              placeholder="Search roles or skills..."
+              class="w-full bg-[#FFFDF8] border border-[#E8DFD0] rounded-full pl-9 pr-4 py-2 text-xs text-[#2C1F0E] placeholder:text-slate-400 focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all shadow-sm"
+            />
+          </div>
+        </div>
+
+        <!-- Role Cards Grid -->
+        <div id="role-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[600px] overflow-y-auto pr-1 custom-scroll">
+          <!-- Dynamically populated via JavaScript -->
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODE 2: COMPANY BASED
+           ==================================================================== -->
+      <div id="mode-company-container" class="hidden flex-col flex-1">
+        <!-- Sub-filter Pills for Companies -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1" id="company-filter-pills">
+            <button onclick="filterCompanySector('All')" class="comp-pill active px-4 py-1.5 rounded-full text-xs font-semibold bg-[#2C1F0E] text-white border border-[#2C1F0E] transition-all whitespace-nowrap" data-sec="All">
+              All Companies
+            </button>
+            <button onclick="filterCompanySector('Big Tech')" class="comp-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-sec="Big Tech">
+              Big Tech
+            </button>
+            <button onclick="filterCompanySector('Big 4')" class="comp-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-sec="Big 4">
+              Big 4 &amp; Consulting
+            </button>
+            <button onclick="filterCompanySector('Finance & Quant')" class="comp-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-sec="Finance & Quant">
+              Finance &amp; Quant
+            </button>
+            <button onclick="filterCompanySector('Enterprise & Cloud')" class="comp-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-sec="Enterprise & Cloud">
+              Enterprise &amp; Cloud
+            </button>
+            <button onclick="filterCompanySector('Unicorn')" class="comp-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap" data-sec="Unicorn">
+              Unicorns &amp; Startups
+            </button>
+          </div>
+
+          <!-- Instant Search Box -->
+          <div class="relative w-full sm:w-72 shrink-0">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">search</span>
+            <input
+              type="text"
+              id="company-search-input"
+              oninput="renderCompanies()"
+              placeholder="Search 100 top companies..."
+              class="w-full bg-[#FFFDF8] border border-[#E8DFD0] rounded-full pl-9 pr-4 py-2 text-xs text-[#2C1F0E] placeholder:text-slate-400 focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all shadow-sm"
+            />
+          </div>
+        </div>
+
+        <!-- Companies Grid -->
+        <div id="company-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[600px] overflow-y-auto pr-1 custom-scroll">
+          <!-- Dynamically populated via JavaScript -->
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODE 3: JD BASED
+           ==================================================================== -->
+      <div id="mode-jd-container" class="hidden flex-col max-w-3xl mx-auto w-full">
+        <div class="bg-[#FFFDF8] border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-sm">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#E8DFD0] flex items-center justify-center text-[#AA7000]">
+              <span class="material-symbols-outlined text-xl">description</span>
+            </div>
+            <div>
+              <h2 class="font-bold text-lg text-[#2C1F0E]">Job Description Parser</h2>
+              <p class="text-xs text-[#8C7B6B]">Paste any official role posting to extract required proficiencies and generate targeted questions.</p>
+            </div>
+          </div>
+
+          <form onsubmit="startJdInterview(event)" class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-1.5">Role Title</label>
+                <input
+                  type="text"
+                  id="jd-title-input"
+                  required
+                  placeholder="e.g. Senior Infrastructure Engineer"
+                  class="w-full bg-[#FAF6EE] border border-[#E8DFD0] rounded-xl px-4 py-2.5 text-xs text-[#2C1F0E] placeholder:text-slate-400 focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-1.5">Target Company (Optional)</label>
+                <input
+                  type="text"
+                  id="jd-company-input"
+                  placeholder="e.g. Stripe, Airbnb, Databricks"
+                  class="w-full bg-[#FAF6EE] border border-[#E8DFD0] rounded-xl px-4 py-2.5 text-xs text-[#2C1F0E] placeholder:text-slate-400 focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-1.5">Job Description</label>
+              <textarea
+                id="jd-text-input"
+                rows="6"
+                required
+                oninput="detectJdKeywords(this.value)"
+                placeholder="Paste the requirements, responsibilities, and qualifications from the job posting..."
+                class="w-full bg-[#FAF6EE] border border-[#E8DFD0] rounded-2xl p-4 text-xs text-[#2C1F0E] placeholder:text-slate-400 focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all leading-relaxed"
+              ></textarea>
+            </div>
+
+            <!-- Detected Competency Tags Preview -->
+            <div id="jd-tags-box" class="p-3.5 bg-[#FAF6EE] border border-[#E8DFD0] rounded-2xl flex items-center justify-between gap-3 text-xs">
+              <span class="text-[#8C7B6B] font-medium">Detected Competencies:</span>
+              <div id="jd-tags-list" class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/20 text-[11px] font-semibold">System Design</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-[#FBF3E0] text-[#AA7000] border border-[#AA7000]/20 text-[11px] font-semibold">Concurrency</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-[#F2EBD8] text-[#7F766C] border border-[#E8DFD0] text-[11px] font-semibold">Scalability</span>
+              </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+              <button
+                type="submit"
+                class="px-6 py-2.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center gap-2 shadow-sm transform hover:-translate-y-0.5"
+              >
+                <span>Generate &amp; Start Interview</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODE 4: CUSTOM
+           ==================================================================== -->
+      <div id="mode-custom-container" class="hidden flex-col max-w-3xl mx-auto w-full">
+        <div class="bg-[#FFFDF8] border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-sm">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#E8DFD0] flex items-center justify-center text-[#AA7000]">
+              <span class="material-symbols-outlined text-xl">tune</span>
+            </div>
+            <div>
+              <h2 class="font-bold text-lg text-[#2C1F0E]">Custom Interview Session</h2>
+              <p class="text-xs text-[#8C7B6B]">Specify custom questions, seniority criteria, and evaluation focus dimensions.</p>
+            </div>
+          </div>
+
+          <form onsubmit="startCustomInterview(event)" class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-1.5">Target Role or Topic</label>
+                <input
+                  type="text"
+                  id="custom-role-input"
+                  required
+                  placeholder="e.g. Real-Time Audio Streaming Architect"
+                  class="w-full bg-[#FAF6EE] border border-[#E8DFD0] rounded-xl px-4 py-2.5 text-xs text-[#2C1F0E] placeholder:text-slate-400 focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-1.5">Seniority Level</label>
+                <select
+                  id="custom-seniority-input"
+                  class="w-full bg-[#FAF6EE] border border-[#E8DFD0] rounded-xl px-4 py-2.5 text-xs text-[#2C1F0E] focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all"
+                >
+                  <option value="Intern / Junior">Intern / Junior</option>
+                  <option value="Mid-Level">Mid-Level</option>
+                  <option value="Senior" selected>Senior</option>
+                  <option value="Staff / Principal">Staff / Principal</option>
+                  <option value="Engineering Manager / Director">Engineering Manager / Director</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-1.5">Primary Evaluation Focus</label>
+                <select
+                  id="custom-focus-input"
+                  class="w-full bg-[#FAF6EE] border border-[#E8DFD0] rounded-xl px-4 py-2.5 text-xs text-[#2C1F0E] focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all"
+                >
+                  <option value="System Architecture & Scalability">System Architecture &amp; Scalability</option>
+                  <option value="Core Data Structures & Algorithms">Core Data Structures &amp; Algorithms</option>
+                  <option value="Engineering Leadership & Behavioral">Engineering Leadership &amp; Behavioral</option>
+                  <option value="Domain Deep Dive & Debugging">Domain Deep Dive &amp; Debugging</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-1.5">Question Count</label>
+                <select
+                  id="custom-count-input"
+                  class="w-full bg-[#FAF6EE] border border-[#E8DFD0] rounded-xl px-4 py-2.5 text-xs text-[#2C1F0E] focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all"
+                >
+                  <option value="3">3 Questions (Speed Run • 15 mins)</option>
+                  <option value="5" selected>5 Questions (Standard • 30 mins)</option>
+                  <option value="8">8 Questions (Comprehensive • 45 mins)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-[#2C1F0E] uppercase tracking-wider mb-1.5">
+                Custom Questions or Topics <span class="font-normal text-[#8C7B6B] lowercase">(optional, one per line)</span>
+              </label>
+              <textarea
+                id="custom-questions-input"
+                rows="4"
+                placeholder="How do you handle zero-downtime database migrations under high traffic?&#10;Describe how you resolve technical debt disagreements across squads."
+                class="w-full bg-[#FAF6EE] border border-[#E8DFD0] rounded-2xl p-4 text-xs text-[#2C1F0E] placeholder:text-slate-400 focus:outline-none focus:border-[#AA7000] focus:ring-1 focus:ring-[#AA7000] transition-all leading-relaxed"
+              ></textarea>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+              <button
+                type="submit"
+                class="px-6 py-2.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center gap-2 shadow-sm transform hover:-translate-y-0.5"
+              >
+                <span>Start Custom Session</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
 
   <!-- ========================================================================
-       BOTTOM CONTROLS BAR: Centered Controls, Dark #1A1208
+       SCREEN 2: LIVE INTERVIEW STAGE (Dark Cinema Mode #1A1208)
        ======================================================================== -->
-  <footer class="h-20 bg-[#1A1208] border-t border-[#3D2E15] px-6 flex items-center justify-between shrink-0 z-30">
-    <!-- Left Controls: Mic & Camera Toggles -->
-    <div class="flex items-center gap-3">
-      <!-- Mic Button -->
-      <button id="mic-toggle-btn" class="w-11 h-11 rounded-full bg-[#251A0A] hover:bg-[#3D2E15] text-white border border-[#3D2E15] flex items-center justify-center transition-all shadow-sm" title="Toggle Microphone">
-        <span id="mic-icon" class="material-symbols-outlined text-xl text-[#AA7000]">mic</span>
-      </button>
+  <div id="interview-stage" class="hidden h-full flex flex-col bg-[#1A1208] text-white overflow-hidden">
+    <!-- Top Header Bar -->
+    <header class="h-16 border-b border-[#3D2E15] px-6 flex items-center justify-between shrink-0 bg-[#1A1208]/90 backdrop-blur-md z-30">
+      <!-- Left: Brand Logo & Selected Session Title -->
+      <div class="flex items-center gap-4">
+        <a href="../index.html" class="flex items-center gap-1.5">
+          <span class="text-xl font-black tracking-tight text-white">IMAIRA<span class="text-[#AA7000]">+</span></span>
+        </a>
+        <div class="h-4 w-px bg-[#3D2E15] hidden sm:block"></div>
+        <div class="hidden sm:flex items-center gap-2 text-xs text-slate-300">
+          <span id="stage-selected-title" class="font-bold text-white">Staff Distributed Systems</span>
+          <span class="text-slate-500">•</span>
+          <span class="px-2.5 py-0.5 rounded-full bg-[#4F6B2D]/20 text-[#4F6B2D] border border-[#4F6B2D]/30 font-semibold text-[11px] flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D] animate-pulse"></span>
+            Live Session
+          </span>
+        </div>
+      </div>
 
-      <!-- Camera Button -->
-      <button id="cam-toggle-btn" class="w-11 h-11 rounded-full bg-[#251A0A] hover:bg-[#3D2E15] text-white border border-[#3D2E15] flex items-center justify-center transition-all shadow-sm" title="Toggle Camera">
-        <span id="cam-icon" class="material-symbols-outlined text-xl text-slate-300">videocam</span>
-      </button>
+      <!-- Right: Switch Track, Timer & End Session -->
+      <div class="flex items-center gap-3">
+        <!-- Return to Setup button -->
+        <button onclick="exitToSetup()" class="px-3 py-1.5 rounded-full bg-[#251A0A] hover:bg-[#3D2E15] text-slate-300 border border-[#3D2E15] text-xs font-semibold transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">swap_horiz</span>
+          <span class="hidden md:inline">Change Track</span>
+        </button>
 
-      <span class="text-xs text-slate-400 hidden sm:inline-block ml-2 font-medium">Mic Active</span>
-    </div>
+        <!-- Session Timer -->
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#251A0A] border border-[#3D2E15] text-xs font-mono font-bold text-slate-200">
+          <span class="material-symbols-outlined text-sm text-[#AA7000]">timer</span>
+          <span id="session-timer">00:00</span>
+        </div>
 
-    <!-- Center Controls: Question Navigation -->
-    <div class="flex items-center gap-3">
-      <button id="prev-question-btn" class="px-4 py-2.5 rounded-full bg-[#251A0A] hover:bg-[#3D2E15] text-slate-300 text-xs font-bold border border-[#3D2E15] flex items-center gap-1.5 transition-all">
-        <span class="material-symbols-outlined text-base">arrow_back</span>
-        <span class="hidden sm:inline">Previous</span>
-      </button>
+        <!-- End Button -->
+        <a href="report.html" class="px-4 py-1.5 rounded-full bg-[#917247]/20 hover:bg-[#917247]/40 text-[#AA7000] border border-[#AA7000]/40 text-xs font-bold transition-all flex items-center gap-1">
+          <span>End Session</span>
+        </a>
+      </div>
+    </header>
 
-      <button id="next-question-btn" class="px-6 py-2.5 rounded-full bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold shadow-pill hover:shadow-xl flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
-        <span>Next Question</span>
-        <span class="material-symbols-outlined text-base">arrow_forward</span>
-      </button>
-    </div>
+    <!-- Main Live Stage -->
+    <main class="flex-1 relative w-full h-full bg-[#251A0A] flex items-center justify-center overflow-hidden">
+      <!-- Ambient Radial Glow Effects -->
+      <div class="absolute w-[600px] h-[600px] rounded-full bg-[#AA7000]/15 blur-3xl pointer-events-none"></div>
+      <div class="absolute w-[450px] h-[450px] rounded-full bg-[#F5A623]/10 blur-3xl pointer-events-none"></div>
 
-    <!-- Right Controls: Finish & View Report -->
-    <div class="flex items-center gap-3">
-      <a href="report.html" class="px-5 py-2.5 rounded-full bg-[#3D2E15] hover:bg-[#917247] text-white text-xs font-bold transition-all flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-base">stop_circle</span>
-        <span class="hidden sm:inline">Finish &amp; View Report</span>
-        <span class="sm:hidden">Finish</span>
-      </a>
-    </div>
-  </footer>
+      <!-- AI Interviewer Visual (Avatar & Waveform) -->
+      <div class="relative z-10 flex flex-col items-center justify-center text-center px-6">
+        <!-- Avatar Glow Ring -->
+        <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#AA7000]/30 to-[#F5A623]/20 border border-[#AA7000]/50 flex items-center justify-center shadow-glow-amber relative mb-4">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#1A1208] border border-[#AA7000]/60 flex items-center justify-center shadow-inner">
+            <span class="material-symbols-outlined text-3xl sm:text-4xl text-[#AA7000]">graphic_eq</span>
+          </div>
+        </div>
 
-  <!-- Interactive Controls Script -->
+        <!-- Waveform Animation Bars -->
+        <div class="flex items-center justify-center gap-2 h-16 sm:h-20 my-2">
+          <div class="stage-wave-bar" style="animation-delay: 0.1s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.35s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.05s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.45s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.15s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.3s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.1s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.25s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.08s"></div>
+          <div class="stage-wave-bar" style="animation-delay: 0.32s"></div>
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A1208]/80 border border-[#3D2E15] text-xs font-semibold text-slate-300 mt-2">
+          <span class="w-2 h-2 rounded-full bg-[#4F6B2D] animate-ping"></span>
+          <span>IMAIRA+ AI Evaluator • Listening actively</span>
+        </div>
+      </div>
+
+      <!-- Current Question Overlay -->
+      <div class="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 w-[92%] max-w-4xl z-20">
+        <div class="bg-[#1A1208]/85 backdrop-blur-xl border border-[#3D2E15] rounded-3xl p-5 sm:p-6 shadow-2xl">
+          <div class="flex items-center justify-between text-xs mb-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#AA7000] text-base">psychology</span>
+              <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]">Current Question</span>
+            </div>
+            <span id="question-counter" class="font-mono text-slate-300 font-bold bg-white/10 px-3 py-1 rounded-full text-xs">
+              Q 1 of 6
+            </span>
+          </div>
+          <p id="current-question-text" class="text-sm sm:text-base md:text-lg text-white font-semibold leading-relaxed">
+            "Tell me about a distributed system where you handled data replication under network partitions. How did you maintain consistency and avoid split-brain scenarios?"
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Evaluation Gauges (Left Side) -->
+      <div class="absolute bottom-[130px] left-6 z-20 w-64 hidden lg:block">
+        <div class="bg-[#1A1208]/80 backdrop-blur-md rounded-2xl p-4 border border-[#3D2E15]">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[#AA7000] mb-3">Live Telemetry</p>
+          <div class="space-y-2.5">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-semibold text-white/80">Technical Content</span>
+                <span class="text-xs font-bold text-[#AA7000]">82%</span>
+              </div>
+              <div class="h-1.5 bg-[#3D2E15] rounded-full overflow-hidden">
+                <div class="h-full bg-[#AA7000] rounded-full" style="width: 82%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-semibold text-white/80">Answer Structure</span>
+                <span class="text-xs font-bold text-[#4F6B2D]">88%</span>
+              </div>
+              <div class="h-1.5 bg-[#3D2E15] rounded-full overflow-hidden">
+                <div class="h-full bg-[#4F6B2D] rounded-full" style="width: 88%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-semibold text-white/80">Communication</span>
+                <span class="text-xs font-bold text-[#8B5CF6]">94%</span>
+              </div>
+              <div class="h-1.5 bg-[#3D2E15] rounded-full overflow-hidden">
+                <div class="h-full bg-[#8B5CF6] rounded-full" style="width: 94%"></div>
+              </div>
+            </div>
+          </div>
+          <p class="text-[10px] text-white/40 mt-3">Active speech transcription verified</p>
+        </div>
+      </div>
+
+      <!-- User Camera PiP (Bottom-Right Corner) -->
+      <div class="absolute bottom-8 right-6 z-25 w-[150px] h-[110px] sm:w-[180px] sm:h-[135px] rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-2xl flex flex-col items-center justify-center">
+        <div class="w-full h-full bg-[#251A0A] flex flex-col items-center justify-center text-slate-400 relative">
+          <span class="material-symbols-outlined text-2xl sm:text-3xl mb-1 text-slate-500">videocam</span>
+          <span class="text-[10px] sm:text-[11px] font-semibold text-slate-300">Candidate Video</span>
+
+          <div class="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 text-[9px] text-[#4F6B2D] font-bold">
+            <span class="w-1 h-1 rounded-full bg-[#4F6B2D] animate-pulse"></span>
+            <span>Live</span>
+          </div>
+          <div class="absolute bottom-2 right-2 text-[9px] font-medium text-slate-400 bg-black/60 px-1 py-0.5 rounded">
+            720p
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Controls Bar -->
+    <footer class="h-20 bg-[#1A1208] border-t border-[#3D2E15] px-6 flex items-center justify-between shrink-0 z-30">
+      <!-- Mic & Camera Toggles -->
+      <div class="flex items-center gap-3">
+        <button id="mic-toggle-btn" class="w-10 h-10 rounded-full bg-[#251A0A] hover:bg-[#3D2E15] text-white border border-[#3D2E15] flex items-center justify-center transition-all shadow-sm" title="Toggle Microphone">
+          <span id="mic-icon" class="material-symbols-outlined text-lg text-[#AA7000]">mic</span>
+        </button>
+        <button id="cam-toggle-btn" class="w-10 h-10 rounded-full bg-[#251A0A] hover:bg-[#3D2E15] text-white border border-[#3D2E15] flex items-center justify-center transition-all shadow-sm" title="Toggle Camera">
+          <span id="cam-icon" class="material-symbols-outlined text-lg text-slate-300">videocam</span>
+        </button>
+        <span class="text-xs text-slate-400 hidden sm:inline-block ml-1 font-medium">Mic Active</span>
+      </div>
+
+      <!-- Question Navigation -->
+      <div class="flex items-center gap-3">
+        <button id="prev-question-btn" class="px-4 py-2 rounded-full bg-[#251A0A] hover:bg-[#3D2E15] text-slate-300 text-xs font-bold border border-[#3D2E15] flex items-center gap-1.5 transition-all">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span class="hidden sm:inline">Previous</span>
+        </button>
+        <button id="next-question-btn" class="px-5 py-2 rounded-full bg-[#AA7000] hover:bg-[#917247] text-white text-xs font-bold shadow-pill hover:shadow-xl flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+          <span>Next Question</span>
+          <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </button>
+      </div>
+
+      <!-- Finish Session -->
+      <div class="flex items-center gap-3">
+        <a href="report.html" class="px-4 py-2 rounded-full bg-[#3D2E15] hover:bg-[#917247] text-white text-xs font-bold transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">stop_circle</span>
+          <span class="hidden sm:inline">Finish &amp; Score</span>
+          <span class="sm:hidden">Finish</span>
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ========================================================================
+       DATA & APPLICATION LOGIC
+       ======================================================================== -->
   <script>
-    // 1. Session Timer
-    let totalSeconds = 263; // 04:23
-    const timerEl = document.getElementById('session-timer');
-    setInterval(() => {
-      totalSeconds++;
-      const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-      const secs = String(totalSeconds % 60).padStart(2, '0');
-      if (timerEl) timerEl.textContent = `${mins}:${secs}`;
-    }, 1000);
+    // 1. Data Store
+    const rolesData = [{"title": "Software Engineer", "category": "Tech", "focus": "Core Backend & API Services"}, {"title": "Distributed Systems Engineer", "category": "Tech", "focus": "Consensus & High Availability"}, {"title": "Cloud Solutions Architect", "category": "Tech", "focus": "Multi-Region Cloud Topologies"}, {"title": "Site Reliability Engineer (SRE)", "category": "Tech", "focus": "Incident Recovery & SLOs"}, {"title": "Database Kernel Engineer", "category": "Tech", "focus": "Storage Engines & WAL Compaction"}, {"title": "DevOps & Platform Engineer", "category": "Tech", "focus": "Kubernetes & Infrastructure as Code"}, {"title": "Frontend Architect", "category": "Tech", "focus": "High-Performance SPA & Micro-Frontends"}, {"title": "Full Stack Engineer", "category": "Tech", "focus": "End-to-End Modern Web Architecture"}, {"title": "Machine Learning Infrastructure Engineer", "category": "Tech", "focus": "Distributed Training & NCCL"}, {"title": "Security & Cryptography Engineer", "category": "Tech", "focus": "Zero Trust & Transport Encryption"}, {"title": "Network Systems Engineer", "category": "Tech", "focus": "eBPF, Kernel Bypass & High-Bandwidth routing"}, {"title": "Distributed Cache Specialist", "category": "Tech", "focus": "Redis, Memcached & Invalidation Strategies"}, {"title": "Microservices Architecture Lead", "category": "Tech", "focus": "gRPC, Event-Driven Sharding & Decoupling"}, {"title": "API Platform Architect", "category": "Tech", "focus": "Rate Limiting, Gateways & Idempotency"}, {"title": "Performance Optimization Engineer", "category": "Tech", "focus": "Low Latency Profiling & Memory Compaction"}, {"title": "Backend Systems Engineer (Go)", "category": "Tech", "focus": "Goroutines, Concurrency & High Throughput"}, {"title": "Backend Systems Engineer (Java/Spring)", "category": "Tech", "focus": "JVM Tuning, Concurrency & Reactive Streams"}, {"title": "Backend Systems Engineer (Rust)", "category": "Tech", "focus": "Zero-Cost Abstractions & Memory Safety"}, {"title": "Backend Systems Engineer (Python/FastAPI)", "category": "Tech", "focus": "Async I/O & High Scale Distributed APIs"}, {"title": "Cloud Native Developer", "category": "Tech", "focus": "Serverless, EventBridge & Containerization"}, {"title": "Search & Retrieval Engineer", "category": "Tech", "focus": "Elasticsearch, Lucene & Vector Embeddings"}, {"title": "Streaming Data Platform Engineer", "category": "Tech", "focus": "Apache Kafka, Flink & Exactly-Once Semantics"}, {"title": "Big Data Processing Engineer", "category": "Tech", "focus": "Spark, Hadoop & Lakehouse Partitioning"}, {"title": "Graph Database Engineer", "category": "Tech", "focus": "Neo4j, Cypher & Social Topology Traversal"}, {"title": "Observability & Telemetry Engineer", "category": "Tech", "focus": "OpenTelemetry, Prometheus & Distributed Tracing"}, {"title": "Identity & Access Management Architect", "category": "Tech", "focus": "OAuth2, OpenID Connect & SAML SSO"}, {"title": "Container Security Engineer", "category": "Tech", "focus": "Docker Hardening, Seccomp & CIS Benchmarks"}, {"title": "Edge Computing Software Engineer", "category": "Tech", "focus": "Wasm at Edge, Cloudflare Workers & CDN caching"}, {"title": "Mobile Infrastructure Engineer (iOS)", "category": "Tech", "focus": "Swift, CoreData & High Concurrency"}, {"title": "Mobile Infrastructure Engineer (Android)", "category": "Tech", "focus": "Kotlin, Jetpack Compose & Coroutines"}, {"title": "Web Performance Engineer", "category": "Tech", "focus": "Core Web Vitals, Hydration & Asset Delivery"}, {"title": "Messaging Middleware Engineer", "category": "Tech", "focus": "RabbitMQ, NATS & Dead Letter Topologies"}, {"title": "Reliability & Chaos Engineer", "category": "Tech", "focus": "Fault Injection, Resilience4j & Redundancy"}, {"title": "Infrastructure Automation Lead", "category": "Tech", "focus": "Terraform, Ansible & Immutable Deployment"}, {"title": "Storage SRE", "category": "Tech", "focus": "Ceph, GlusterFS & Distributed Block Storage"}, {"title": "Data Pipeline Infrastructure Lead", "category": "Tech", "focus": "Airflow, Dagster & DAG Resilience"}, {"title": "Distributed Messaging Architect", "category": "Tech", "focus": "Partitioning Keys, Log Replay & Mirroring"}, {"title": "CI/CD Pipeline Security Specialist", "category": "Tech", "focus": "Supply Chain Security & SLSA Compliance"}, {"title": "RPC & IPC Protocols Developer", "category": "Tech", "focus": "FlatBuffers, Protobuf & Serialization Efficiency"}, {"title": "Virtualization & Hypervisor Engineer", "category": "Tech", "focus": "KVM, QEMU & Xen Virtualization"}, {"title": "Linux Kernel Developer", "category": "Tech", "focus": "Memory Management, System Calls & Cgroups"}, {"title": "Real-Time Systems Developer", "category": "Tech", "focus": "RTOS, Embedded C & Deterministic Schedulers"}, {"title": "High-Frequency Trading Software Engineer", "category": "Tech", "focus": "Sub-microsecond Execution & FPGA interfacing"}, {"title": "Distributed Consensus Researcher", "category": "Tech", "focus": "Paxos, Raft & Byzantine Fault Tolerance"}, {"title": "Microservices Mesh Engineer", "category": "Tech", "focus": "Istio, Linkerd & Mutual TLS Traffic Management"}, {"title": "Cloud FinOps & Capacity Architect", "category": "Tech", "focus": "Resource Auto-scaling & Compute Optimization"}, {"title": "Application Security Engineer", "category": "Tech", "focus": "DAST, SAST & Secure Code Reviews"}, {"title": "Disaster Recovery Specialist", "category": "Tech", "focus": "RPO/RTO Invariants & Multi-Cloud Failover"}, {"title": "WebRTC Video & Voice Engineer", "category": "Tech", "focus": "STUN/TURN, SFU & Low-Latency Audio Streaming"}, {"title": "Applied NLP Systems Engineer", "category": "Tech", "focus": "Transformer Serving, TensorRT & vLLM Optimization"}, {"title": "Vector Database Engineer", "category": "Tech", "focus": "Milvus, Pinecone & HNSW Indexing"}, {"title": "Technical Product Manager", "category": "Management", "focus": "API Platforms & Developer Tools"}, {"title": "Engineering Manager", "category": "Management", "focus": "High-Throughput Backend & Distributed Systems"}, {"title": "Technical Program Manager (TPM)", "category": "Management", "focus": "Infrastructure & Cross-Functional Delivery"}, {"title": "Director of Engineering", "category": "Management", "focus": "Platform Architecture & Talent Scaling"}, {"title": "Group Product Manager (GPM)", "category": "Management", "focus": "Enterprise Cloud & SaaS Products"}, {"title": "Agile Delivery Lead", "category": "Management", "focus": "Scrum, Kanban & Scaled Agile Frameworks"}, {"title": "VP of Engineering", "category": "Management", "focus": "Technology Strategy, Budgeting & Board Reporting"}, {"title": "Product Operations Manager", "category": "Management", "focus": "Feedback Loops & GTM Alignment"}, {"title": "Release & Deployment Manager", "category": "Management", "focus": "Zero-Downtime Pipeline Governance"}, {"title": "IT Infrastructure Manager", "category": "Management", "focus": "Enterprise Architecture & Tier-3 Support"}, {"title": "Security Program Manager", "category": "Management", "focus": "SOC 2, ISO 27001 & Compliance Roadmaps"}, {"title": "Scrum Master", "category": "Management", "focus": "Team Velocity & Blocker Resolution"}, {"title": "Chief Technology Officer (CTO)", "category": "Management", "focus": "Executive Tech Vision & Architecture Oversight"}, {"title": "Platform Product Manager", "category": "Management", "focus": "Developer Experience & SDK Ecosystems"}, {"title": "Cloud Delivery Manager", "category": "Management", "focus": "SLA Fulfillment & Vendor Cost Management"}, {"title": "Lead Product Owner", "category": "Management", "focus": "Backlog Prioritization & User Story Mapping"}, {"title": "Software Quality Manager", "category": "Management", "focus": "Automated QA & Test Engineering Standards"}, {"title": "Data Governance Manager", "category": "Management", "focus": "GDPR, Data Lineage & Access Policies"}, {"title": "Site Reliability Manager", "category": "Management", "focus": "On-Call Rotations, Error Budgets & Post-Mortems"}, {"title": "Developer Relations Manager", "category": "Management", "focus": "Open Source Strategy & Community Advocacy"}, {"title": "Customer Engineering Manager", "category": "Management", "focus": "Post-Sales Technical Architecture & Integrations"}, {"title": "Solutions Architecture Manager", "category": "Management", "focus": "Client Engagement & Pre-Sales Engineering"}, {"title": "AI Product Manager", "category": "Management", "focus": "LLM Applications & Machine Learning Governance"}, {"title": "FinOps Delivery Manager", "category": "Management", "focus": "Cloud Spend Allocation & Reserved Capacity"}, {"title": "Technical Agile Coach", "category": "Management", "focus": "XP, Pair Programming & TDD Transformation"}, {"title": "Product Growth Manager", "category": "Management", "focus": "Retention Funnels & Product-Led Growth"}, {"title": "Enterprise Integration Lead", "category": "Management", "focus": "ERP, CRM & Legacy Modernization"}, {"title": "Core Systems Program Manager", "category": "Management", "focus": "Large-Scale Data Center Migrations"}, {"title": "Risk & Compliance Operations Manager", "category": "Management", "focus": "Audit Defense & Vulnerability Lifecycle"}, {"title": "DevOps Practice Lead", "category": "Management", "focus": "DevSecOps Maturity & Tooling Consolidation"}, {"title": "Senior Delivery Consultant", "category": "Management", "focus": "Client Roadmaps & Milestone Governance"}, {"title": "Technical Operations Director", "category": "Management", "focus": "Global Support Centers & Escalation Routing"}, {"title": "Product Lifecycle Specialist", "category": "Management", "focus": "Sunset Strategies & Deprecation Plans"}, {"title": "Engineering Operations Lead", "category": "Management", "focus": "Hiring Rubrics & Performance Management"}, {"title": "Strategic Portfolio Manager", "category": "Management", "focus": "OKRs, Capital Allocation & Resource Balancing"}, {"title": "Chief Information Security Officer (CISO)", "category": "Management", "focus": "Threat Modeling & Enterprise Risk Defense"}, {"title": "API Product Owner", "category": "Management", "focus": "Monetization, Developer Portals & Rate Plans"}, {"title": "Global Systems Deployment Lead", "category": "Management", "focus": "International Rollouts & Localization"}, {"title": "Vendor Engineering Manager", "category": "Management", "focus": "SaaS Procurement & Contract Negotiation"}, {"title": "Core Infrastructure TPM", "category": "Management", "focus": "Hardware Procurement & Data Center Topologies"}, {"title": "Mobile Product Manager", "category": "Management", "focus": "App Store Optimization & Mobile UX Funnels"}, {"title": "Data Platform Product Manager", "category": "Management", "focus": "Self-Serve Analytics & ETL Tooling"}, {"title": "Customer Experience Manager", "category": "Management", "focus": "Net Promoter Score & SLA Compliance"}, {"title": "Change Management Director", "category": "Management", "focus": "Enterprise Organizational Restructuring"}, {"title": "Quality Engineering Director", "category": "Management", "focus": "Chaos Engineering & Resiliency Programs"}, {"title": "Design Systems Manager", "category": "Management", "focus": "Component Libraries & Cross-Platform Consistency"}, {"title": "Security Operations Lead (SecOps)", "category": "Management", "focus": "SIEM, SOC & Incident Response Protocol"}, {"title": "Payments Product Manager", "category": "Management", "focus": "PCI-DSS, Payment Gateways & Fraud Mitigation"}, {"title": "Billing & Monetization Manager", "category": "Management", "focus": "Subscription Engines & Invoicing Pipelines"}, {"title": "Enterprise Program Director", "category": "Management", "focus": "Multi-Year Transformation Programs"}, {"title": "Technical Strategy Lead", "category": "Management", "focus": "Build vs Buy Analysis & Tech Due Diligence"}, {"title": "Software Engineering Intern", "category": "Intern", "focus": "Data Structures & Core Algorithms"}, {"title": "Backend Development Intern", "category": "Intern", "focus": "REST APIs, Node.js & PostgreSQL"}, {"title": "Frontend Development Intern", "category": "Intern", "focus": "React, TypeScript & Tailwind CSS"}, {"title": "Full Stack Intern", "category": "Intern", "focus": "CRUD Applications & Modern Web Frameworks"}, {"title": "Data Science Intern", "category": "Intern", "focus": "Pandas, Scikit-Learn & Feature Engineering"}, {"title": "Machine Learning Intern", "category": "Intern", "focus": "PyTorch, Model Training & Evaluation"}, {"title": "Cloud & DevOps Intern", "category": "Intern", "focus": "Docker, Linux & AWS Basics"}, {"title": "Mobile App Development Intern (iOS)", "category": "Intern", "focus": "Swift, SwiftUI & Interface Design"}, {"title": "Mobile App Development Intern (Android)", "category": "Intern", "focus": "Kotlin, Android Studio & Room DB"}, {"title": "Data Analyst Intern", "category": "Intern", "focus": "SQL Queries, Excel & Tableau Dashboards"}, {"title": "Quality Assurance & Automation Intern", "category": "Intern", "focus": "Selenium, Cypress & Integration Testing"}, {"title": "Cybersecurity Intern", "category": "Intern", "focus": "Vulnerability Scanning & Network Security Basics"}, {"title": "Site Reliability Engineering Intern", "category": "Intern", "focus": "Monitoring, Grafana & Shell Scripting"}, {"title": "Systems Programming Intern", "category": "Intern", "focus": "C/C++, Memory Allocation & Pointer Arithmetic"}, {"title": "Database Administration Intern", "category": "Intern", "focus": "Indexing, Schema Design & Backups"}, {"title": "Artificial Intelligence Research Intern", "category": "Intern", "focus": "Paper Implementation & Benchmark Testing"}, {"title": "Natural Language Processing Intern", "category": "Intern", "focus": "Tokenization, HuggingFace & Fine-Tuning"}, {"title": "Computer Vision Intern", "category": "Intern", "focus": "OpenCV, Object Detection & Image Augmentation"}, {"title": "Developer Tools Intern", "category": "Intern", "focus": "CLI Applications, Git Hooks & Scripting"}, {"title": "API Platform Intern", "category": "Intern", "focus": "Documentation, Swagger/OpenAPI & Testing"}, {"title": "Embedded Software Intern", "category": "Intern", "focus": "Microcontrollers, Arduino & C Programming"}, {"title": "Network Engineering Intern", "category": "Intern", "focus": "TCP/IP, Routing & Packet Capture Analysis"}, {"title": "Business Intelligence Intern", "category": "Intern", "focus": "Power BI, Dashboard Layouts & Metrics"}, {"title": "Product Management Intern", "category": "Intern", "focus": "User Research, PRD Drafting & Competitive Audits"}, {"title": "UI/UX Design & Frontend Intern", "category": "Intern", "focus": "Figma, CSS Grid & Accessibility"}, {"title": "Technical Documentation Intern", "category": "Intern", "focus": "Markdown, API Guides & Tutorial Creation"}, {"title": "Open Source Contributor Intern", "category": "Intern", "focus": "Issue Triaging, Pull Requests & Code Review"}, {"title": "Distributed Storage Intern", "category": "Intern", "focus": "KV Stores, File Systems & Consistency Basics"}, {"title": "Infrastructure Automation Intern", "category": "Intern", "focus": "Terraform, Bash & CloudFormation"}, {"title": "Game Development Intern", "category": "Intern", "focus": "Unity, C# & Physics Simulations"}, {"title": "Robotics Software Intern", "category": "Intern", "focus": "ROS, Kinematics & Sensor Fusion"}, {"title": "Information Security Intern", "category": "Intern", "focus": "Penetration Testing, OWASP Top 10 Basics"}, {"title": "Web Scraping & Data Pipeline Intern", "category": "Intern", "focus": "BeautifulSoup, Scrapy & Data Cleaning"}, {"title": "Distributed Systems Intern", "category": "Intern", "focus": "Client-Server Architecture & RPC Protocols"}, {"title": "Blockchain Developer Intern", "category": "Intern", "focus": "Solidity, Smart Contracts & EVM Basics"}, {"title": "Compiler & Languages Intern", "category": "Intern", "focus": "Abstract Syntax Trees & Parser Generation"}, {"title": "Audio & Signal Processing Intern", "category": "Intern", "focus": "FFT, Audio Filters & DSP Fundamentals"}, {"title": "Bioinformatics Computing Intern", "category": "Intern", "focus": "Genomic Data Processing & Python Algorithms"}, {"title": "Search & Recommendation Intern", "category": "Intern", "focus": "TF-IDF, Collaborative Filtering & Similarity"}, {"title": "Quantum Computing Intern", "category": "Intern", "focus": "Qiskit, Quantum Circuits & Linear Algebra"}, {"title": "Spatial & AR/VR Computing Intern", "category": "Intern", "focus": "WebGL, Three.js & 3D Math"}, {"title": "Microservices Architecture Intern", "category": "Intern", "focus": "Docker Compose, Reverse Proxies & Nginx"}, {"title": "Financial Analytics Intern", "category": "Intern", "focus": "Time Series Analysis, Backtesting & Python"}, {"title": "Marketing Analytics Intern", "category": "Intern", "focus": "A/B Testing, Conversion Rate Analysis & SQL"}, {"title": "Operations Research Intern", "category": "Intern", "focus": "Linear Programming, Optimization & NumPy"}, {"title": "Cloud Security Intern", "category": "Intern", "focus": "IAM Roles, Least Privilege & Security Groups"}, {"title": "Linux Systems Intern", "category": "Intern", "focus": "Process Management, Systemd & Bash Automation"}, {"title": "Performance Benchmarking Intern", "category": "Intern", "focus": "JMeter, Load Testing & Throughput Metrics"}, {"title": "DevSecOps Intern", "category": "Intern", "focus": "SonarQube, GitGuardian & Secret Management"}, {"title": "Applied Math & Statistics Intern", "category": "Intern", "focus": "Monte Carlo Simulations & Hypothesis Testing"}, {"title": "Healthcare Tech Intern", "category": "Intern", "focus": "FHIR Standards, Health Data ETL & Python"}, {"title": "Embedded Systems Engineer", "category": "Engineering", "focus": "ARM Cortex, RTOS & Low-Power Firmware"}, {"title": "Firmware Architecture Specialist", "category": "Engineering", "focus": "Bootloaders, SPI/I2C & Hardware Bring-Up"}, {"title": "Hardware Systems Architect", "category": "Engineering", "focus": "PCB Design, Signal Integrity & System Topologies"}, {"title": "Robotics Software Engineer", "category": "Engineering", "focus": "ROS2, SLAM, Motion Planning & C++"}, {"title": "Autonomous Vehicles Navigation Lead", "category": "Engineering", "focus": "Kalman Filters, Lidar/Radar Sensor Fusion"}, {"title": "IoT Solutions Architect", "category": "Engineering", "focus": "MQTT, BLE, Edge Gateways & Device Shadows"}, {"title": "Distributed Storage Engineer", "category": "Engineering", "focus": "Ceph, Distributed Block Devices & Erasure Coding"}, {"title": "Industrial Automation Engineer", "category": "Engineering", "focus": "SCADA, PLC Programming & Modbus"}, {"title": "Computer Architecture Engineer", "category": "Engineering", "focus": "RISC-V, CPU Pipeline Design & Verilog"}, {"title": "FPGA Acceleration Engineer", "category": "Engineering", "focus": "VHDL, High-Level Synthesis & PCIe DMA"}, {"title": "Digital Signal Processing (DSP) Engineer", "category": "Engineering", "focus": "Audio/RF Filtering & MatLab Simulation"}, {"title": "Telecommunications Systems Engineer", "category": "Engineering", "focus": "5G NR, Baseband Processing & LTE Protocol"}, {"title": "Avionics Software Engineer", "category": "Engineering", "focus": "DO-178C Certification, Safety-Critical Systems"}, {"title": "Automotive Systems Engineer", "category": "Engineering", "focus": "AUTOSAR, CAN Bus & Functional Safety (ISO 26262)"}, {"title": "Medical Devices Software Engineer", "category": "Engineering", "focus": "IEC 62304 Standards & Biosensor Firmware"}, {"title": "Kernel Driver Engineer", "category": "Engineering", "focus": "Linux Device Drivers, DMA Buffers & Interrupt Handlers"}, {"title": "High-Voltage Systems Engineer", "category": "Engineering", "focus": "Battery Management Systems (BMS) & Power Electronics"}, {"title": "Thermal Systems & Mechanical Architect", "category": "Engineering", "focus": "Heatsink Optimization & Computational Fluid Dynamics"}, {"title": "Optical & Photonic Systems Engineer", "category": "Engineering", "focus": "Transceivers, DWDM & High-Speed Interconnects"}, {"title": "Semiconductor Physical Design Lead", "category": "Engineering", "focus": "ASIC Synthesis, Place-and-Route & Timing Closure"}, {"title": "FPGA High-Frequency Trading Engineer", "category": "Engineering", "focus": "Ultra-Low-Latency Order Books & Kernel Bypass"}, {"title": "Wireless Network Protocol Engineer", "category": "Engineering", "focus": "Wi-Fi 7 Standards, 802.11 Protocols & RF Design"}, {"title": "Satellite Communications Engineer", "category": "Engineering", "focus": "LEO Constellations, Orbital Mechanics & Uplinks"}, {"title": "Power Systems & Microgrid Engineer", "category": "Engineering", "focus": "Inverter Control, Grid Tie & Energy Storage"}, {"title": "Sensor Systems Specialist", "category": "Engineering", "focus": "IMU Calibration, MEMS Sensors & Noise Filtering"}, {"title": "Electronic Hardware Validation Lead", "category": "Engineering", "focus": "Oscilloscopes, EMI/EMC Testing & Stress Tests"}, {"title": "Flight Control Systems Engineer", "category": "Engineering", "focus": "PID Controllers, Aerodynamic Flight Dynamics"}, {"title": "Drone Fleet Software Architect", "category": "Engineering", "focus": "Swarm Coordination, Geofencing & Cellular Telemetry"}, {"title": "Subsea & Marine Robotics Engineer", "category": "Engineering", "focus": "Acoustic Modems, Sonar Processing & High Pressure"}, {"title": "Railway Signaling & Control Engineer", "category": "Engineering", "focus": "CBTC, Fail-Safe Interlocking & Safety Invariants"}, {"title": "Microfluidics & Bio-Instruments Engineer", "category": "Engineering", "focus": "Precision Actuation & Automated Fluid Handling"}, {"title": "Spacecraft Ground Systems Software Engineer", "category": "Engineering", "focus": "CCSDS Packet Telemetry & Command Sequencing"}, {"title": "Chip Verification Engineer (UVM)", "category": "Engineering", "focus": "SystemVerilog, Functional Coverage & Formal Verification"}, {"title": "Precision Motion Control Engineer", "category": "Engineering", "focus": "Stepper Motors, Servo Loops & Optical Encoders"}, {"title": "Acoustics & Audio Hardware Engineer", "category": "Engineering", "focus": "Microphone Arrays, Beamforming & Noise Suppression"}, {"title": "Antenna & RF Design Engineer", "category": "Engineering", "focus": "Phased Arrays, S-Parameters & High-Frequency EM"}, {"title": "Robotic Arm Manipulation Engineer", "category": "Engineering", "focus": "Inverse Kinematics, Trajectory Optimization & Grippers"}, {"title": "Smart Wearables Systems Engineer", "category": "Engineering", "focus": "Ultra-Low Energy Profiles, PPG Sensors & Accelerometry"}, {"title": "Battery Systems Validation Lead", "category": "Engineering", "focus": "Cycle Life Testing, Thermal Runaway Mitigation"}, {"title": "Automated Optical Inspection Engineer", "category": "Engineering", "focus": "High-Resolution Cameras & Machine Vision Lights"}, {"title": "Hydraulic & Pneumatic Systems Engineer", "category": "Engineering", "focus": "Proportional Valves & Fluid Power Logic"}, {"title": "Laser & Optoelectronics Specialist", "category": "Engineering", "focus": "Diode Lasers, Fiber Optics & Beam Alignment"}, {"title": "Metrology & Sensor Fusion Engineer", "category": "Engineering", "focus": "Coordinate Measuring Machines & Sub-micron Inspection"}, {"title": "Instrumentation & Controls Engineer", "category": "Engineering", "focus": "Industrial Transducers, 4-20mA Loops & PID"}, {"title": "Radiation-Hardened Systems Engineer", "category": "Engineering", "focus": "Single-Event Upsets (SEU) & Space Environment Hardening"}, {"title": "Cleanroom Process Integration Engineer", "category": "Engineering", "focus": "Semiconductor Wafer Fabrication & Lithography"}, {"title": "Power Supply Design Engineer", "category": "Engineering", "focus": "Buck/Boost Converters, LLC Resonant Topologies"}, {"title": "Electric Powertrain Architect", "category": "Engineering", "focus": "Traction Inverters, Permanent Magnet Synchronous Motors"}, {"title": "Safety-Critical Software Auditor", "category": "Engineering", "focus": "MISRA C Compliance, Formal Proofs & Static Analysis"}, {"title": "Hardware Security Specialist", "category": "Engineering", "focus": "Physical Unclonable Functions (PUF) & Side-Channel Defense"}, {"title": "Display & Graphics Hardware Engineer", "category": "Engineering", "focus": "MIPI DSI, DisplayPort Protocol & OLED Panel Drivers"}, {"title": "Data Analyst", "category": "Analyst", "focus": "SQL Queries, Dashboarding & KPI Definition"}, {"title": "Senior Business Analyst", "category": "Analyst", "focus": "Requirements Engineering & Business Process Modeling"}, {"title": "Financial Quantitative Analyst", "category": "Analyst", "focus": "Derivatives Pricing, Stochastic Calculus & Python"}, {"title": "Product Analytics Specialist", "category": "Analyst", "focus": "Cohort Retention, Churn Modeling & A/B Experimentation"}, {"title": "Business Intelligence Architect", "category": "Analyst", "focus": "Data Warehouse Modeling, Star Schema & Power BI"}, {"title": "Risk & Compliance Analyst", "category": "Analyst", "focus": "Credit Risk Modeling, Fraud Detection & Basel III"}, {"title": "Marketing & Growth Analyst", "category": "Analyst", "focus": "Multi-Touch Attribution, LTV:CAC & Ad Performance"}, {"title": "Operations Research Analyst", "category": "Analyst", "focus": "Supply Chain Optimization & Linear Programming"}, {"title": "Cybersecurity Threat Analyst", "category": "Analyst", "focus": "SOC Log Analysis, SIEM Dashboards & Threat Hunting"}, {"title": "Revenue Operations Analyst", "category": "Analyst", "focus": "Pipeline Forecasting, Salesforce Analytics & Win-Loss"}, {"title": "Supply Chain Data Analyst", "category": "Analyst", "focus": "Demand Forecasting, Inventory Turns & Safety Stock"}, {"title": "Healthcare Data Analyst", "category": "Analyst", "focus": "EHR Datasets, Clinical Outcomes & Epidemiological Models"}, {"title": "Customer Experience (CX) Analyst", "category": "Analyst", "focus": "Net Promoter Score, CSAT Trends & Sentiment Analysis"}, {"title": "People & HR Analytics Lead", "category": "Analyst", "focus": "Attrition Prediction, Compensation Benchmarking & Surveys"}, {"title": "E-commerce Category Analyst", "category": "Analyst", "focus": "Basket Analysis, Price Elasticity & Markdown Modeling"}, {"title": "Fraud & Anti-Money Laundering Analyst", "category": "Analyst", "focus": "Transaction Monitoring & Suspicious Activity Reports"}, {"title": "Equity Research Analyst", "category": "Analyst", "focus": "Discounted Cash Flow (DCF), Industry Reports & Valuation"}, {"title": "Credit Risk Scoring Analyst", "category": "Analyst", "focus": "Logistic Regression, FICO Scoring & Default Probability"}, {"title": "Algorithmic Trading Performance Analyst", "category": "Analyst", "focus": "Sharpe Ratio, Alpha Attribution & Slippage Profiling"}, {"title": "Web Traffic & SEO Analyst", "category": "Analyst", "focus": "Google Analytics 4, Crawl Budgets & Funnel Drop-offs"}, {"title": "Cloud Cost & FinOps Analyst", "category": "Analyst", "focus": "AWS Cost Explorer, EC2 Spot Utilization & Unit Economics"}, {"title": "Logistics & Route Optimization Analyst", "category": "Analyst", "focus": "Vehicle Routing Problem (VRP) & Mileage Variance"}, {"title": "Pricing Strategy Analyst", "category": "Analyst", "focus": "Dynamic Pricing Models, Competitor Scraping & Margins"}, {"title": "Asset Management Analyst", "category": "Analyst", "focus": "Portfolio Rebalancing, Tracking Error & Risk Parity"}, {"title": "Treasury & Liquidity Analyst", "category": "Analyst", "focus": "Cash Flow Forecasting, FX Hedging & Interest Rate Risk"}, {"title": "Mergers & Acquisitions (M&A) Analyst", "category": "Analyst", "focus": "LBO Modeling, Quality of Earnings & Synergies"}, {"title": "Telecom Network Traffic Analyst", "category": "Analyst", "focus": "Call Detail Records (CDR), Tower Congestion & QoS"}, {"title": "SaaS Metrics & Net Retention Analyst", "category": "Analyst", "focus": "ARR, MRR, Quick Ratio & Magic Number Diagnostics"}, {"title": "Gaming Economy & LiveOps Analyst", "category": "Analyst", "focus": "In-Game Currency Inflation, Player Progression & Gacha"}, {"title": "Media & Entertainment Analytics Lead", "category": "Analyst", "focus": "Content Viewer Drop-Off & Streaming Bitrate Analysis"}, {"title": "Energy & Carbon Emissions Analyst", "category": "Analyst", "focus": "Scope 1/2/3 Accounting, ESG Reporting & Renewables"}, {"title": "Real Estate Market Valuation Analyst", "category": "Analyst", "focus": "Cap Rate Analysis, Rent Rolls & Spatial Regression"}, {"title": "Voice of Customer (VoC) Analyst", "category": "Analyst", "focus": "NLP Topic Modeling on Support Tickets & Reviews"}, {"title": "Customer Lifetime Value (LTV) Specialist", "category": "Analyst", "focus": "Survival Analysis, Beta-Geometric NBD Models"}, {"title": "Ad Tech Yield Optimization Analyst", "category": "Analyst", "focus": "Header Bidding, eCPM Floors & Programmatic Fill Rates"}, {"title": "Clinical Trial Data Analyst", "category": "Analyst", "focus": "CDISC Standards, Biostatistics & Protocol Deviations"}, {"title": "Supply Vendor Performance Analyst", "category": "Analyst", "focus": "On-Time In-Full (OTIF) & Scorecard Governance"}, {"title": "Insurance Actuarial Analyst", "category": "Analyst", "focus": "Loss Ratios, Catastrophe Modeling & Reserving"}, {"title": "Search Ranking Relevance Analyst", "category": "Analyst", "focus": "NDCG Evaluation, Precision@K & Query Intent Audits"}, {"title": "Experimentation & Statistics Specialist", "category": "Analyst", "focus": "Sample Size Calculation, P-Hacking Defense & CUPED"}, {"title": "Procurement Analytics Specialist", "category": "Analyst", "focus": "Spend Categorization, Contract Compliance & Savings"}, {"title": "Brand Reputation & Sentiment Analyst", "category": "Analyst", "focus": "Social Listening, Brand Affinity & Crisis Detection"}, {"title": "API Platform Usage Analyst", "category": "Analyst", "focus": "Endpoint Latency Percentiles & Developer Churn"}, {"title": "Retail Store Footprint Analyst", "category": "Analyst", "focus": "Store Heatmaps, Cannibalization & Gravity Models"}, {"title": "Mobile App Store Engagement Analyst", "category": "Analyst", "focus": "Keyword Rankings, App Store Conversions & SDK Health"}, {"title": "Data Lineage & Quality Analyst", "category": "Analyst", "focus": "Data Freshness Alerts, Schema Drift & Great Expectations"}, {"title": "Macroeconomic Research Analyst", "category": "Analyst", "focus": "Inflation Indicators, Yield Curve Modeling & Central Banks"}, {"title": "Patent & Intellectual Property Analyst", "category": "Analyst", "focus": "Prior Art Searches, Citation Networks & White Spaces"}, {"title": "Workforce Planning Analyst", "category": "Analyst", "focus": "Headcount Modeling, Ramp Time & Capacity Planning"}, {"title": "Enterprise CRM Data Analyst", "category": "Analyst", "focus": "Lead Velocity Rate, MQL-to-SQL Conversion & Attribution"}, {"title": "SLA Performance & Reliability Analyst", "category": "Analyst", "focus": "MTTR, MTBF & Uptime Penalties Modeling"}];
+    const companiesData = [{"name": "Google", "sector": "Big Tech", "focus": "Coding \u2022 Distributed Systems \u2022 Leadership (Googlyness)"}, {"name": "Meta", "sector": "Big Tech", "focus": "Coding Speed \u2022 System Architecture \u2022 Cultural Fit"}, {"name": "Apple", "sector": "Big Tech", "focus": "Hardware/Software Co-design \u2022 Deep Engineering \u2022 Culture"}, {"name": "Amazon", "sector": "Big Tech", "focus": "Coding & DSA \u2022 System Design \u2022 16 Leadership Principles"}, {"name": "Microsoft", "sector": "Big Tech", "focus": "Technical Problem Solving \u2022 Cloud Design \u2022 Growth Mindset"}, {"name": "Netflix", "sector": "Big Tech", "focus": "Senior System Architecture \u2022 High Autonomy \u2022 Culture Memo"}, {"name": "Uber", "sector": "Big Tech", "focus": "High-Throughput Distributed Systems \u2022 Concurrency \u2022 Bar Raiser"}, {"name": "Stripe", "sector": "Big Tech", "focus": "Production Code Debugging \u2022 API Design \u2022 Practical Coding"}, {"name": "Airbnb", "sector": "Big Tech", "focus": "Architecture Tradeoffs \u2022 Product Sense \u2022 Core Values"}, {"name": "Spotify", "sector": "Big Tech", "focus": "Distributed Streaming \u2022 System Design \u2022 Agile Squad Fit"}, {"name": "Adobe", "sector": "Big Tech", "focus": "Graphics/Cloud Systems \u2022 Algorithms \u2022 Engineering Depth"}, {"name": "Salesforce", "sector": "Big Tech", "focus": "Multi-Tenant Architecture \u2022 Enterprise Scale \u2022 Values"}, {"name": "Nvidia", "sector": "Big Tech", "focus": "GPU Acceleration \u2022 CUDA \u2022 Deep Systems & Hardware"}, {"name": "Twitter / X", "sector": "Big Tech", "focus": "High-Concurrency Fanout \u2022 Distributed Systems \u2022 Speed"}, {"name": "LinkedIn", "sector": "Big Tech", "focus": "Data Infrastructure \u2022 Kafka Scale \u2022 Culture Fit"}, {"name": "ByteDance", "sector": "Big Tech", "focus": "High-Speed Algorithms \u2022 Recommendation Engines \u2022 Scale"}, {"name": "Pinterest", "sector": "Big Tech", "focus": "Distributed Graph Systems \u2022 API Design \u2022 Collaboration"}, {"name": "Snapchat", "sector": "Big Tech", "focus": "Multimedia Architecture \u2022 Low Latency \u2022 Coding"}, {"name": "DoorDash", "sector": "Big Tech", "focus": "Logistics Algorithms \u2022 Real-Time Systems \u2022 Leadership"}, {"name": "Lyft", "sector": "Big Tech", "focus": "Geospatial Routing \u2022 Distributed Systems \u2022 Technical Rounds"}, {"name": "McKinsey & Company", "sector": "Consulting", "focus": "Structured Problem Solving \u2022 Case Study \u2022 Impact"}, {"name": "Boston Consulting Group (BCG)", "sector": "Consulting", "focus": "Strategy Frameworks \u2022 Quantitative Modeling \u2022 Leadership"}, {"name": "Bain & Company", "sector": "Consulting", "focus": "Case Interviews \u2022 Commercial Acumen \u2022 Team Dynamics"}, {"name": "Deloitte", "sector": "Big 4", "focus": "Technology Transformation \u2022 System Architecture \u2022 Consulting"}, {"name": "PwC", "sector": "Big 4", "focus": "Enterprise Tech Strategy \u2022 Risk Analysis \u2022 Case Rounds"}, {"name": "EY (Ernst & Young)", "sector": "Big 4", "focus": "Solution Architecture \u2022 Digital Transformation \u2022 Behavioral"}, {"name": "KPMG", "sector": "Big 4", "focus": "IT Strategy \u2022 Enterprise Audit \u2022 Client Case Simulation"}, {"name": "Accenture", "sector": "Consulting", "focus": "Cloud Delivery \u2022 Systems Integration \u2022 Leadership Fit"}, {"name": "Oliver Wyman", "sector": "Consulting", "focus": "Financial & Strategic Advisory \u2022 Case Modeling"}, {"name": "Kearney", "sector": "Consulting", "focus": "Operations Strategy \u2022 Supply Chain \u2022 Case Interviews"}, {"name": "Strategy& (PwC)", "sector": "Consulting", "focus": "Executive Strategy \u2022 Market Assessment \u2022 Case Studies"}, {"name": "L.E.K. Consulting", "sector": "Consulting", "focus": "Commercial Due Diligence \u2022 Growth Strategy"}, {"name": "Booz Allen Hamilton", "sector": "Consulting", "focus": "Defense Tech \u2022 Mission Systems \u2022 Architecture"}, {"name": "Slalom", "sector": "Consulting", "focus": "Modern Tech Architecture \u2022 Collaborative Problem Solving"}, {"name": "Capgemini", "sector": "Consulting", "focus": "Enterprise Engineering \u2022 Agile Delivery \u2022 Technical Assessment"}, {"name": "Goldman Sachs", "sector": "Finance & Quant", "focus": "Low-Latency Systems \u2022 Algorithms \u2022 Financial Markets"}, {"name": "Morgan Stanley", "sector": "Finance & Quant", "focus": "Distributed Finance Core \u2022 Math & Coding \u2022 Leadership"}, {"name": "Citadel", "sector": "Finance & Quant", "focus": "Sub-microsecond Systems \u2022 Advanced Math \u2022 Data Structures"}, {"name": "Jane Street", "sector": "Finance & Quant", "focus": "Functional Programming (OCaml) \u2022 Probability \u2022 Systems"}, {"name": "Two Sigma", "sector": "Finance & Quant", "focus": "Machine Learning at Scale \u2022 Algorithms \u2022 Statistics"}, {"name": "Jump Trading", "sector": "Finance & Quant", "focus": "C++ Low-Latency \u2022 FPGA & Network Protocols \u2022 Concurrency"}, {"name": "Hudson River Trading (HRT)", "sector": "Finance & Quant", "focus": "Algorithmic Precision \u2022 Ultra-Low Latency \u2022 Architecture"}, {"name": "Bloomberg", "sector": "Finance & Quant", "focus": "Distributed Financial Data \u2022 C++ \u2022 Real-Time Systems"}, {"name": "DE Shaw", "sector": "Finance & Quant", "focus": "Deep Algorithmic Thinking \u2022 Quant Modeling \u2022 Systems"}, {"name": "DRW", "sector": "Finance & Quant", "focus": "High-Frequency Infrastructure \u2022 Concurrency \u2022 Tradeoffs"}, {"name": "BlackRock", "sector": "Finance & Quant", "focus": "Aladdin Risk Platform \u2022 Enterprise Scale \u2022 Java/C++"}, {"name": "JPMorgan Chase", "sector": "Finance & Quant", "focus": "High-Volume Transaction Banking \u2022 System Security \u2022 Cloud"}, {"name": "PayPal", "sector": "FinTech", "focus": "Payment Gateways \u2022 Fault Tolerance \u2022 Global Scale"}, {"name": "Block (Square)", "sector": "FinTech", "focus": "Merchant Systems \u2022 Open Source \u2022 Architecture"}, {"name": "Robinhood", "sector": "FinTech", "focus": "Stock & Crypto Order Routing \u2022 High Availability \u2022 Concurrency"}, {"name": "Plaid", "sector": "FinTech", "focus": "Financial API Integrations \u2022 Security \u2022 Distributed Data"}, {"name": "Brex", "sector": "FinTech", "focus": "Credit Engine Architecture \u2022 Elixir/Kotlin \u2022 Growth"}, {"name": "Coinbase", "sector": "FinTech", "focus": "Blockchain Infrastructure \u2022 Distributed Wallets \u2022 Security"}, {"name": "Chime", "sector": "FinTech", "focus": "High-Volume Consumer Banking \u2022 Distributed Databases"}, {"name": "Affirm", "sector": "FinTech", "focus": "Underwriting Algorithms \u2022 Low-Latency Decisioning"}, {"name": "Snowflake", "sector": "Enterprise & Cloud", "focus": "Data Warehouse Internals \u2022 C++ \u2022 Query Compilers"}, {"name": "Databricks", "sector": "Enterprise & Cloud", "focus": "Spark Core \u2022 Lakehouse Engines \u2022 Distributed ML"}, {"name": "Oracle", "sector": "Enterprise & Cloud", "focus": "OCI Cloud Infrastructure \u2022 Database Internals \u2022 Systems"}, {"name": "Cisco", "sector": "Enterprise & Cloud", "focus": "Networking Protocols \u2022 SD-WAN \u2022 Distributed Infrastructure"}, {"name": "IBM", "sector": "Enterprise & Cloud", "focus": "Hybrid Cloud \u2022 Linux/RedHat Systems \u2022 Enterprise Scalability"}, {"name": "Palantir", "sector": "Enterprise & Cloud", "focus": "Foundry Architecture \u2022 Decompressed Data \u2022 Complex Logic"}, {"name": "VMware", "sector": "Enterprise & Cloud", "focus": "Hypervisors \u2022 Distributed SDN \u2022 Virtualization"}, {"name": "Atlassian", "sector": "Enterprise & Cloud", "focus": "Collaborative Cloud Systems \u2022 High Availability \u2022 Microservices"}, {"name": "ServiceNow", "sector": "Enterprise & Cloud", "focus": "Enterprise Workflow Automation \u2022 Scale \u2022 High Reliability"}, {"name": "Twilio", "sector": "Enterprise & Cloud", "focus": "Telecommunications Cloud \u2022 Voice/SMS APIs \u2022 Low Latency"}, {"name": "Cloudflare", "sector": "Enterprise & Cloud", "focus": "Edge Computing \u2022 Rust \u2022 DDoS Defense & Network Stack"}, {"name": "MongoDB", "sector": "Enterprise & Cloud", "focus": "Document Storage Engines \u2022 Distributed Raft \u2022 C++"}, {"name": "Confluent", "sector": "Enterprise & Cloud", "focus": "Kafka Internals \u2022 Stream Processing \u2022 Distributed Architecture"}, {"name": "HashiCorp", "sector": "Enterprise & Cloud", "focus": "Raft Consensus (Vault/Consul) \u2022 Go \u2022 Infrastructure"}, {"name": "Elastic", "sector": "Enterprise & Cloud", "focus": "Distributed Search Engines \u2022 Lucene \u2022 Lucene Inverted Index"}, {"name": "Intuit", "sector": "Enterprise & Cloud", "focus": "TurboTax/QuickBooks Infrastructure \u2022 High Security \u2022 Scale"}, {"name": "Workday", "sector": "Enterprise & Cloud", "focus": "In-Memory Enterprise Architecture \u2022 Metadata Driven Systems"}, {"name": "Splunk", "sector": "Enterprise & Cloud", "focus": "High-Volume Log Search \u2022 Streaming Analytics \u2022 Architecture"}, {"name": "Box", "sector": "Enterprise & Cloud", "focus": "Enterprise Content Management \u2022 Encryption \u2022 Scale"}, {"name": "DocuSign", "sector": "Enterprise & Cloud", "focus": "Cryptographic Signatures \u2022 High Availability \u2022 Compliance"}, {"name": "TCS (Tata Consultancy Services)", "sector": "Global Enterprise", "focus": "Core Engineering \u2022 Technical Depth \u2022 System Analysis"}, {"name": "Infosys", "sector": "Global Enterprise", "focus": "Large-Scale Architecture \u2022 Enterprise Modernization"}, {"name": "Wipro", "sector": "Global Enterprise", "focus": "Cloud Migration \u2022 Distributed Problem Solving"}, {"name": "HCL Technologies", "sector": "Global Enterprise", "focus": "Digital Foundation \u2022 Infrastructure Architecture"}, {"name": "Zomato", "sector": "Unicorn", "focus": "Hyperlocal Logistics \u2022 High-Concurrency Order Engine"}, {"name": "Swiggy", "sector": "Unicorn", "focus": "Real-Time Matching \u2022 Routing Topologies \u2022 Microservices"}, {"name": "Flipkart", "sector": "Unicorn", "focus": "Big Billion Days Scale \u2022 High-Concurrency Inventory"}, {"name": "CRED", "sector": "Unicorn", "focus": "Clean Architecture \u2022 High Security \u2022 Financial Ledgers"}, {"name": "Razorpay", "sector": "Unicorn", "focus": "Payment Orchestration \u2022 Sub-second Idempotency"}, {"name": "Zepto", "sector": "Unicorn", "focus": "10-Minute Delivery Dispatch \u2022 Dynamic Sourcing Algorithms"}, {"name": "Meesho", "sector": "Unicorn", "focus": "Tier-2/3 Scalable Marketplace \u2022 Social Commerce Infrastructure"}, {"name": "Paytm", "sector": "Unicorn", "focus": "High-Frequency UPI Switch \u2022 QR Transaction Systems"}, {"name": "InMobi", "sector": "Unicorn", "focus": "AdTech Real-Time Bidding \u2022 Big Data Streams"}, {"name": "Postman", "sector": "Unicorn", "focus": "API Tooling \u2022 Client-Server Architectures \u2022 Dev Ecosystem"}, {"name": "Groww", "sector": "Unicorn", "focus": "Stock Exchange Integration \u2022 Low-Latency Market Feeds"}, {"name": "Ola", "sector": "Unicorn", "focus": "Geospatial Dispatch \u2022 High-Volume Ride Matching"}, {"name": "Freshworks", "sector": "Unicorn", "focus": "SaaS Multi-Tenancy \u2022 CRM Platform Architecture"}, {"name": "BrowserStack", "sector": "Unicorn", "focus": "Real-Device Cloud Infrastructure \u2022 WebRTC Streaming"}, {"name": "Dunzo", "sector": "Unicorn", "focus": "Geo-Fenced Route Sizing \u2022 On-Demand Inventory"}, {"name": "PolicyBazaar", "sector": "Unicorn", "focus": "Insurance Aggregation \u2022 Conversion Funnels \u2022 Cloud"}, {"name": "Zerodha", "sector": "FinTech / Unicorn", "focus": "Kite Core \u2022 High-Frequency Order Books \u2022 Frugal Architecture"}, {"name": "PhonePe", "sector": "FinTech / Unicorn", "focus": "Massive UPI Switch \u2022 Distributed High-Concurrency Systems"}, {"name": "Klaviyo", "sector": "SaaS Unicorn", "focus": "Event-Driven Marketing Systems \u2022 High-Volume Mail Delivery"}, {"name": "Figma", "sector": "Design Tech", "focus": "Wasm Core \u2022 Multi-User Real-Time Operational Transforms"}, {"name": "Notion", "sector": "Productivity Tech", "focus": "Block Architecture \u2022 Offline-First Sync \u2022 Postgres Sharding"}];
 
-    // 2. Questions Carousel
-    const questions = [
-      "Tell me about a distributed system where you handled data replication under network partitions. How did you maintain consistency and avoid split-brain scenarios?",
-      "How do you design a high-throughput event ingestion pipeline that guarantees exactly-once processing semantics?",
-      "Explain the fundamental trade-offs between LSM-Trees and B-Trees for write-intensive versus read-intensive workloads.",
-      "How would you architect a distributed rate limiter across global data centers with low latency and soft consistency?",
-      "Walk me through how you troubleshoot and mitigate cascading failures in a microservices ecosystem.",
-      "Describe how Raft achieves consensus during leader election and log replication under partial network partitions.",
-      "How do you optimize inter-node communication collectives in distributed deep learning training?",
-      "Discuss a scenario where you had to push back on a key architectural requirement due to SLA or reliability constraints."
-    ];
-
+    let activeRoleCategory = 'Tech';
+    let activeCompanySector = 'All';
+    let currentQuestions = [];
     let currentQIndex = 0;
-    const questionCounter = document.getElementById('question-counter');
-    const questionText = document.getElementById('current-question-text');
+    let timerInterval = null;
+    let totalSeconds = 0;
+
+    // 2. Mode Switching
+    function switchMode(mode) {
+      const tabs = ['role', 'company', 'jd', 'custom'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const container = document.getElementById(`mode-${t}-container`);
+        if (t === mode) {
+          btn.className = "px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all bg-[#2C1F0E] text-white shadow-sm flex items-center gap-1.5 whitespace-nowrap";
+          container.classList.remove('hidden');
+          container.classList.add('flex');
+        } else {
+          btn.className = "px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all text-[#7F766C] hover:text-[#2C1F0E] flex items-center gap-1.5 whitespace-nowrap";
+          container.classList.add('hidden');
+          container.classList.remove('flex');
+        }
+      });
+      if (mode === 'role') renderRoles();
+      if (mode === 'company') renderCompanies();
+    }
+
+    // 3. Category Filter for Roles
+    function filterRoleCategory(cat) {
+      activeRoleCategory = cat;
+      document.querySelectorAll('#category-pills .cat-pill').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = "cat-pill active px-4 py-1.5 rounded-full text-xs font-semibold bg-[#2C1F0E] text-white border border-[#2C1F0E] transition-all whitespace-nowrap";
+        } else {
+          btn.className = "cat-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap";
+        }
+      });
+      renderRoles();
+    }
+
+    // 4. Render Roles Grid
+    function renderRoles() {
+      const query = (document.getElementById('role-search-input').value || '').toLowerCase().trim();
+      const grid = document.getElementById('role-grid');
+      grid.innerHTML = '';
+
+      const filtered = rolesData.filter(r => {
+        const matchesCat = r.category === activeRoleCategory;
+        const matchesQuery = !query || r.title.toLowerCase().includes(query) || r.focus.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-[#8C7B6B]">
+            <span class="material-symbols-outlined text-3xl mb-2 text-slate-400">search_off</span>
+            <p class="text-sm font-medium">No roles match your search within ${activeRoleCategory}.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(role => {
+        const card = document.createElement('div');
+        card.className = "group bg-[#FFFDF8] border border-[#E8DFD0] hover:border-[#AA7000] rounded-2xl p-4 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer flex flex-col justify-between";
+        card.onclick = () => startInterview(role.title, role.category);
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-[#FAF6EE] text-[#7F766C] border border-[#E8DFD0] text-[10px] font-bold tracking-wider uppercase group-hover:bg-[#FBF3E0] group-hover:text-[#AA7000] transition-colors">
+                ${role.category}
+              </span>
+              <span class="material-symbols-outlined text-sm text-slate-400 group-hover:text-[#AA7000] group-hover:translate-x-0.5 transition-all">
+                arrow_forward
+              </span>
+            </div>
+            <h3 class="font-bold text-sm text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors leading-snug line-clamp-1">
+              ${role.title}
+            </h3>
+            <p class="text-xs text-[#8C7B6B] mt-1 line-clamp-2 leading-relaxed">
+              ${role.focus}
+            </p>
+          </div>
+          <div class="mt-3.5 pt-2.5 border-t border-[#F2EBD8] flex items-center justify-between text-[11px] font-semibold text-[#8C7B6B] group-hover:text-[#2C1F0E]">
+            <span>Practice Track</span>
+            <span class="text-[#AA7000] font-bold flex items-center gap-0.5">Start <span class="material-symbols-outlined text-xs">play_arrow</span></span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // 5. Sector Filter for Companies
+    function filterCompanySector(sector) {
+      activeCompanySector = sector;
+      document.querySelectorAll('#company-filter-pills .comp-pill').forEach(btn => {
+        if (btn.getAttribute('data-sec') === sector) {
+          btn.className = "comp-pill active px-4 py-1.5 rounded-full text-xs font-semibold bg-[#2C1F0E] text-white border border-[#2C1F0E] transition-all whitespace-nowrap";
+        } else {
+          btn.className = "comp-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-[#FFFDF8] text-[#7F766C] border border-[#E8DFD0] hover:border-[#AA7000] hover:text-[#2C1F0E] transition-all whitespace-nowrap";
+        }
+      });
+      renderCompanies();
+    }
+
+    // 6. Render Companies Grid
+    function renderCompanies() {
+      const query = (document.getElementById('company-search-input').value || '').toLowerCase().trim();
+      const grid = document.getElementById('company-grid');
+      grid.innerHTML = '';
+
+      const filtered = companiesData.filter(c => {
+        let matchesSector = false;
+        if (activeCompanySector === 'All') matchesSector = true;
+        else if (activeCompanySector === 'Big 4') matchesSector = (c.sector === 'Big 4' || c.sector === 'Consulting');
+        else if (activeCompanySector === 'Unicorn') matchesSector = (c.sector.includes('Unicorn') || c.sector.includes('Startups') || c.sector.includes('Design'));
+        else matchesSector = c.sector.includes(activeCompanySector);
+
+        const matchesQuery = !query || c.name.toLowerCase().includes(query) || c.sector.toLowerCase().includes(query) || c.focus.toLowerCase().includes(query);
+        return matchesSector && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-[#8C7B6B]">
+            <span class="material-symbols-outlined text-3xl mb-2 text-slate-400">search_off</span>
+            <p class="text-sm font-medium">No enterprise rubrics match your search.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(company => {
+        const card = document.createElement('div');
+        card.className = "group bg-[#FFFDF8] border border-[#E8DFD0] hover:border-[#AA7000] rounded-2xl p-4 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer flex flex-col justify-between";
+        card.onclick = () => startInterview(`${company.name} Standard`, company.sector);
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-[#FAF6EE] text-[#7F766C] border border-[#E8DFD0] text-[10px] font-bold tracking-wider uppercase group-hover:bg-[#FBF3E0] group-hover:text-[#AA7000] transition-colors">
+                ${company.sector}
+              </span>
+              <span class="material-symbols-outlined text-sm text-slate-400 group-hover:text-[#AA7000] group-hover:translate-x-0.5 transition-all">
+                arrow_forward
+              </span>
+            </div>
+            <h3 class="font-bold text-sm text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors leading-snug line-clamp-1">
+              ${company.name}
+            </h3>
+            <p class="text-xs text-[#8C7B6B] mt-1 line-clamp-2 leading-relaxed">
+              ${company.focus}
+            </p>
+          </div>
+          <div class="mt-3.5 pt-2.5 border-t border-[#F2EBD8] flex items-center justify-between text-[11px] font-semibold text-[#8C7B6B] group-hover:text-[#2C1F0E]">
+            <span>Benchmark Rubric</span>
+            <span class="text-[#AA7000] font-bold flex items-center gap-0.5">Start <span class="material-symbols-outlined text-xs">play_arrow</span></span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // 7. Keyword detection for JD Parser
+    function detectJdKeywords(text) {
+      const tagsList = document.getElementById('jd-tags-list');
+      if (!text || text.length < 15) return;
+      const lower = text.toLowerCase();
+      const detected = [];
+      if (lower.includes('distributed') || lower.includes('scale') || lower.includes('microservice')) detected.push('Distributed Architecture');
+      if (lower.includes('python') || lower.includes('golang') || lower.includes('rust') || lower.includes('java')) detected.push('Core Backend');
+      if (lower.includes('react') || lower.includes('frontend') || lower.includes('ui')) detected.push('Frontend & Web');
+      if (lower.includes('sql') || lower.includes('database') || lower.includes('postgres')) detected.push('Storage Engines');
+      if (lower.includes('cloud') || lower.includes('aws') || lower.includes('k8s') || lower.includes('kubernetes')) detected.push('Cloud Infrastructure');
+      if (lower.includes('lead') || lower.includes('mentor') || lower.includes('agile')) detected.push('Leadership & Delivery');
+
+      if (detected.length > 0) {
+        tagsList.innerHTML = detected.map(tag => `
+          <span class="px-2.5 py-0.5 rounded-full bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/20 text-[11px] font-semibold">${tag}</span>
+        `).join('');
+      }
+    }
+
+    // 8. Start JD Interview
+    function startJdInterview(e) {
+      e.preventDefault();
+      const role = document.getElementById('jd-title-input').value.trim();
+      const company = document.getElementById('jd-company-input').value.trim();
+      const title = company ? `${role} • ${company}` : role;
+      startInterview(title, 'Job Description');
+    }
+
+    // 9. Start Custom Interview
+    function startCustomInterview(e) {
+      e.preventDefault();
+      const role = document.getElementById('custom-role-input').value.trim();
+      const seniority = document.getElementById('custom-seniority-input').value;
+      const customQuestionsText = document.getElementById('custom-questions-input').value.trim();
+      let customList = [];
+      if (customQuestionsText) {
+        customList = customQuestionsText.split('\n').map(q => q.trim()).filter(q => q.length > 0);
+      }
+      startInterview(`${seniority} ${role}`, 'Custom Track', customList);
+    }
+
+    // 10. Generate Questions Based on Role & Track
+    function getQuestionsForTrack(title, track, customList = []) {
+      if (customList && customList.length > 0) return customList;
+
+      const lower = title.toLowerCase();
+      if (track === 'Management' || lower.includes('manager') || lower.includes('director') || lower.includes('product')) {
+        return [
+          "Walk me through a scenario where engineering and product disagreed on roadmap trade-offs. How did you resolve it?",
+          "How do you establish engineering velocity metrics without creating toxic incentives or gaming of story points?",
+          "Describe your framework for conducting root-cause post-mortems following a major customer-facing outage.",
+          "How do you manage underperformance on a distributed team while maintaining engineering morale?",
+          "Explain how you prioritize technical debt paydown against urgent feature delivery for high-stakes enterprise clients."
+        ];
+      } else if (track === 'Intern' || lower.includes('intern')) {
+        return [
+          "Explain the time and space complexity difference between an Array-based list and a Hash Map for lookup operations.",
+          "Describe a project you built from scratch. What was the toughest bug you hit, and how did you diagnose it?",
+          "How do you ensure your code handles edge cases such as null inputs, race conditions, or network timeouts?",
+          "What git workflow do you use when collaborating with a team to avoid merge conflicts and keep main stable?",
+          "If an API call takes unexpectedly long in your application, what steps would you take to pinpoint the bottleneck?"
+        ];
+      } else if (track === 'Analyst' || lower.includes('analyst') || lower.includes('business')) {
+        return [
+          "How do you distinguish between correlation and causation when evaluating a new feature rollout?",
+          "Walk me through how you would optimize an expensive SQL query involving multiple joins across billion-row tables.",
+          "Explain how you set up an A/B experimentation framework to guard against false discoveries and sample ratio mismatches.",
+          "How do you translate ambiguous executive business questions into actionable quantitative KPIs?",
+          "Describe a time when the data contradicted stakeholder assumptions. How did you communicate the findings?"
+        ];
+      } else if (track === 'Engineering' || lower.includes('embedded') || lower.includes('firmware') || lower.includes('hardware')) {
+        return [
+          "How do you handle memory constraints and avoid dynamic allocation pitfalls in real-time embedded systems?",
+          "Explain how you debug intermittent signal bounce or bus contention in SPI or I2C communication channels.",
+          "What strategies do you employ to guarantee deterministic task scheduling in an RTOS environment?",
+          "Walk me through how you design a fail-safe state machine for hardware that must gracefully handle power drops.",
+          "How do you approach EMI/EMC compliance and thermal throttling in high-density PCB layouts?"
+        ];
+      } else if (title.includes('Google')) {
+        return [
+          "How would you architect a global web search indexing engine with sub-second update propagation?",
+          "Explain how you design a resilient multi-tenant RPC framework handling hundreds of millions of requests per second.",
+          "Describe a situation where you spearheaded an ambitious engineering improvement with high ambiguity and no direct authority."
+        ];
+      } else if (title.includes('Amazon')) {
+        return [
+          "Describe a time when you had to make a high-stakes architectural decision with incomplete information (Bias for Action).",
+          "Walk me through an occasion where you deep dived into telemetry data to uncover a non-obvious performance bottleneck.",
+          "Tell me about a time you refused to compromise on code quality standards despite intense delivery deadlines (Insist on Highest Standards)."
+        ];
+      }
+
+      // Standard Tech / Distributed Systems Default
+      return [
+        "Tell me about a distributed system where you handled data replication under network partitions. How did you maintain consistency and avoid split-brain scenarios?",
+        "How do you design a high-throughput event ingestion pipeline that guarantees exactly-once processing semantics?",
+        "Explain the fundamental trade-offs between LSM-Trees and B-Trees for write-intensive versus read-intensive workloads.",
+        "How would you architect a distributed rate limiter across global data centers with low latency and soft consistency?",
+        "Walk me through how you troubleshoot and mitigate cascading failures in a microservices ecosystem.",
+        "Describe how Raft achieves consensus during leader election and log replication under partial network partitions."
+      ];
+    }
+
+    // 11. Start Interview Session & Transition Screen
+    function startInterview(title, track, customList = []) {
+      currentQuestions = getQuestionsForTrack(title, track, customList);
+      currentQIndex = 0;
+
+      // Update Top Stage Title
+      document.getElementById('stage-selected-title').textContent = `${title} (${track})`;
+
+      // Hide Setup, Show Interview Stage
+      document.getElementById('setup-screen').classList.add('hidden');
+      const stage = document.getElementById('interview-stage');
+      stage.classList.remove('hidden');
+      stage.classList.add('flex');
+
+      // Update question text
+      updateQuestion(0);
+
+      // Start timer
+      totalSeconds = 0;
+      clearInterval(timerInterval);
+      const timerEl = document.getElementById('session-timer');
+      timerInterval = setInterval(() => {
+        totalSeconds++;
+        const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const secs = String(totalSeconds % 60).padStart(2, '0');
+        if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+      }, 1000);
+    }
+
+    // 12. Exit to Setup
+    function exitToSetup() {
+      clearInterval(timerInterval);
+      document.getElementById('interview-stage').classList.add('hidden');
+      document.getElementById('interview-stage').classList.remove('flex');
+      document.getElementById('setup-screen').classList.remove('hidden');
+    }
+
+    // 13. Question Navigation
+    function updateQuestion(index) {
+      currentQIndex = index;
+      const counter = document.getElementById('question-counter');
+      const text = document.getElementById('current-question-text');
+      if (counter) counter.textContent = `Q ${index + 1} of ${currentQuestions.length}`;
+      if (text) text.textContent = `"${currentQuestions[index]}"`;
+    }
+
     const nextBtn = document.getElementById('next-question-btn');
     const prevBtn = document.getElementById('prev-question-btn');
 
-    function updateQuestion(index) {
-      currentQIndex = index;
-      if (questionCounter) questionCounter.textContent = `Q ${index + 1} of ${questions.length}`;
-      if (questionText) questionText.textContent = `"${questions[index]}"`;
-    }
-
     if (nextBtn) {
       nextBtn.addEventListener('click', () => {
-        if (currentQIndex < questions.length - 1) {
+        if (currentQIndex < currentQuestions.length - 1) {
           updateQuestion(currentQIndex + 1);
         } else {
           window.location.href = 'report.html';
@@ -294,7 +894,7 @@
       });
     }
 
-    // 3. Mic & Camera Toggles
+    // 14. Mic & Camera Toggles
     const micBtn = document.getElementById('mic-toggle-btn');
     const micIcon = document.getElementById('mic-icon');
     let micActive = true;
@@ -302,7 +902,7 @@
       micBtn.addEventListener('click', () => {
         micActive = !micActive;
         micIcon.textContent = micActive ? 'mic' : 'mic_off';
-        micIcon.className = micActive ? 'material-symbols-outlined text-xl text-[#AA7000]' : 'material-symbols-outlined text-xl text-slate-500';
+        micIcon.className = micActive ? 'material-symbols-outlined text-lg text-[#AA7000]' : 'material-symbols-outlined text-lg text-slate-500';
       });
     }
 
@@ -313,9 +913,12 @@
       camBtn.addEventListener('click', () => {
         camActive = !camActive;
         camIcon.textContent = camActive ? 'videocam' : 'videocam_off';
-        camIcon.className = camActive ? 'material-symbols-outlined text-xl text-slate-300' : 'material-symbols-outlined text-xl text-slate-500';
+        camIcon.className = camActive ? 'material-symbols-outlined text-lg text-slate-300' : 'material-symbols-outlined text-lg text-slate-500';
       });
     }
+
+    // Initial render
+    renderRoles();
   </script>
 </body>
 </html>
