@@ -991,6 +991,7 @@
     let selectedCodingLanguage = 'C++ (GCC 14)';
     let selectedRound = 'Coding';
     let selectedInterviewerIdx = 0;
+    let selectedEvaluatorRegion = 'All';
 
     let currentQuestions = [];
     let currentQIndex = 0;
@@ -1572,38 +1573,48 @@
       if (!grid) return;
       grid.innerHTML = '';
 
-      const filtered = selectedEvaluatorRegion === 'All' 
+      const currentRegion = (typeof selectedEvaluatorRegion !== 'undefined') ? selectedEvaluatorRegion : 'All';
+      const filtered = (currentRegion === 'All')
         ? interviewers.map((inv, originalIdx) => ({ inv, originalIdx }))
-        : interviewers.map((inv, originalIdx) => ({ inv, originalIdx })).filter(item => item.inv.region === selectedEvaluatorRegion);
+        : interviewers.map((inv, originalIdx) => ({ inv, originalIdx })).filter(item => item.inv.region === currentRegion);
 
       const countBadge = document.getElementById('evaluator-count-badge');
       if (countBadge) {
-        countBadge.textContent = `${filtered.length} Personas (${selectedEvaluatorRegion})`;
+        countBadge.textContent = `${filtered.length} Personas (${currentRegion})`;
       }
 
       filtered.forEach(({ inv, originalIdx }) => {
         const btn = document.createElement('div');
         const isActive = (originalIdx === selectedInterviewerIdx);
-        btn.className = "p-2 rounded-xl border text-left transition-all flex flex-col justify-between cursor-pointer relative group " + 
-          (isActive ? "border-2 border-[#2C1F0E] bg-[#F2EBD8] shadow-sm" : "border-[#E8DFD0] hover:border-[#AA7000] bg-[#FFFDF8]");
+        btn.className = "p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer relative group " + 
+          (isActive ? "border-2 border-[#2C1F0E] bg-[#F2EBD8] shadow-sm ring-1 ring-[#2C1F0E]/20" : "border-[#E8DFD0] hover:border-[#AA7000] bg-[#FFFDF8]");
         
+        const genderBadge = inv.gender === 'female'
+          ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#FAF0F4] text-[#B83280] border border-[#F3D1E4]">Female</span>'
+          : '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#EFF4FA] text-[#2563EB] border border-[#D0E1F9]">Male</span>';
+
         btn.innerHTML = `
-          <div class="flex items-center gap-2 mb-1.5">
-            <div class="w-10 h-10 rounded-full overflow-hidden border border-[#E8DFD0] shadow-sm relative flex-shrink-0">
-              <img src="${inv.avatar}" alt="${inv.name}" class="w-full h-full object-cover" />
-            </div>
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-1">
-                <span class="text-xs font-bold text-[#2C1F0E] truncate">${inv.name}</span>
-                <span class="text-xs">${inv.regionFlag || ''}</span>
+          <div>
+            <div class="flex items-center gap-2.5 mb-2">
+              <div class="w-11 h-11 rounded-xl overflow-hidden border border-[#E8DFD0] shadow-sm relative shrink-0">
+                <img src="${inv.avatar}" alt="${inv.name}" class="w-full h-full object-cover" />
               </div>
-              <div class="text-[10px] text-[#AA7000] font-semibold truncate leading-tight">${inv.accentLabel}</div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-1 mb-0.5">
+                  <span class="text-xs font-bold text-[#2C1F0E] truncate flex items-center gap-1">
+                    <span>${inv.name}</span>
+                    <span>${inv.regionFlag || ''}</span>
+                  </span>
+                  ${genderBadge}
+                </div>
+                <div class="text-[10px] text-[#AA7000] font-semibold truncate leading-tight">${inv.accentLabel}</div>
+              </div>
             </div>
           </div>
-          <div class="flex items-center justify-between pt-1 border-t border-[#E8DFD0]/60 text-[10px]">
-            <span class="text-[#7F766C] truncate">${inv.subLabel || ''}</span>
-            <button type="button" onclick="previewEvaluatorVoice(${originalIdx}, event)" class="px-1.5 py-0.5 rounded bg-white hover:bg-[#FAF6EE] border border-[#E8DFD0] text-[#2C1F0E] font-bold text-[9px] flex items-center gap-0.5 shadow-2xs hover:text-[#AA7000] cursor-pointer" title="Sample Voice">
-              <span class="material-symbols-outlined text-[11px]">volume_up</span>
+          <div class="flex items-center justify-between pt-2 border-t border-[#E8DFD0]/60 text-[10px]">
+            <span class="text-[#7F766C] truncate max-w-[130px]">${inv.subLabel || ''}</span>
+            <button type="button" onclick="previewEvaluatorVoice(${originalIdx}, event)" class="px-2 py-0.5 rounded-md bg-white hover:bg-[#FAF6EE] border border-[#E8DFD0] text-[#2C1F0E] font-bold text-[9px] flex items-center gap-1 shadow-2xs hover:text-[#AA7000] cursor-pointer" title="Sample Voice">
+              <span class="material-symbols-outlined text-xs">volume_up</span>
               <span>Sample</span>
             </button>
           </div>
@@ -1648,45 +1659,64 @@
 
     // Modal Opening: ONLY SHOW CODING LANGUAGE WHEN TECH ROUND IS CHOSEN
     function openInterviewConfig(title, track, levels = null, company = null) {
-      pendingTitle = title;
-      pendingTrack = track;
-      pendingCompany = company;
+      try {
+        pendingTitle = title;
+        pendingTrack = track;
+        pendingCompany = company;
 
-      let availableLevels = levels;
-      if (!availableLevels || !availableLevels.length) {
-        if (track === 'Tech' || track === 'Engineering') {
-          availableLevels = ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"];
-        } else if (track === 'Management') {
-          availableLevels = ["Associate", "Manager", "Senior Manager", "Director"];
-        } else if (track === 'Intern') {
-          availableLevels = ["Summer Intern", "Graduate Intern", "Co-Op"];
+        let availableLevels = levels;
+        if (!availableLevels || !availableLevels.length) {
+          if (track === 'Tech' || track === 'Engineering') {
+            availableLevels = ["SDE 1", "SDE 2", "Senior SDE", "Staff SDE"];
+          } else if (track === 'Management') {
+            availableLevels = ["Associate", "Manager", "Senior Manager", "Director"];
+          } else if (track === 'Intern') {
+            availableLevels = ["Summer Intern", "Graduate Intern", "Co-Op"];
+          } else {
+            availableLevels = ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"];
+          }
+        }
+        currentAvailableLevels = availableLevels;
+        pendingLevel = availableLevels[1] || availableLevels[0];
+
+        renderLevelButtons();
+
+        const roleTitleEl = document.getElementById('modal-role-title');
+        if (roleTitleEl) roleTitleEl.textContent = title + " (" + pendingLevel + ")";
+        const roleSubEl = document.getElementById('modal-role-subtitle');
+        if (roleSubEl) roleSubEl.textContent = (company ? company + " • " : "") + track + " Track • Standardized Evaluator";
+
+        // Select initial round
+        if (track === 'Tech') {
+          selectRound('Coding');
         } else {
-          availableLevels = ["Analyst 1", "Analyst 2", "Senior Analyst", "Lead Analyst"];
+          selectRound('Role Related');
+        }
+
+        renderEvaluators();
+        updateLanguageSelectorVisibility();
+
+        const modal = document.getElementById('interview-config-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
+      } catch (err) {
+        console.error("Notice in openInterviewConfig:", err);
+        const modal = document.getElementById('interview-config-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
         }
       }
-      currentAvailableLevels = availableLevels;
-      pendingLevel = availableLevels[1] || availableLevels[0];
-
-      renderLevelButtons();
-
-      document.getElementById('modal-role-title').textContent = title + " (" + pendingLevel + ")";
-      document.getElementById('modal-role-subtitle').textContent = (company ? company + " • " : "") + track + " Track • Standardized Evaluator";
-
-      // Select initial round
-      if (track === 'Tech') {
-        selectRound('Coding');
-      } else {
-        selectRound('Role Related');
-      }
-
-      renderEvaluators();
-      updateLanguageSelectorVisibility();
-
-      document.getElementById('interview-config-modal').classList.remove('hidden');
     }
 
     function closeInterviewConfig() {
-      document.getElementById('interview-config-modal').classList.add('hidden');
+      const modal = document.getElementById('interview-config-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
     }
 
     function selectRound(round) {
@@ -1826,14 +1856,18 @@
     let soundCheckPassed = false;
 
     function openPracticePrerequisite() {
-      if (!document.getElementById('setting-terms').checked) {
+      const termsCheck = document.getElementById('setting-terms');
+      if (termsCheck && !termsCheck.checked) {
         alert("Please accept the terms to proceed.");
         return;
       }
       
       closeInterviewConfig();
       const modal = document.getElementById('prerequisite-modal');
-      modal.classList.remove('hidden');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
 
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const img = document.getElementById('prereq-interviewer-img');
@@ -1848,7 +1882,11 @@
     }
 
     function closePracticePrerequisite() {
-      document.getElementById('prerequisite-modal').classList.add('hidden');
+      const modal = document.getElementById('prerequisite-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
     }
 
     async function runSystemPrerequisiteChecks() {
