@@ -39,3 +39,9 @@ __pycache__/
 
 # Unwanted reference drafts & test dumps
 stitch_imaira_ai_mock_interviews/
+
+# Python AI engine
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
