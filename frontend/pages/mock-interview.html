@@ -16,6 +16,16 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script src="../js/tailwind-config.js"></script>
 
+  <!-- MediaPipe Tasks Vision Bundle & Client-Side Event Processor Matrix -->
+  <script type="module">
+    import { FilesetResolver, FaceLandmarker, PoseLandmarker } 
+      from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.16";
+    window.FilesetResolver = FilesetResolver;
+    window.FaceLandmarker = FaceLandmarker;
+    window.PoseLandmarker = PoseLandmarker;
+  </script>
+  <script src="../js/candidate-matrix-engine.js"></script>
+
   <!-- Custom Stylesheets -->
   <link rel="stylesheet" href="../css/style.css" />
 
@@ -668,10 +678,18 @@
           <span class="text-[10px] font-medium text-slate-300">You (Candidate)</span>
         </div>
 
+        <!-- Live Signal Processing Matrix Telemetry HUD -->
+        <div id="candidate-matrix-hud" class="absolute top-7 left-1.5 right-1.5 z-20 flex flex-wrap gap-1 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+          <span id="hud-gaze-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300">Gaze: Centered</span>
+          <span id="hud-posture-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300">Posture: Poised</span>
+          <span id="hud-tone-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-amber-500/40 text-[9px] font-semibold text-amber-300">Tone: Active</span>
+          <span id="hud-sync-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-sky-500/40 text-[9px] font-semibold text-sky-300">Sync: In-Sync</span>
+        </div>
+
         <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
-          <div class="flex items-center gap-1 text-[9px] text-red-400 font-bold">
-            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-            <span>REC</span>
+          <div class="flex items-center gap-1.5 text-[9px] text-emerald-400 font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="hud-matrix-status">MATRIX ACTIVE</span>
           </div>
           <button onclick="pinTile('candidate')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Your Camera Fullscreen">
             <span class="material-symbols-outlined text-xs">push_pin</span>
@@ -1881,14 +1899,22 @@ int main() {
           document.exitFullscreen().catch(() => {});
         }
 
+        // Capture Candidate Performance & Integrity Matrix
+        if (window.candidateMatrixInstance) {
+          const matrixReport = window.candidateMatrixInstance.getMatrixReport();
+          localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
+        }
+
         try {
+          const matrixReport = window.candidateMatrixInstance ? window.candidateMatrixInstance.getMatrixReport() : null;
           const evalResult = await tryApiFetch(`/sessions/${activeSessionId || 'general'}/submit/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               answers: collectedAnswers,
               role: pendingTitle,
-              company: selectedCompany ? selectedCompany.name : 'Google'
+              company: selectedCompany ? selectedCompany.name : 'Google',
+              integrity_matrix: matrixReport
             })
           });
           if (evalResult) {
@@ -1962,6 +1988,38 @@ int main() {
       }
     }
 
+    function updateCandidateMatrixHUD(metrics) {
+      const gazePill = document.getElementById('hud-gaze-pill');
+      const posturePill = document.getElementById('hud-posture-pill');
+      const tonePill = document.getElementById('hud-tone-pill');
+      const syncPill = document.getElementById('hud-sync-pill');
+
+      if (gazePill) {
+        gazePill.textContent = "Gaze: " + (metrics.eyeContact || "Centered");
+        gazePill.className = metrics.eyeContact === 'Centered'
+          ? "px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300"
+          : "px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-amber-500/40 text-[9px] font-semibold text-amber-300";
+      }
+
+      if (posturePill) {
+        posturePill.textContent = "Posture: " + (metrics.posture || "Poised");
+        posturePill.className = (metrics.posture || "").includes('Poised')
+          ? "px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300"
+          : "px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-amber-500/40 text-[9px] font-semibold text-amber-300";
+      }
+
+      if (tonePill) {
+        tonePill.textContent = "Tone: " + (metrics.vocalTone || "Active");
+      }
+
+      if (syncPill) {
+        syncPill.textContent = "Sync: " + (metrics.lipSync || "In-Sync");
+        syncPill.className = (metrics.lipSync || "").includes('In-Sync')
+          ? "px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-sky-500/40 text-[9px] font-semibold text-sky-300"
+          : "px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-rose-500/40 text-[9px] font-semibold text-rose-300";
+      }
+    }
+
     function initHardwareMedia() {
       const wantVideo = document.getElementById('setting-video').checked;
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -1978,6 +2036,19 @@ int main() {
             } else {
               if (dockVid) dockVid.classList.add('hidden');
               if (dockFb) dockFb.classList.remove('hidden');
+            }
+
+            // Launch Candidate Performance & Integrity Matrix Engine
+            if (window.CandidateMatrixEngine) {
+              if (window.candidateMatrixInstance) {
+                window.candidateMatrixInstance.destroy();
+              }
+              window.candidateMatrixInstance = new CandidateMatrixEngine();
+              window.candidateMatrixInstance.initialize(dockVid, stream)
+                .then(() => {
+                  window.candidateMatrixInstance.on('telemetry', updateCandidateMatrixHUD);
+                })
+                .catch(err => console.log("Matrix telemetry notice:", err));
             }
           })
           .catch(e => {
