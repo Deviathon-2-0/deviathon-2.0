@@ -1440,7 +1440,7 @@
             <span class="text-[#AA7000] font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">Practice <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
           </div>
         `;
-        card.onclick = () => openInterviewConfig(role.title, role.category, role.levels, null);
+        card.onclick = () => { customInterviewQuestions = null; openInterviewConfig(role.title, role.category, role.levels, null); };
         grid.appendChild(card);
       });
     }
@@ -1536,7 +1536,7 @@
             <span class="text-[#AA7000] font-bold flex items-center gap-1">Practice <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
           </div>
         `;
-        card.onclick = () => openInterviewConfig(comp.name + " " + sub.title, sub.track, [sub.level], comp.name);
+        card.onclick = () => { customInterviewQuestions = null; openInterviewConfig(comp.name + " " + sub.title, sub.track, [sub.level], comp.name); };
         grid.appendChild(card);
       });
     }
@@ -1739,6 +1739,89 @@
       }
     });
 
+    // Custom Questions & JD Interview Handlers
+    let customInterviewQuestions = null;
+
+    function startJdInterview() {
+      const titleInput = document.getElementById('jd-role-title');
+      const jdInput = document.getElementById('jd-text');
+      const title = (titleInput && titleInput.value.trim()) || 'Software Engineer (JD Aligned)';
+      const jdText = (jdInput && jdInput.value.trim()) || '';
+
+      customInterviewQuestions = [
+        {
+          title: 'System Architecture & JD Competencies',
+          type: 'System Design',
+          prompt: 'Based on the job requirements for ' + title + ', design an end-to-end scalable architecture that satisfies high-throughput availability and resilient failover.',
+          input: 'Architecture specifications & service constraints',
+          output: 'Component diagram, data flow, and SLA mitigation',
+          constraints: 'Target 99.99% uptime, sub-50ms P99 latency',
+          instructions: 'Break down components, API contracts, caching layers, and database sharding.',
+          starterCode: getStarterCodeForProblem('generic', selectedCodingLanguage || 'Python 3.11')
+        },
+        {
+          title: 'Core Algorithmic Implementation',
+          type: 'Coding',
+          prompt: 'Implement an optimal solution to handle concurrent event batching and idempotent deduplication required for the ' + title + ' role.',
+          input: 'Event stream with duplicate keys and varying arrival timestamps',
+          output: 'Ordered, deduplicated event output array',
+          constraints: 'Time complexity O(N), Space complexity O(K)',
+          instructions: 'Write clean, production-ready code with unit edge cases.',
+          starterCode: getStarterCodeForProblem('generic', selectedCodingLanguage || 'Python 3.11')
+        },
+        {
+          title: 'Production Incident Mitigation & SLOs',
+          type: 'Technical Deep Dive',
+          prompt: 'Describe an incident where a critical downstream microservice suffered cascaded timeouts. How do you implement circuit breakers and graceful degradation?',
+          input: 'Cascading dependency latency spike scenario',
+          output: 'Root cause analysis, recovery sequence, and prevention runbook',
+          constraints: 'Minimize user-facing 5xx errors to zero during degrade phase'
+        },
+        {
+          title: 'Cross-Functional Leadership & Culture',
+          type: 'Behavioral',
+          prompt: 'Tell me about a time you led a high-stakes engineering initiative aligned with the responsibilities of ' + title + ' and resolved team misalignment.',
+          input: 'Situational leadership scenario',
+          output: 'STAR framework delivery with quantified impact',
+          constraints: 'Highlight communication clarity and objective decision metrics'
+        }
+      ];
+
+      openInterviewConfig(title, 'Tech', ['Mid-Level', 'Senior', 'Staff Lead'], 'Target Company');
+    }
+
+    function startCustomInterview() {
+      const titleInput = document.getElementById('custom-title');
+      const domainInput = document.getElementById('custom-domain');
+      const questionsInput = document.getElementById('custom-questions');
+
+      const title = (titleInput && titleInput.value.trim()) || 'Custom Technical Role';
+      const domain = (domainInput && domainInput.value.trim()) || 'Core Architecture';
+      const rawQuestions = (questionsInput && questionsInput.value.trim()) || '';
+
+      if (rawQuestions) {
+        const lines = rawQuestions.split('\n').map(l => l.trim()).filter(l => l.length > 5);
+        if (lines.length > 0) {
+          customInterviewQuestions = lines.map((q, idx) => ({
+            title: title + ' - Round ' + (idx + 1),
+            type: idx === 0 ? 'Coding' : 'Technical & Behavioral',
+            prompt: q,
+            input: 'Domain context: ' + domain,
+            output: 'Comprehensive technical evaluation',
+            constraints: 'Standard production grade efficiency and edge handling',
+            instructions: 'Deliver structured problem solving with clear trade-off analysis.',
+            starterCode: getStarterCodeForProblem('generic', selectedCodingLanguage || 'Python 3.11')
+          }));
+        } else {
+          customInterviewQuestions = null;
+        }
+      } else {
+        customInterviewQuestions = null;
+      }
+
+      openInterviewConfig(title, 'Tech', ['Level 1', 'Level 2', 'Level 3', 'Lead'], domain);
+    }
+
     // Start Practice Session
     let soundCheckPassed = false;
 
@@ -1856,7 +1939,11 @@
       document.getElementById('spotlight-name-tag').textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
 
       // GENERATE AUTHENTIC QUESTIONS FOR THIS ROLE & COMPANY
-      currentQuestions = generateQuestionBank(pendingTitle, pendingCompany, pendingTrack, pendingLevel, selectedRound, selectedCodingLanguage);
+      if (customInterviewQuestions && customInterviewQuestions.length > 0) {
+        currentQuestions = customInterviewQuestions;
+      } else {
+        currentQuestions = generateQuestionBank(pendingTitle, pendingCompany, pendingTrack, pendingLevel, selectedRound, selectedCodingLanguage);
+      }
 
       currentQIndex = 0;
       renderQuestionNavigationPills();

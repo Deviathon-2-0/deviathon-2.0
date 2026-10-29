@@ -1,12 +1,82 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
+const routeRewritesPlugin = () => ({
+  name: 'route-rewrites-plugin',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const parts = req.url.split('?');
+      const pathname = parts[0];
+      const search = parts[1] ? '?' + parts[1] : '';
+
+      const routeMap = {
+        '/mock-interview': '/pages/mock-interview.html',
+        '/mock-interview.html': '/pages/mock-interview.html',
+        '/practice': '/pages/mock-interview.html',
+        '/practice.html': '/pages/mock-interview.html',
+        '/interview': '/pages/mock-interview.html',
+        '/dashboard': '/pages/dashboard.html',
+        '/auth': '/pages/auth.html',
+        '/login': '/pages/auth.html',
+        '/resume': '/pages/resume.html',
+        '/assessment': '/pages/assessment.html',
+        '/history': '/pages/history.html',
+        '/report': '/pages/report.html',
+        '/prep-plan': '/pages/prep-plan.html',
+        '/voice-interviews': '/pages/voice-interviews.html',
+        '/resume-review': '/pages/resume-review.html',
+        '/question-banks': '/pages/question-banks.html',
+        '/rubrics-scoring': '/pages/rubrics-scoring.html',
+        '/coding-assignments': '/pages/coding-assignments.html',
+        '/performance-reports': '/pages/performance-reports.html',
+        '/accent-agnostic': '/pages/accent-agnostic.html',
+        '/zero-retention': '/pages/zero-retention.html',
+        '/end-to-end': '/pages/end-to-end.html',
+        '/settings': '/pages/settings.html',
+      };
+
+      if (routeMap[pathname]) {
+        req.url = routeMap[pathname] + search;
+      }
+      next();
+    });
+  },
+  configurePreviewServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const parts = req.url.split('?');
+      const pathname = parts[0];
+      const search = parts[1] ? '?' + parts[1] : '';
+
+      const routeMap = {
+        '/mock-interview': '/pages/mock-interview.html',
+        '/mock-interview.html': '/pages/mock-interview.html',
+        '/practice': '/pages/mock-interview.html',
+        '/practice.html': '/pages/mock-interview.html',
+        '/interview': '/pages/mock-interview.html',
+        '/dashboard': '/pages/dashboard.html',
+        '/auth': '/pages/auth.html',
+        '/login': '/pages/auth.html',
+        '/resume': '/pages/resume.html',
+        '/assessment': '/pages/assessment.html',
+      };
+
+      if (routeMap[pathname]) {
+        req.url = routeMap[pathname] + search;
+      }
+      next();
+    });
+  }
+});
+
 export default defineConfig({
   root: '.',
+  plugins: [routeRewritesPlugin()],
   build: {
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
+        mockInterviewRoot: resolve(__dirname, 'mock-interview.html'),
+        practiceRoot: resolve(__dirname, 'practice.html'),
         auth: resolve(__dirname, 'pages/auth.html'),
         dashboard: resolve(__dirname, 'pages/dashboard.html'),
         mockInterview: resolve(__dirname, 'pages/mock-interview.html'),
