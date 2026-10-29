@@ -1764,8 +1764,7 @@ int main() {
       const lineNumbers = document.getElementById('editor-line-numbers');
       if (!textarea || !lineNumbers) return;
 
-      const lines = textarea.value.split('
-').length;
+      const lines = textarea.value.split(String.fromCharCode(10)).length;
       const totalCount = Math.max(lines, 15);
       lineNumbers.innerHTML = Array.from({ length: totalCount }, (_, i) => i + 1).join('<br/>');
     }
