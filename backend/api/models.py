@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
 import uuid
 
 class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='profile')
     name = models.CharField(max_length=150, default="Alex Morgan")
     email = models.EmailField(blank=True, default="alex.morgan@example.com")
     age = models.IntegerField(null=True, blank=True, default=26)
@@ -40,6 +42,7 @@ class InterviewSession(models.Model):
     feedback_summary = models.JSONField(default=dict, blank=True)
     concept_breakdown = models.JSONField(default=list, blank=True)
     code_evaluation = models.JSONField(default=dict, blank=True)
+    telemetry_matrix = models.JSONField(default=dict, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     # Third party apps
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     
     # Internal apps
     'api',
@@ -51,10 +52,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'imaira_backend.urls'
 
+FRONTEND_DIR = BASE_DIR.parent / 'frontend'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR.parent / 'frontend'],
+        'DIRS': [FRONTEND_DIR] if FRONTEND_DIR.is_dir() else [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -101,13 +104,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR.parent / 'frontend',
-]
+STATICFILES_DIRS = [FRONTEND_DIR] if FRONTEND_DIR.is_dir() else []
 
 # Media files (Audio recordings, uploads, resumes)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -139,6 +141,10 @@ CORS_ALLOW_HEADERS = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',

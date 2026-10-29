@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npm --prefix frontend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
-    "dev:backend": "npm --prefix backend run dev",
+    "dev:backend": "python backend/manage.py runserver 0.0.0.0:8000",
+    "start:backend": "python backend/manage.py runserver 0.0.0.0:8000",
     "start": "npm --prefix frontend run dev"
   }
 }
