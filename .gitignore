@@ -1,3 +1,9 @@
+# Media & uploads
+media/
+db.sqlite3
+staticfiles/
+*.pptx
+
 # Dependencies
 node_modules/
 frontend/node_modules/

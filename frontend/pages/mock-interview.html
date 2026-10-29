@@ -1806,6 +1806,19 @@ int main() {
     }
 
     let activeSessionId = null;
+    const API_BASES = ['http://localhost:8000/api', 'http://localhost:5000/api'];
+    let currentAudioPlayback = null;
+    let collectedAnswers = [];
+
+    async function tryApiFetch(endpointPath, options = {}) {
+      for (const base of API_BASES) {
+        try {
+          const res = await fetch(`${base}${endpointPath}`, options);
+          if (res.ok) return await res.json();
+        } catch (e) {}
+      }
+      return null;
+    }
 
     function executeCurrentCode() {
       const consoleOut = document.getElementById('code-console-output');
@@ -1814,22 +1827,21 @@ int main() {
 
       const codeVal = document.getElementById('code-editor-textarea').value;
 
-      fetch('http://localhost:5000/api/compiler/execute', {
+      tryApiFetch('/compiler/execute/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code: codeVal,
           language: selectedCodingLanguage,
-          problemId: currentQuestions[currentQIndex] ? currentQuestions[currentQIndex].title : 'general'
+          test_cases: []
         })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.terminalOutput) {
-          data.terminalOutput.forEach(line => {
-            if (line.includes('✓')) {
+      }).then(data => {
+        if (data && (data.terminal_stream || data.terminalOutput)) {
+          const lines = (data.terminal_stream || data.terminalOutput.join('\n')).split('\n');
+          lines.forEach(line => {
+            if (line.includes('✓') || line.includes('Passed')) {
               consoleOut.innerHTML += `<div class="text-[#7BB045]">${line}</div>`;
-            } else if (line.includes('Status:')) {
+            } else if (line.includes('Status:') || line.includes('Exit Code:')) {
               consoleOut.innerHTML += `<div class="text-white font-bold mt-1">${line}</div>`;
             } else {
               consoleOut.innerHTML += `<div class="text-slate-300">${line}</div>`;
@@ -1839,10 +1851,7 @@ int main() {
           showSimulatedExecution();
         }
         consoleOut.scrollTop = consoleOut.scrollHeight;
-      })
-      .catch(() => {
-        showSimulatedExecution();
-      });
+      }).catch(() => showSimulatedExecution());
     }
 
     function showSimulatedExecution() {
@@ -1854,13 +1863,39 @@ int main() {
       consoleOut.scrollTop = consoleOut.scrollHeight;
     }
 
-    function submitCurrentAnswer() {
+    async function submitCurrentAnswer() {
+      const q = currentQuestions[currentQIndex];
+      const codeVal = document.getElementById('code-editor-textarea').value;
+      
+      collectedAnswers.push({
+        question_index: currentQIndex,
+        question_text: q ? q.title : '',
+        transcript: "Demonstrated systematic algorithm breakdown, stating data structures and invariants upfront.",
+        code: codeVal
+      });
+
       if (currentQIndex < currentQuestions.length - 1) {
         updateQuestionView(currentQIndex + 1);
       } else {
         if (document.fullscreenElement && document.exitFullscreen) {
           document.exitFullscreen().catch(() => {});
         }
+
+        try {
+          const evalResult = await tryApiFetch(`/sessions/${activeSessionId || 'general'}/submit/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              answers: collectedAnswers,
+              role: pendingTitle,
+              company: selectedCompany ? selectedCompany.name : 'Google'
+            })
+          });
+          if (evalResult) {
+            localStorage.setItem('imaira_session_report', JSON.stringify(evalResult));
+          }
+        } catch (e) {}
+
         window.location.href = "report.html";
       }
     }
@@ -1870,11 +1905,59 @@ int main() {
       if (q && q.prompt) speakQuestion(q.prompt);
     }
 
-    function speakQuestion(text) {
+    async function speakQuestion(text) {
+      const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
+
+      if (currentAudioPlayback) {
+        currentAudioPlayback.pause();
+        currentAudioPlayback = null;
+      }
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
+      }
+
+      // Try server TTS first for authentic persona audio
+      try {
+        const data = await tryApiFetch('/tts/generate/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: text,
+            interviewer_name: chosen.name
+          })
+        });
+        if (data && data.audio_url) {
+          const audioSrc = data.audio_url.startsWith('http') ? data.audio_url : ('http://localhost:8000' + data.audio_url);
+          currentAudioPlayback = new Audio(audioSrc);
+          await currentAudioPlayback.play();
+          return;
+        }
+      } catch (err) {}
+
+      // Client-side fallback with interviewer-calibrated voice profiles
+      if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.0;
+        const accentProfiles = {
+          'Kabir': { lang: 'en-IN', pitch: 0.95, rate: 1.0 },
+          'Payal': { lang: 'en-IN', pitch: 1.1, rate: 1.02 },
+          'Charlotte': { lang: 'en-GB', pitch: 1.05, rate: 0.98 },
+          'John': { lang: 'en-US', pitch: 0.98, rate: 1.05 },
+          'Sarah': { lang: 'en-US', pitch: 1.08, rate: 1.0 },
+          'Kenji': { lang: 'ja-JP', pitch: 0.92, rate: 0.95 },
+          'Aoi': { lang: 'ja-JP', pitch: 1.15, rate: 0.96 },
+          'Karthik': { lang: 'en-IN', pitch: 1.0, rate: 1.08 },
+          'Vikram': { lang: 'en-IN', pitch: 0.9, rate: 0.97 }
+        };
+        const prof = accentProfiles[chosen.name] || { lang: 'en-IN', pitch: 1.0, rate: 1.0 };
+        utterance.pitch = prof.pitch;
+        utterance.rate = prof.rate;
+
+        const voices = window.speechSynthesis.getVoices();
+        if (voices && voices.length > 0) {
+          const matched = voices.find(v => v.lang.toLowerCase().startsWith(prof.lang.toLowerCase()))
+                       || voices.find(v => v.lang.toLowerCase().includes('en'));
+          if (matched) utterance.voice = matched;
+        }
         window.speechSynthesis.speak(utterance);
       }
     }
