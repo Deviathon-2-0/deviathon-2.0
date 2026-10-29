@@ -158,7 +158,7 @@
 .wave-bar {
   width: 4px;
   border-radius: 2px;
-  background: #10B981;
+  background: #4F6B2D;
   animation: wave-bar 1s ease-in-out infinite;
 }
 .wave-bar:nth-child(1) { animation-delay: 0s; height: 20px; }
