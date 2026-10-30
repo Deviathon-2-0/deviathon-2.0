@@ -117,7 +117,7 @@
           <span class="text-xl font-black tracking-tight text-[#2C1F0E]">IMAIRA<span class="text-[#AA7000]">+</span></span>
         </a>
         <div class="h-4 w-px bg-[#E8DFD0] hidden sm:block"></div>
-        <span class="text-xs font-semibold text-[#8C7B6B] hidden sm:inline">Mock Interview Setup</span>
+        <span class="text-xs font-semibold text-[#8C7B6B] hidden sm:inline" id="setup-header-line">IMAIRA+ AI Technical Mock Interview Setup</span>
       </div>
 
       <div class="flex items-center gap-4">
@@ -898,7 +898,7 @@
           <div class="absolute bottom-4 left-4 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20 shadow-lg">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="call-interviewer-name" class="font-bold">Kabir</span>
-            <span class="text-slate-300 text-[11px] font-normal" id="call-interviewer-accent">Indian English (North)</span>
+            <span class="text-slate-300 text-[11px] font-normal" id="call-interviewer-accent">South Indian English (Male)</span>
           </div>
 
 
@@ -1757,15 +1757,46 @@
       }
     }
 
-    // Render Roles with Question Counts & Topics
+    // Render Roles with Question Counts & Topics (Robust, Fault-Tolerant)
     function renderRoles(category = activeRoleCategory, query = '') {
       const grid = document.getElementById('roles-grid');
-      grid.innerHTML = '';
-      const filtered = rolesData.filter(r => {
-        const matchCat = category === 'All' || r.category === category;
-        const matchQ = query === '' || r.title.toLowerCase().includes(query.toLowerCase()) || r.focus.toLowerCase().includes(query.toLowerCase());
+      if (!grid) return;
+
+      const targetCat = category || activeRoleCategory || 'Tech';
+      const qInput = document.getElementById('role-search-input');
+      const qVal = (typeof query === 'string' ? query : (qInput ? qInput.value : '')).trim().toLowerCase();
+
+      const sourceRoles = (typeof rolesData !== 'undefined' && Array.isArray(rolesData) && rolesData.length > 0)
+        ? rolesData
+        : [
+            { title: "Software Engineer", category: "Tech", focus: "Core Backend & API Services", levels: ["SDE 1", "SDE 2", "Senior SDE"] },
+            { title: "Distributed Systems Engineer", category: "Tech", focus: "Consensus & High Availability", levels: ["SDE 1", "SDE 2", "Senior SDE"] },
+            { title: "Cloud Solutions Architect", category: "Tech", focus: "Multi-Region Cloud Topologies", levels: ["SDE 1", "SDE 2", "Senior SDE"] },
+            { title: "Site Reliability Engineer (SRE)", category: "Tech", focus: "Incident Recovery & SLOs", levels: ["SDE 1", "SDE 2", "Senior SDE"] },
+            { title: "Database Kernel Engineer", category: "Tech", focus: "Storage Engines & WAL Compaction", levels: ["SDE 1", "SDE 2", "Senior SDE"] },
+            { title: "Frontend Architect", category: "Tech", focus: "High-Performance SPA & Micro-Frontends", levels: ["SDE 1", "SDE 2", "Senior SDE"] }
+          ];
+
+      const filtered = sourceRoles.filter(r => {
+        if (!r) return false;
+        const matchCat = targetCat === 'All' || r.category === targetCat;
+        const matchQ = !qVal || 
+          (r.title && r.title.toLowerCase().includes(qVal)) || 
+          (r.focus && r.focus.toLowerCase().includes(qVal));
         return matchCat && matchQ;
       });
+
+      grid.innerHTML = '';
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-[#7F766C]">
+            <span class="material-symbols-outlined text-4xl mb-2 text-[#AA7000]/60">search_off</span>
+            <p class="text-sm font-semibold text-[#2C1F0E]">No interview tracks found</p>
+            <p class="text-xs text-[#7F766C] mt-1">Try switching categories or clearing your search query.</p>
+          </div>
+        `;
+        return;
+      }
 
       filtered.forEach(role => {
         const card = document.createElement('div');
@@ -1773,14 +1804,13 @@
         card.innerHTML = `
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-[#AA7000]">${role.category}</span>
-
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[#AA7000]">${role.category || 'Tech'}</span>
             </div>
-            <h3 class="text-sm font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors">${role.title}</h3>
-            <p class="text-xs text-[#7F766C] mt-1.5 line-clamp-1">${role.focus}</p>
+            <h3 class="text-sm font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors">${role.title || 'Technical Role'}</h3>
+            <p class="text-xs text-[#7F766C] mt-1.5 line-clamp-1">${role.focus || ''}</p>
           </div>
           <div class="mt-4 pt-2.5 border-t border-[#E8DFD0]/60 flex items-center justify-between text-xs">
-            <span class="text-[11px] text-[#8C7B6B]">Levels: <strong>${(role.levels || []).slice(0, 2).join(', ')}...</strong></span>
+            <span class="text-[11px] text-[#8C7B6B]">Levels: <strong>${(role.levels || ['SDE 1', 'SDE 2']).slice(0, 2).join(', ')}...</strong></span>
             <span class="text-[#AA7000] font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">Practice <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
           </div>
         `;
@@ -1798,7 +1828,8 @@
           btn.className = "role-cat-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-[#FFFDF8] border border-[#E8DFD0] text-[#7F766C] hover:text-[#2C1F0E]";
         }
       });
-      renderRoles(cat, document.getElementById('role-search-input').value);
+      const qInput = document.getElementById('role-search-input');
+      renderRoles(cat, qInput ? qInput.value : '');
     }
 
     function searchRoles(q) {
@@ -1853,7 +1884,7 @@
           btn.className = "company-sector-btn px-4 py-1.5 rounded-full text-xs font-semibold transition-all bg-[#FFFDF8] border border-[#E8DFD0] text-[#7F766C] hover:text-[#2C1F0E]";
         }
       });
-      renderCompanies(sector, document.getElementById('company-search-input').value);
+      const qComp = document.getElementById('company-search-input'); renderCompanies(sector, qComp ? qComp.value : '');
     }
 
     function searchCompanies(q) {
@@ -2888,7 +2919,6 @@
 
             // Dual-Layer Zero-Lag Video State Switcher (Seamless Crossfade, Zero Black Frames)
     function setInterviewerVideoState(state) {
-      const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const isTalking = (state === 'talking');
 
       const pairs = [
@@ -2906,14 +2936,20 @@
         if (pair.listen && pair.talk) {
           if (isTalking) {
             // Mouth Movement / Speaking loop
-            const p = pair.talk.play();
-            if (p && typeof p.catch === 'function') p.catch(() => {});
+            pair.talk.style.opacity = '1';
             pair.talk.classList.remove('opacity-0');
             pair.talk.classList.add('opacity-100');
+            const p = pair.talk.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
           } else {
-            // Attentive Nodding / Listening loop
+            // Attentive Nodding / Listening loop: explicitly hide talking video and play listening loop
+            pair.talk.style.opacity = '0';
             pair.talk.classList.remove('opacity-100');
             pair.talk.classList.add('opacity-0');
+            try {
+              pair.talk.pause();
+              pair.talk.currentTime = 0;
+            } catch(e) {}
             const p = pair.listen.play();
             if (p && typeof p.catch === 'function') p.catch(() => {});
           }
@@ -3200,7 +3236,11 @@
         const nameEl = document.getElementById('call-interviewer-name');
         if (nameEl) nameEl.textContent = chosen.name;
         const accentEl = document.getElementById('call-interviewer-accent');
-        if (accentEl) accentEl.textContent = chosen.accentLabel;
+        if (accentEl) accentEl.textContent = chosen.accentLabel || 'South Indian English (Male)';
+        const stageRoleTitle = document.getElementById('stage-role-title');
+        if (stageRoleTitle) stageRoleTitle.textContent = pendingTitle || 'Software Engineer';
+        const stageRoleLevel = document.getElementById('stage-role-level');
+        if (stageRoleLevel) stageRoleLevel.textContent = pendingLevel || 'SDE 2';
         const pipName = document.getElementById('pip-interviewer-name');
         if (pipName) pipName.textContent = chosen.name;
 
@@ -3640,10 +3680,10 @@
       // - NON-CODING: Route to Interviewer (Full-Stage Video Call), interviewer speaks prompt
       if (isCodingQ) {
         switchStageView('code');
-        speakQuestion(q.title || q.prompt);
+        speakQuestion(q.title || q.prompt, q.title);
       } else {
         switchStageView('video');
-        speakQuestion(q.prompt);
+        speakQuestion(q.prompt, q.title);
       }
     }
 
@@ -3906,15 +3946,68 @@
 
     function repeatCurrentQuestion() {
       const q = currentQuestions[currentQIndex];
-      if (q && q.prompt) speakQuestion(q.prompt);
+      if (q && q.prompt) speakQuestion(q.prompt, q.title);
+    }
+
+    // Clean and sanitize problem prompts for voice-over speech synthesis
+    function cleanQuestionForSpeech(rawText, title = "") {
+      if (!rawText) {
+        return title ? `Here is your problem: ${title}. Please walk me through your technical approach.` : "Please review the problem description and explain your proposed solution.";
+      }
+
+      // 1. Strip code blocks & inline code
+      let t = rawText.replace(/```[\s\S]*?```/g, ' ');
+      t = t.replace(/`[^`]*`/g, ' ');
+
+      // 2. Strip all HTML tags completely
+      t = t.replace(/<[^>]+>/g, ' ');
+
+      // 3. Strip everything starting from Example 1, Input:, Constraints:, etc.
+      const cutMatch = t.search(/\b(?:example\s*\d*|input\s*:|output\s*:|constraints?\s*:|sample\s+input|test\s*cases?)\b/i);
+      if (cutMatch !== -1) {
+        t = t.substring(0, cutMatch);
+      }
+
+      // 4. Remove Markdown syntax & mathematical symbols
+      t = t.replace(/[*_#~\[\]()\\<>=|{}]/g, ' ');
+      t = t.replace(/&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/gi, ' ');
+      t = t.replace(/https?:\/\/\S+/g, '');
+
+      // 5. Clean up stray punctuation like standalone dots, dashes, colons
+      t = t.replace(/\s+([.,?!:;])/g, '$1');
+      t = t.replace(/\.{2,}/g, '.');
+      t = t.replace(/\s+/g, ' ').trim();
+
+      // 6. Ensure sentences don't have stray periods inside identifiers (e.g. s.length)
+      t = t.replace(/\b([a-zA-Z])\.([a-zA-Z])\b/g, '$1 $2');
+
+      // 7. If result is too short, use title
+      if (t.length < 15 && title) {
+        t = `In this round, we are tackling ${title}. Please walk me through your approach and how you would design an optimal solution.`;
+      }
+
+      // 8. Take first 2-3 clean sentences if overly long
+      const sentences = t.split(/(?<=[.?!])\s+/);
+      if (sentences.length > 3) {
+        t = sentences.slice(0, 3).join(' ');
+      }
+
+      return t.trim();
     }
 
     let currentSpeechToken = 0;
+    let speechWatchdogTimeout = null;
 
-        async function speakQuestion(text) {
+    async function speakQuestion(rawText, title = "") {
+      const text = cleanQuestionForSpeech(rawText, title);
       const token = ++currentSpeechToken;
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const pacingVal = parseFloat(document.getElementById('modal-speech-pacing')?.value || '1.0');
+
+      if (speechWatchdogTimeout) {
+        clearTimeout(speechWatchdogTimeout);
+        speechWatchdogTimeout = null;
+      }
 
       // Stop any existing audio & speech synthesis instantly to prevent overlap
       if (currentAudioPlayback) {
@@ -3935,10 +4028,24 @@
 
       const onPlaybackEnded = () => {
         if (token !== currentSpeechToken) return;
+        if (speechWatchdogTimeout) {
+          clearTimeout(speechWatchdogTimeout);
+          speechWatchdogTimeout = null;
+        }
         // When question finishes speaking, switch immediately to listening loop and enable STT
         setInterviewerVideoState('listening');
         toggleCandidateAnswerRecording(true);
       };
+
+      // Set guaranteed watchdog: if audio doesn't trigger onended within expected duration + 2s, force listening state
+      const wordsCount = text.split(/\s+/).length || 15;
+      const expectedMs = Math.max(3500, Math.min(25000, (wordsCount / (135 * pacingVal)) * 60 * 1000 + 2000));
+      speechWatchdogTimeout = setTimeout(() => {
+        if (token === currentSpeechToken) {
+          console.log("[IMAIRA+ TTS] Watchdog triggered - restoring video to listening loop");
+          onPlaybackEnded();
+        }
+      }, expectedMs);
 
       // 1. Try server neural TTS with authentic human accents & gender
       try {
@@ -3962,8 +4069,17 @@
           audio.onerror = () => {
             if (token === currentSpeechToken) fallbackClientSpeech(text, chosen, pacingVal, onPlaybackEnded);
           };
-          await audio.play();
-          return;
+          audio.onpause = () => {
+            if (audio.currentTime >= audio.duration - 0.25) {
+              onPlaybackEnded();
+            }
+          };
+          try {
+            await audio.play();
+            return;
+          } catch(playErr) {
+            console.warn('[IMAIRA+ TTS] Audio play error, falling back to client speech:', playErr);
+          }
         }
       } catch (err) {
         console.warn('[IMAIRA+ TTS] Server TTS unavailable, falling back to speech synthesis:', err);

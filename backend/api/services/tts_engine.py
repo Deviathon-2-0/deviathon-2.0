@@ -177,57 +177,70 @@ def pcm_to_wav(pcm_bytes, sample_rate=24000, channels=1, sample_width=2):
     return buffer.read()
 
 
+def sanitize_interview_text(text: str) -> str:
+    """
+    Cleans raw problem prompts, stripping HTML tags, Markdown artifacts,
+    code blocks, editorial constraints, test cases, and symbol glitches so that
+    the speech synthesis engine produces natural, conversational speech without reading
+    code tokens like '=', '<=', '<div>', 'Input:', or '.' as 'stop point'.
+    """
+    if not text:
+        return ""
+    
+    # 1. Strip HTML tags completely
+    clean = re.sub(r'<[^>]+>', ' ', text)
+    
+    # 2. Strip code blocks & inline code
+    clean = re.sub(r'```[\s\S]*?```', ' ', clean)
+    clean = re.sub(r'`[^`]*`', ' ', clean)
+    
+    # 3. Strip editorial sections like Example 1, Input:, Output:, Constraints:
+    cut_match = re.search(r'(?i)\b(example\s*\d*|input\s*:|output\s*:|constraints?\s*:|sample\s+input|test\s*cases?)\b', clean)
+    if cut_match:
+        clean = clean[:cut_match.start()]
+    
+    # 4. Strip mathematical comparison operators and code symbols
+    clean = re.sub(r'[*_#~\[\]()\\<>=|{}]', ' ', clean)
+    clean = re.sub(r'&(?:[a-z\d]+|#\d+|#x[a-f\d]+);', ' ', clean)
+    clean = re.sub(r'https?://\S+', '', clean)
+    
+    # 5. Fix standalone dots, multiple dots, and punctuation spacing
+    clean = re.sub(r'\s+([.,?!:;])', r'\1', clean)
+    clean = re.sub(r'\.{2,}', '.', clean)
+    clean = re.sub(r'\s+', ' ', clean).strip()
+    
+    # 6. Ensure sentences don't have stray periods inside identifiers (e.g. s.length)
+    clean = re.sub(r'\b([a-zA-Z])\.([a-zA-Z])\b', r'\1 \2', clean)
+    
+    return clean
+
+
 def build_emotion_ssml(text, voice_name, gender="male", pacing_factor=1.0):
     """
-    The Emotion Multi-Pass Technique & Variation/Word-Weight Pipeline:
-    - Pass 1: Text Sanitization & Intent Structuring
-    - Pass 2: Natural Breathing Micro-pauses (The Essential Listener Test)
-    - Pass 3: Operative Technical Word-Weight & Dynamic Emphasis
-    - Pass 4: Expressive Style Tagging & Prosody Modulation
+    Build clean, natural human SSML without symbol artifacts or 'stop point' glitching:
+    - Strips all HTML/code/editorial noise via sanitize_interview_text
+    - Escapes XML characters safely
+    - Applies natural prosody rate without breaking voice synthesis
     """
-    clean = re.sub(r'[*_#`]', '', text)
-    clean = re.sub(r'\s+', ' ', clean).strip()
+    clean = sanitize_interview_text(text)
+    if not clean:
+        clean = "Please walk me through your technical approach and how you would design an optimal solution."
 
-    # Pass 2: Natural Breathing Micro-pauses (Essential Listener Test)
-    clean = re.sub(r'([.?!])\s+', r'\1 <break time="260ms"/> ', clean)
-    clean = re.sub(r'(Hello!?|Hi there!?|Good day\.?|Welcome\.?|Konnichiwa!?)\s*', r'\1 <break time="220ms"/> ', clean, flags=re.I)
-    clean = re.sub(r'(,\s+)', r', <break time="160ms"/> ', clean)
-    clean = re.sub(r'(<break[^>]+>\s*)+', r'<break time="220ms"/> ', clean)
-
-    # Pass 3: Variation & Operative Word Weight (Emphasis on technical anchor tokens)
-    keywords = [
-        'concurrency', 'latency', 'distributed', 'bottlenecks', 'scalability',
-        'architecture', 'optimal', 'trade-offs', 'edge cases', 'hashmap',
-        'data structures', 'failure modes', 'guarantees', 'complexity',
-        'asymptotic', 'microservices', 'sharding', 'throughput', 'consensus'
-    ]
-    for kw in keywords:
-        clean = re.sub(rf'\b({kw})\b', r'<emphasis level="moderate">\1</emphasis>', clean, flags=re.I)
-
-    # Escape XML characters cleanly
+    # Escape XML characters safely
     clean = clean.replace('&', '&amp;')
-    clean = re.sub(r'&amp;(lt|gt|quot|apos);', r'&\1;', clean)
+    clean = clean.replace('<', '&lt;')
+    clean = clean.replace('>', '&gt;')
+    clean = clean.replace('"', '&quot;')
+    clean = clean.replace("'", '&apos;')
 
     percent_delta = int((pacing_factor - 1.0) * 100)
     rate_str = f"+{percent_delta}%" if percent_delta >= 0 else f"{percent_delta}%"
 
-    express_tag = ""
-    express_close = ""
-    v_lower = voice_name.lower()
-    if 'neerja' in v_lower:
-        express_tag = "<mstts:express-as style='cheerful' styledegree='1.15'>"
-        express_close = "</mstts:express-as>"
-    elif 'christopher' in v_lower:
-        express_tag = "<mstts:express-as style='friendly' styledegree='1.10'>"
-        express_close = "</mstts:express-as>"
-
-    ssml = f"""<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='en-US'>
+    ssml = f"""<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis'>
 <voice name='{voice_name}'>
-{express_tag}
 <prosody rate='{rate_str}'>
 {clean}
 </prosody>
-{express_close}
 </voice>
 </speak>"""
     return ssml
@@ -276,6 +289,7 @@ async def _generate_edge_tts(text_or_ssml, voice_name, output_path, rate_str="+0
 
 
 def synthesize_interviewer_speech(text, interviewer_name="Kabir", pacing="1.0"):
+    text = sanitize_interview_text(text)
     """
     Synthesize high-fidelity human speech for a designated interviewer.
     Prioritizes ultra-realistic Neural Voices (Edge TTS) with authentic gender & accent,

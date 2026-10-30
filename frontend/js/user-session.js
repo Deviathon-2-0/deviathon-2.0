@@ -358,3 +358,4 @@ class UserSessionManager {
 
 // Instantiate globally
 window.userSession = new UserSessionManager();
+
