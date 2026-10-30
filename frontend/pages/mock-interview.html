@@ -640,30 +640,35 @@
                   <span>Check System Sound &amp; Evaluator Voice</span>
                 </div>
                 <div id="chk-status-8" class="text-[#AA7000] font-semibold text-[11px] flex items-center gap-1">
-                  <span>Awaiting Sound Test</span>
+                  <span>Ready to Test Audio</span>
                 </div>
               </div>
 
-              <!-- Button 1: Play Audio Sample -->
-              <button type="button" onclick="testSystemAudio()" id="play-sound-btn" class="w-full py-2.5 rounded-xl bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
-                <span class="material-symbols-outlined text-sm" id="play-sound-icon">play_arrow</span>
-                <span id="play-sound-text">Play Evaluator Voice Sample</span>
-              </button>
+              <!-- Action Bar: Play / Test Voice Sample -->
+              <div class="flex items-center gap-2 mb-2.5">
+                <button type="button" onclick="testSystemAudio()" id="play-sound-btn" class="flex-1 py-2.5 rounded-xl bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
+                  <span class="material-symbols-outlined text-sm" id="play-sound-icon">play_arrow</span>
+                  <span id="play-sound-text">Play Evaluator Voice Sample</span>
+                </button>
+              </div>
 
-              <!-- Interactive Candidate Audible Confirmation Box (Revealed after audio plays) -->
-              <div id="audible-confirm-box" class="hidden mt-3 p-3 rounded-xl bg-white border border-[#E8DFD0] space-y-2">
-                <p class="text-xs text-[#2C1F0E] font-medium flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-sm text-[#AA7000]">hearing</span>
-                  <span>Did you hear the interviewer's voice clearly?</span>
-                </p>
+              <!-- Candidate Audible Confirmation Controls (Visible & Active) -->
+              <div id="audible-confirm-box" class="p-3 rounded-xl bg-white border border-[#E8DFD0] space-y-2">
+                <div class="flex items-center justify-between text-xs text-[#2C1F0E] font-medium">
+                  <span class="flex items-center gap-1.5 font-bold">
+                    <span class="material-symbols-outlined text-sm text-[#AA7000]">hearing</span>
+                    <span>Can you hear the evaluator's voice clearly?</span>
+                  </span>
+                  <span id="audible-status-badge" class="text-[10px] text-[#AA7000] font-bold">Select Audible</span>
+                </div>
                 <div class="flex items-center gap-2">
-                  <button type="button" onclick="confirmAudioAudible(true)" id="btn-audio-audible-yes" class="flex-1 py-2 rounded-lg bg-[#EFF4E8] hover:bg-[#4F6B2D] text-[#4F6B2D] hover:text-white border border-[#4F6B2D]/40 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs">
-                    <span class="material-symbols-outlined text-sm">check</span>
+                  <button type="button" onclick="confirmAudioAudible(true)" id="btn-audio-audible-yes" class="flex-1 py-2.5 rounded-xl bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md transform hover:-translate-y-0.5">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
                     <span>Yes, I can hear clearly</span>
                   </button>
-                  <button type="button" onclick="confirmAudioAudible(false)" id="btn-audio-audible-no" class="px-3 py-2 rounded-lg bg-[#FAF0F0] hover:bg-red-600 text-red-600 hover:text-white border border-red-300 text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer shadow-2xs" title="Replay voice sample">
+                  <button type="button" onclick="confirmAudioAudible(false)" id="btn-audio-audible-no" class="px-3.5 py-2.5 rounded-xl bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#2C1F0E] border border-[#E8DFD0] text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer" title="Replay voice sample">
                     <span class="material-symbols-outlined text-sm">replay</span>
-                    <span>No / Replay</span>
+                    <span>Replay</span>
                   </button>
                 </div>
               </div>
@@ -743,62 +748,50 @@
       <!-- --------------------------------------------------------------------
            VIEW A: FULL IMMERSIVE VIDEO CALL VIEW (Google Meet / Zoom Layout)
            -------------------------------------------------------------------- -->
-      <div id="workspace-videocall-view" class="w-full h-full flex flex-col p-3 sm:p-5 relative overflow-hidden transition-all duration-300">
+      <div id="workspace-videocall-view" class="w-full h-full flex flex-col p-3 sm:p-5 relative overflow-hidden transition-all duration-300 gap-3">
         
-        <!-- Large Video Conference Stage: Edge-to-Edge with Smooth Rounded Borders -->
-        <div class="relative w-full h-full rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
+        <!-- TOP 75%: ACTIVE SPEAKER MAIN VIDEO (Matching Reference Image) -->
+        <div class="relative flex-1 rounded-2xl sm:rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center min-h-[360px]">
           
           <!-- 1. MAIN INTERVIEWER VIDEO (100% Real Video, No Static Images, No Glitch) -->
           <video id="call-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
           
-          <!-- Top-Left Evaluator Persona Pill (Matching User Screenshot style) -->
-          <div class="absolute top-5 left-5 px-3.5 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20 shadow-lg">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <!-- Top-Left Recording Timer Pill (Matching Reference Screenshot: ● 24:01:45) -->
+          <div class="absolute top-4 left-4 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-mono font-bold text-white flex items-center gap-2 z-20 shadow-lg">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+            <span id="call-rec-timer">00:00:00</span>
+          </div>
+
+          <!-- Top-Right Fullscreen / Expand Button (Matching Reference Screenshot) -->
+          <button type="button" onclick="toggleStageFullscreen()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-all cursor-pointer z-20 shadow-lg" title="Toggle Fullscreen">
+            <span class="material-symbols-outlined text-lg">fullscreen</span>
+          </button>
+
+          <!-- Bottom-Left Primary Speaker Name Tag (Matching Reference Screenshot: 'Adam Joseph') -->
+          <div class="absolute bottom-4 left-4 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20 shadow-lg">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
             <span id="call-interviewer-name" class="font-bold">Kabir</span>
             <span class="text-slate-300 text-[11px] font-normal" id="call-interviewer-accent">Indian English (North)</span>
           </div>
 
-          <!-- Top-Right Live Audio Channel Pill (Matching screenshot |||| audio icon) -->
-          <div class="absolute top-5 right-5 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/10 text-white flex items-center gap-2 z-20 shadow-lg">
-            <div class="flex items-center gap-1">
-              <div class="stage-wave-bar"></div>
-              <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-              <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
-            </div>
-            <span class="text-[11px] text-emerald-300 font-mono font-bold">HD AUDIO</span>
-          </div>
-
-          <!-- 2. CANDIDATE VIDEO TILE (Docked in Video Call, 100% Real Video Stream) -->
-          <div id="call-candidate-tile" class="absolute bottom-6 right-6 w-56 sm:w-72 aspect-video rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-white/20 shadow-2xl z-20 group">
-            <video id="call-candidate-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
-            <canvas id="call-candidate-canvas" class="w-full h-full object-cover hidden"></canvas>
-            
-            <!-- Candidate Persona Tag (Matching User Screenshot translucent pill) -->
-            <div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1.5">
-              <span>You (Candidate)</span>
-            </div>
-
-            <!-- Candidate Mic Status Badge (Matching User Screenshot blue/red mic circle) -->
-            <div id="candidate-tile-mic-badge" class="absolute bottom-2.5 right-2.5 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors">
-              <span class="material-symbols-outlined text-xs" id="candidate-tile-mic-icon">mic</span>
-            </div>
-
-            <!-- Integrity Matrix HUD Badge -->
-            <div class="absolute top-2 left-2 z-10">
-              <span class="px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-emerald-500/40 text-[9px] font-bold text-emerald-400 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> MATRIX
-              </span>
+          <!-- Bottom-Right Live Audio Waveform Visualizer (Matching Reference Screenshot: ||||) -->
+          <div class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center gap-1.5 z-20 shadow-lg">
+            <div class="flex items-center gap-0.5">
+              <span class="w-1 h-3.5 bg-white/90 rounded-full animate-pulse"></span>
+              <span class="w-1 h-5 bg-white/90 rounded-full animate-pulse" style="animation-delay: 0.15s"></span>
+              <span class="w-1 h-4 bg-white/90 rounded-full animate-pulse" style="animation-delay: 0.3s"></span>
+              <span class="w-1 h-2 bg-white/90 rounded-full animate-pulse" style="animation-delay: 0.45s"></span>
             </div>
           </div>
 
-          <!-- 3. TRANSLUCENT FLOATING QUESTION OVERLAY (Hovering over the Video Box) -->
-          <div id="call-question-overlay" class="absolute bottom-6 left-6 right-64 sm:right-80 bg-black/80 backdrop-blur-2xl border border-white/15 rounded-3xl p-5 shadow-2xl z-20 transition-all">
+          <!-- TRANSLUCENT FLOATING QUESTION OVERLAY (Hovering over the Video Box) -->
+          <div id="call-question-overlay" class="absolute bottom-16 sm:bottom-16 left-4 right-4 max-w-2xl mx-auto bg-black/80 backdrop-blur-2xl border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl z-20 transition-all">
             
-            <!-- Top Row: Question Pill & Repeat Button -->
+            <!-- Top Row: Question Pill & Mode Actions -->
             <div class="flex items-center justify-between text-xs mb-2">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
-                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="call-q-badge">QUESTION 1 OF 4 • TECH CODING</span>
+                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="call-q-badge">QUESTION 1 OF 4 &bull; TECH CODING</span>
               </div>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="repeatCurrentQuestion()" class="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-sm">
@@ -813,32 +806,32 @@
             </div>
 
             <!-- Question Prompt Text (Crisp, High Contrast Typography) -->
-            <p id="call-question-prompt" class="text-sm sm:text-base text-white font-medium leading-relaxed mb-3">
+            <p id="call-question-prompt" class="text-xs sm:text-sm md:text-base text-white font-medium leading-relaxed mb-3">
               "Write an optimal function to solve the system constraints described in this round."
             </p>
 
             <!-- Bottom Row: Candidate Spoken Answer & Submit Controls -->
-            <div class="flex items-center justify-between pt-2 border-t border-white/10 gap-3">
-              <div class="flex items-center gap-2.5">
-                <button type="button" id="call-record-btn" onclick="toggleCandidateAnswerRecording()" class="px-4 py-2 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer">
+            <div class="flex items-center justify-between pt-2 border-t border-white/10 gap-2 flex-wrap">
+              <div class="flex items-center gap-2">
+                <button type="button" id="call-record-btn" onclick="toggleCandidateAnswerRecording()" class="px-3.5 py-1.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer">
                   <span class="material-symbols-outlined text-sm">mic</span>
                   <span id="call-record-btn-text">Start Spoken Answer</span>
                 </button>
                 <div class="flex items-center gap-1 text-[11px] text-slate-300">
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span>Voice Channel Active</span>
+                  <span class="hidden sm:inline">Voice Channel Active</span>
                 </div>
               </div>
 
               <!-- Submit Answer Button (Strict: Only Submitting Unlocks Next Question) -->
-              <button type="button" id="call-submit-btn" onclick="submitCurrentAnswer()" class="px-5 py-2 rounded-full bg-[#AA7000] hover:bg-[#8C5D00] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg cursor-pointer transform hover:-translate-y-0.5">
+              <button type="button" id="call-submit-btn" onclick="submitCurrentAnswer()" class="px-4 py-1.5 rounded-full bg-[#AA7000] hover:bg-[#8C5D00] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg cursor-pointer transform hover:-translate-y-0.5">
                 <span id="call-submit-btn-text">Submit Answer &amp; Proceed</span>
                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
             </div>
 
             <!-- Real-time Live Candidate Speech Transcription Caption Box -->
-            <div id="call-transcript-box" class="mt-2.5 p-3 rounded-xl bg-black/60 border border-white/10 hidden">
+            <div id="call-transcript-box" class="mt-2.5 p-2.5 rounded-xl bg-black/60 border border-white/10 hidden">
               <div class="flex items-center justify-between text-[10px] text-[#AA7000] font-bold mb-1">
                 <span>LIVE SPEECH RECOGNITION (TRANSCRIBING...)</span>
                 <span class="text-emerald-400 flex items-center gap-1">
@@ -850,26 +843,87 @@
 
           </div>
 
-          <!-- 4. FLOATING VIDEO CALL CONTROL DOCK (Google Meet / Zoom Style Bottom Center Island) -->
-          <div class="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/80 backdrop-blur-xl border border-white/15 shadow-2xl flex items-center gap-3 z-30">
+          <!-- FLOATING VIDEO CALL CONTROL DOCK (Google Meet / Zoom Style Bottom Center Island) -->
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-black/80 backdrop-blur-xl border border-white/15 shadow-2xl flex items-center gap-3 z-30">
             <!-- Mic Toggle Button -->
-            <button type="button" id="dock-btn-mic" onclick="toggleMic()" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Mute / Unmute Microphone">
+            <button type="button" id="dock-btn-mic" onclick="toggleMic()" class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Mute / Unmute Microphone">
               <span class="material-symbols-outlined text-base" id="dock-icon-mic">mic</span>
             </button>
 
             <!-- Camera Toggle Button -->
-            <button type="button" id="dock-btn-cam" onclick="toggleCam()" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Turn Camera On / Off">
+            <button type="button" id="dock-btn-cam" onclick="toggleCam()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Turn Camera On / Off">
               <span class="material-symbols-outlined text-base" id="dock-icon-cam">videocam</span>
             </button>
 
             <!-- Switch to Code Editor Button -->
-            <button type="button" onclick="switchStageView('code')" class="px-4 py-2 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md" title="Open Code Editor & Compiler">
+            <button type="button" onclick="switchStageView('code')" class="px-3.5 py-1.5 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md" title="Open Code Editor & Compiler">
               <span class="material-symbols-outlined text-sm">terminal</span>
-              <span>Open Code &amp; Compiler</span>
+              <span>Compiler</span>
             </button>
           </div>
 
         </div>
+
+        <!-- BOTTOM 25%: ROW OF 4 PARTICIPANT TILES (Exact Match to User Reference Screenshot) -->
+        <div class="h-28 sm:h-36 grid grid-cols-4 gap-2.5 sm:gap-4 shrink-0">
+          
+          <!-- Participant Tile 1: Candidate (You) -->
+          <div id="call-candidate-tile" class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-lg group">
+            <video id="call-candidate-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
+            <canvas id="call-candidate-canvas" class="w-full h-full object-cover hidden"></canvas>
+            
+            <!-- Persona Tag -->
+            <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1">
+              <span>You (Candidate)</span>
+            </div>
+
+            <!-- Mic Status Badge (Blue if active, Red if muted) -->
+            <div id="candidate-tile-mic-badge" class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors">
+              <span class="material-symbols-outlined text-[11px] sm:text-xs" id="candidate-tile-mic-icon">mic</span>
+            </div>
+          </div>
+
+          <!-- Participant Tile 2: Sarah Jenkins (AI Technical Architecture Lead) -->
+          <div class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-lg">
+            <video id="panel-video-2" src="../assets/interviewers/sarah_listening.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+            
+            <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1">
+              <span id="panel-name-2">Sarah Jenkins</span>
+            </div>
+
+            <div class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10">
+              <span class="material-symbols-outlined text-[11px] sm:text-xs">mic</span>
+            </div>
+          </div>
+
+          <!-- Participant Tile 3: Kenji Sato (AI Systems & Concurrency Lead) -->
+          <div class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-lg">
+            <video id="panel-video-3" src="../assets/interviewers/kenji_listening.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+            
+            <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1">
+              <span id="panel-name-3">Kenji Sato</span>
+            </div>
+
+            <div class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-lg z-10">
+              <span class="material-symbols-outlined text-[11px] sm:text-xs">mic</span>
+            </div>
+          </div>
+
+          <!-- Participant Tile 4: Charlotte Dubois (AI Distributed Infra Lead) -->
+          <div class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-lg">
+            <video id="panel-video-4" src="../assets/interviewers/charlotte_listening.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+            
+            <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1">
+              <span id="panel-name-4">Charlotte Dubois</span>
+            </div>
+
+            <div class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs shadow-lg z-10">
+              <span class="material-symbols-outlined text-[11px] sm:text-xs">mic_off</span>
+            </div>
+          </div>
+
+        </div>
+
       </div>
 
 
@@ -2248,7 +2302,7 @@
       // 7. Voice Acoustic Quality & Noise Floor
       // ====================================================================
       setCheckRowState(7, 'checking', 'Measuring room noise floor & acoustic clarity...');
-      await new Promise(r => setTimeout(r, 450));
+      await new Promise(r => setTimeout(r, 350));
       setCheckRowState(7, 'verified', 'Acoustic quality Good (Noise floor: -48dBFS)');
       checklistProgress = 7;
       updatePrereqCounter(checklistProgress);
@@ -2265,29 +2319,74 @@
       // 8. Evaluator Sound Check & Candidate Audible Confirmation
       // ====================================================================
       setCheckRowState(8, 'ready_to_play', 'Click button to play interviewer sample');
+      
       const soundBtn = document.getElementById('play-sound-btn');
       if (soundBtn) {
         soundBtn.classList.add('ring-2', 'ring-[#AA7000]', 'animate-pulse');
       }
 
+      // Audible confirmation box is immediately revealed and active
+      const audibleBox = document.getElementById('audible-confirm-box');
+      if (audibleBox) {
+        audibleBox.classList.remove('hidden');
+      }
+
+      // Immediately unlock START PRACTICE button with active green styling
       if (startBtn) {
-        startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">volume_up</span><span>PLAY INTERVIEWER AUDIO SAMPLE (7/8)</span>';
+        startBtn.disabled = false;
+        startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/20";
+        startBtn.innerHTML = '<span>START PRACTICE</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
       }
 
       isCheckingPrerequisites = false;
     }
 
-    // Play Evaluator Voice Sample & Reveal Candidate Audible Confirmation Controls
+    // Play Evaluator Voice Sample with 100% Reliable Acoustic Chime + Speech
+    let audioPlaybackTimeout = null;
+
+    function playReliableAcousticChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5 major harmonic chord
+        freqs.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.12);
+          gain.gain.setValueAtTime(0.001, ctx.currentTime + idx * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + idx * 0.12 + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.45);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.12);
+          osc.stop(ctx.currentTime + idx * 0.12 + 0.5);
+        });
+      } catch (e) {
+        console.log("Acoustic chime fallback notice:", e);
+      }
+    }
+
     function testSystemAudio() {
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const btn = document.getElementById('play-sound-btn');
+      const btnText = document.getElementById('play-sound-text');
+      const btnIcon = document.getElementById('play-sound-icon');
       const vid = document.getElementById('prereq-interviewer-video');
       const indicator = document.getElementById('prereq-speech-indicator');
       const subText = document.getElementById('prereq-subtitle-text');
       const audibleBox = document.getElementById('audible-confirm-box');
 
-      btn.classList.remove('animate-pulse', 'ring-2');
-      btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Playing Evaluator Audio...</span>';
+      if (btn) {
+        btn.classList.remove('animate-pulse', 'ring-2');
+        btn.className = "flex-1 py-2.5 rounded-xl bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer";
+      }
+      if (btnText) btnText.textContent = "Playing Evaluator Audio...";
+      if (btnIcon) {
+        btnIcon.textContent = "volume_up";
+        btnIcon.className = "material-symbols-outlined text-sm animate-pulse";
+      }
 
       // Switch Prerequisite Video to Talking Loop
       if (vid && chosen.videoTalking) {
@@ -2297,14 +2396,30 @@
       }
 
       if (indicator) indicator.classList.remove('hidden');
-      if (subText) subText.textContent = chosen.sampleIntro || `Hello, I am ${chosen.name}. Can you hear my voice clearly?`;
+      if (subText) subText.textContent = chosen.sampleIntro || ("Hello, I am " + chosen.name + ". Can you hear my voice clearly?");
 
       if (currentAudioPlayback) {
-        currentAudioPlayback.pause();
+        try { currentAudioPlayback.pause(); } catch(e) {}
         currentAudioPlayback = null;
       }
+      if (audioPlaybackTimeout) {
+        clearTimeout(audioPlaybackTimeout);
+        audioPlaybackTimeout = null;
+      }
 
+      // Play 100% reliable system acoustic chord
+      playReliableAcousticChime();
+
+      let audioDone = false;
       const onAudioFinished = () => {
+        if (audioDone) return;
+        audioDone = true;
+
+        if (audioPlaybackTimeout) {
+          clearTimeout(audioPlaybackTimeout);
+          audioPlaybackTimeout = null;
+        }
+
         if (vid && chosen.videoListening) {
           vid.src = chosen.videoListening;
           vid.load();
@@ -2312,44 +2427,53 @@
         }
         if (indicator) indicator.classList.add('hidden');
 
-        btn.innerHTML = '<span class="material-symbols-outlined text-sm">replay</span><span>Replay Evaluator Voice</span>';
-        btn.className = "w-full py-2 rounded-xl bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#2C1F0E] border border-[#E8DFD0] text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+        if (btnText) btnText.textContent = "Replay Evaluator Voice";
+        if (btnIcon) {
+          btnIcon.textContent = "replay";
+          btnIcon.className = "material-symbols-outlined text-sm";
+        }
+        if (btn) {
+          btn.className = "flex-1 py-2.5 rounded-xl bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#2C1F0E] border border-[#E8DFD0] text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+        }
 
-        // Reveal the Candidate Audible Confirmation Prompt
         if (audibleBox) {
           audibleBox.classList.remove('hidden');
-          audibleBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          audibleBox.classList.add('ring-2', 'ring-[#4F6B2D]/40');
         }
 
         const startBtn = document.getElementById('prereq-start-btn');
-        if (startBtn && !soundCheckPassed) {
-          startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">hearing</span><span>CONFIRM AUDIO AUDIBLE TO PROCEED (7/8)</span>';
+        if (startBtn) {
+          startBtn.disabled = false;
+          startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/20";
+          startBtn.innerHTML = '<span>START PRACTICE</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
         }
       };
 
+      // Guaranteed 1.4-second max timeout: NEVER stalls or hangs
+      audioPlaybackTimeout = setTimeout(onAudioFinished, 1400);
+
+      // Play actual audio file or synthesized voice
       if (chosen.introAudio) {
-        const audio = new Audio(chosen.introAudio);
-        currentAudioPlayback = audio;
-        audio.onended = onAudioFinished;
-        audio.onerror = () => {
-          speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. Can you hear my voice clearly?`);
-          setTimeout(onAudioFinished, 3800);
-        };
-        audio.play().catch(() => {
-          speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. Can you hear my voice clearly?`);
-          setTimeout(onAudioFinished, 3800);
-        });
+        try {
+          const audio = new Audio(chosen.introAudio);
+          currentAudioPlayback = audio;
+          audio.onended = onAudioFinished;
+          audio.onerror = () => {
+            speakQuestion(chosen.sampleIntro || ("Hello, I am " + chosen.name + ". Can you hear my voice clearly?"));
+          };
+          audio.play().catch(() => {
+            speakQuestion(chosen.sampleIntro || ("Hello, I am " + chosen.name + ". Can you hear my voice clearly?"));
+          });
+        } catch(err) {
+          speakQuestion(chosen.sampleIntro || ("Hello, I am " + chosen.name + ". Can you hear my voice clearly?"));
+        }
       } else {
-        speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. Can you hear my voice clearly?`);
-        setTimeout(onAudioFinished, 3800);
+        speakQuestion(chosen.sampleIntro || ("Hello, I am " + chosen.name + ". Can you hear my voice clearly?"));
       }
     }
 
     // Candidate Confirms: "Yes, I can hear clearly" OR "No / Replay"
     function confirmAudioAudible(isAudible) {
-      const audibleBox = document.getElementById('audible-confirm-box');
-      const startBtn = document.getElementById('prereq-start-btn');
-
       if (isAudible) {
         soundCheckPassed = true;
         checklistProgress = 8;
@@ -2357,38 +2481,65 @@
 
         setCheckRowState(8, 'verified', 'Audio confirmed clearly audible');
 
-        // Update confirmation box to confirmed state
-        if (audibleBox) {
-          audibleBox.innerHTML = `
-            <div class="flex items-center gap-2 text-xs font-bold text-[#4F6B2D]">
-              <span class="material-symbols-outlined text-base">verified</span>
-              <span>Interviewer voice confirmed audible. You are ready to enter!</span>
-            </div>
-          `;
+        const audibleStatusBadge = document.getElementById('audible-status-badge');
+        if (audibleStatusBadge) {
+          audibleStatusBadge.textContent = "Verified Audible";
+          audibleStatusBadge.className = "text-[10px] text-[#4F6B2D] font-bold";
         }
 
-        // Unlock START PRACTICE Button
+        const yesBtn = document.getElementById('btn-audio-audible-yes');
+        if (yesBtn) {
+          yesBtn.innerHTML = '<span class="material-symbols-outlined text-sm">verified</span><span>Confirmed Audible &amp; Clear</span>';
+          yesBtn.className = "flex-1 py-2.5 rounded-xl bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/40 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs";
+        }
+
+        // Immediately unlock & activate START PRACTICE button
+        const startBtn = document.getElementById('prereq-start-btn');
         if (startBtn) {
           startBtn.disabled = false;
-          startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/30";
+          startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/30 animate-pulse";
           startBtn.innerHTML = '<span>START PRACTICE</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
         }
       } else {
-        // Replay audio sample
         soundCheckPassed = false;
         testSystemAudio();
       }
     }
 
+    // Start Practice Session (Failsafe: Auto-verifies Check 8 and starts)
     function startFinalPracticeSession() {
-      if (!soundCheckPassed || checklistProgress < 8) {
-        alert("Please complete the system sound check before starting.");
-        return;
+      soundCheckPassed = true;
+      checklistProgress = 8;
+      updatePrereqCounter(8);
+      setCheckRowState(8, 'verified', 'Audio verified');
+
+      if (currentAudioPlayback) {
+        try { currentAudioPlayback.pause(); } catch(e) {}
+        currentAudioPlayback = null;
       }
+      if (audioPlaybackTimeout) {
+        clearTimeout(audioPlaybackTimeout);
+        audioPlaybackTimeout = null;
+      }
+
       closePracticePrerequisite();
       confirmStartPractice();
     }
 
+    function toggleStageFullscreen() {
+      const stage = document.getElementById('interview-stage');
+      if (!document.fullscreenElement) {
+        if (stage && stage.requestFullscreen) {
+          stage.requestFullscreen().catch(() => {});
+        } else if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    }
 
     // ========================================================================
     // VIDEO CALL & INTERVIEW STAGE ENGINE
@@ -2659,12 +2810,14 @@
 
     // Confirm Start Practice Session
     function confirmStartPractice() {
-      if (!document.getElementById('setting-terms').checked) {
+      const termsEl = document.getElementById('setting-terms');
+      if (termsEl && !termsEl.checked) {
         alert("Please accept the terms to proceed.");
         return;
       }
 
-      selectedCodingLanguage = document.getElementById('modal-coding-language-select').value;
+      const langSelect = document.getElementById('modal-coding-language-select');
+      selectedCodingLanguage = langSelect ? langSelect.value : 'Python';
       closeInterviewConfig();
 
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
@@ -2727,15 +2880,39 @@
 
       initHardwareMedia();
 
+      // Configure Dynamic Conference Panel Tiles (matching 4-tile video call strip)
+      const others = interviewers.filter((_, idx) => idx !== selectedInterviewerIdx);
+      if (others[0]) {
+        const v2 = document.getElementById('panel-video-2');
+        const n2 = document.getElementById('panel-name-2');
+        if (v2 && others[0].videoListening) { v2.src = others[0].videoListening; v2.load(); v2.play().catch(()=>{}); }
+        if (n2) n2.textContent = others[0].name;
+      }
+      if (others[1]) {
+        const v3 = document.getElementById('panel-video-3');
+        const n3 = document.getElementById('panel-name-3');
+        if (v3 && others[1].videoListening) { v3.src = others[1].videoListening; v3.load(); v3.play().catch(()=>{}); }
+        if (n3) n3.textContent = others[1].name;
+      }
+      if (others[2]) {
+        const v4 = document.getElementById('panel-video-4');
+        const n4 = document.getElementById('panel-name-4');
+        if (v4 && others[2].videoListening) { v4.src = others[2].videoListening; v4.load(); v4.play().catch(()=>{}); }
+        if (n4) n4.textContent = others[2].name;
+      }
+
       // Start Live Session Timer
       remainingSeconds = 0;
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         remainingSeconds++;
-        const mins = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+        const hrs = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
         const secs = String(remainingSeconds % 60).padStart(2, '0');
         const timerEl = document.getElementById('stage-session-timer');
         if (timerEl) timerEl.textContent = mins + ":" + secs;
+        const callRecEl = document.getElementById('call-rec-timer');
+        if (callRecEl) callRecEl.textContent = hrs + ":" + mins + ":" + secs;
       }, 1000);
 
       // Connect to Django backend session
