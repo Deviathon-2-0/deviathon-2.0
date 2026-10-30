@@ -27,6 +27,9 @@ from api.models import (
     ResumeAudit,
     AssessmentSubmission,
     PrepPlanRecord,
+    CatalogQuestion,
+    CompanyQuestionMapping,
+    FollowUpDialogue,
 )
 from api.services.tts_engine import synthesize_interviewer_speech, INTERVIEWER_PROFILES
 from api.services.stt_engine import transcribe_candidate_speech
@@ -514,6 +517,9 @@ def start_interview_session(request):
     language = request.data.get('language', 'python')
     technology = request.data.get('technology', language).lower()
 
+    round_name = (request.data.get('round') or '').strip().lower()
+    track_norm = f"{track} {round_name}".lower()
+
     session = InterviewSession.objects.create(
         role=role,
         company=company,
@@ -527,37 +533,95 @@ def start_interview_session(request):
 
     questions = []
 
-    # 1. Prefer distinct company-specific LeetCode questions from PostgreSQL CompanyQuestionMapping
-    from api.models import CompanyQuestionMapping
-    company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company, time_window='Thirty Days').order_by('-frequency')
-    if not company_qs.exists():
-        company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company, time_window='All').order_by('-frequency')
+    # STRICT TRACK SEGREGATION: Never mix Coding, Behavioral, or System Design!
+    is_behavioral = any(k in track_norm for k in ['behavioral', 'hr', 'management', 'leadership', 'culture', 'people', 'warm up', 'non-tech'])
+    is_system_design = any(k in track_norm for k in ['system design', 'architecture', 'distributed', 'hld', 'lld', 'infrastructure', 'role related'])
 
-    seen_slugs = set()
-    for cm in company_qs:
-        if cm.question_slug in seen_slugs:
-            continue
-        seen_slugs.add(cm.question_slug)
+    if is_behavioral:
+        # STRICTLY Behavioral questions from PostgreSQL CatalogQuestion (category='Behavioral')
+        b_qs = list(CatalogQuestion.objects.filter(category='Behavioral').order_by('?')[:4])
+        for idx, bq in enumerate(b_qs):
+            questions.append({
+                'index': idx,
+                'title': bq.title,
+                'text': bq.prompt,
+                'prompt': bq.prompt,
+                'type': 'Behavioral',
+                'expected_concepts': bq.required_keywords or ["Situation", "Task", "Action", "Result", "Leadership Principles", "Conflict Resolution"],
+                'starter_code': '',
+                'source_id': bq.question_key,
+                'reference_answer': bq.sample_solution or "",
+                'explanation': "STAR Behavioral & Leadership competency evaluation.",
+                'source_metadata': {'track': 'Behavioral', 'category': 'Behavioral'}
+            })
+    elif is_system_design:
+        # STRICTLY System Design questions from PostgreSQL CatalogQuestion (category='System Design')
+        sd_qs = list(CatalogQuestion.objects.filter(category='System Design').order_by('?')[:4])
+        for idx, sdq in enumerate(sd_qs):
+            questions.append({
+                'index': idx,
+                'title': sdq.title,
+                'text': sdq.prompt,
+                'prompt': sdq.prompt,
+                'type': 'System Design',
+                'expected_concepts': sdq.required_keywords or ["Scalability", "High Availability", "Database Sharding", "Caching", "Latency Bounds"],
+                'starter_code': '# System Design Architecture Notes\n# 1. Functional & Non-Functional Requirements\n# 2. Capacity Estimation\n# 3. High-Level Architecture Diagram\n# 4. Deep Dive & Bottlenecks\n\n',
+                'source_id': sdq.question_key,
+                'reference_answer': sdq.sample_solution or "",
+                'explanation': "High-scale distributed systems architecture question.",
+                'source_metadata': {'track': 'System Design', 'category': 'System Design'}
+            })
+    else:
+        # Technical / Coding Track: Prefer distinct company-specific LeetCode questions
+        from api.models import CompanyQuestionMapping
+        company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company, time_window='Thirty Days').order_by('-frequency')
+        if not company_qs.exists():
+            company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company, time_window='All').order_by('-frequency')
 
-        prompt_text = cm.catalog_question.prompt if cm.catalog_question and cm.catalog_question.prompt else f"Write an optimal function to solve '{cm.title}'. Detail time and space complexity upfront."
-        starter = cm.catalog_question.starter_code if cm.catalog_question and cm.catalog_question.starter_code else f"# Problem: {cm.title} ({cm.difficulty})\n\n"
-        questions.append({
-            'index': len(questions),
-            'title': f"{cm.title} ({cm.difficulty})",
-            'text': prompt_text,
-            'prompt': prompt_text,
-            'expected_concepts': cm.topics or [cm.difficulty, "time_complexity", "space_complexity"],
-            'starter_code': starter,
-            'source_id': cm.question_slug,
-            'reference_answer': cm.catalog_question.sample_solution if cm.catalog_question else "",
-            'explanation': f"Asked at {cm.company_name} with {cm.frequency}% frequency.",
-            'source_metadata': {'company': cm.company_name, 'slug': cm.question_slug, 'frequency': cm.frequency}
-        })
-        if len(questions) >= 4:
-            break
+        seen_slugs = set()
+        for cm in company_qs:
+            if cm.question_slug in seen_slugs:
+                continue
+            seen_slugs.add(cm.question_slug)
 
-    # 2. Prefer questions stored in PostgreSQL technology bank for remaining slots
-    bank_questions = get_interview_questions(technology=technology, count=4 - len(questions)) if len(questions) < 4 else []
+            prompt_text = cm.catalog_question.prompt if cm.catalog_question and cm.catalog_question.prompt else f"Write an optimal function to solve '{cm.title}'. Detail time and space complexity upfront."
+            starter = cm.catalog_question.starter_code if cm.catalog_question and cm.catalog_question.starter_code else f"# Problem: {cm.title} ({cm.difficulty})\n\n"
+            questions.append({
+                'index': len(questions),
+                'title': f"{cm.title} ({cm.difficulty})",
+                'text': prompt_text,
+                'prompt': prompt_text,
+                'type': 'Coding',
+                'expected_concepts': cm.topics or [cm.difficulty, "time_complexity", "space_complexity"],
+                'starter_code': starter,
+                'source_id': cm.question_slug,
+                'reference_answer': cm.catalog_question.sample_solution if cm.catalog_question else "",
+                'explanation': f"Asked at {cm.company_name} with {cm.frequency}% frequency.",
+                'source_metadata': {'company': cm.company_name, 'slug': cm.question_slug, 'frequency': cm.frequency}
+            })
+            if len(questions) >= 4:
+                break
+
+        # Fallback to general coding CatalogQuestion if < 4
+        if len(questions) < 4:
+            rem = 4 - len(questions)
+            cat_qs = list(CatalogQuestion.objects.filter(category__in=['Coding', 'Algorithms', 'LeetCode']).exclude(question_id__in=seen_slugs).order_by('?')[:rem])
+            for cq in cat_qs:
+                questions.append({
+                    'index': len(questions),
+                    'title': cq.title,
+                    'text': cq.prompt,
+                    'prompt': cq.prompt,
+                    'type': 'Coding',
+                    'expected_concepts': cq.required_keywords or ["Algorithm", "Data Structures", "Time Complexity"],
+                    'starter_code': cq.starter_code or f"# Problem: {cq.title}\n\n",
+                    'source_id': cq.question_key,
+                    'reference_answer': cq.sample_solution or "",
+                    'explanation': "Algorithm & data structures problem.",
+                    'source_metadata': {'category': cq.category}
+                })
+
+    bank_questions = []
 
     for bank_q in bank_questions:
         answer = bank_q.answer or {}
@@ -659,8 +723,11 @@ def generate_followup_probe(request):
     role = request.data.get('role', 'Software Engineer')
 
     session = _resolve_session(session_id, role=role)
+    track_val = (request.data.get('track') or session.track or 'Tech').strip().lower()
+    is_behavioral = track_val in ['behavioral', 'management', 'hr', 'leadership', 'cultural fit', 'non-tech', 'culture'] or 'behavior' in q_title.lower() or q_title.startswith('beh_')
+    is_system_design = track_val in ['system design', 'architecture', 'distributed systems', 'hld', 'lld'] or 'system design' in q_title.lower() or q_title.startswith('sd_')
 
-    has_code = bool(code and len(code) > 25 and not code.startswith('// Problem:'))
+    has_code = bool(code and len(code) > 25 and not code.startswith('// Problem:') and not code.startswith('# Problem:'))
     has_speech = bool(transcript and not transcript.startswith('[No'))
 
     followup_prompt = ''
@@ -676,15 +743,31 @@ def generate_followup_probe(request):
 
     if client:
         try:
-            sys_inst = (
-                "You are an elite, realistic technical interviewer at Google or Meta. "
-                "The candidate just provided an answer or code snippet to an interview question. "
-                "Ask ONE concise, sharp follow-up question (1-2 sentences maximum) probing their solution. "
-                "If they wrote code, question their time/space complexity or specific edge cases. "
-                "If they gave a verbal explanation, ask how they would handle scale, concurrency, or failure modes. "
-                "If they provided no answer, ask a helpful scaffolding question to test first-principles intuition. "
-                "Keep your tone direct and conversational. Output ONLY the follow-up question."
-            )
+            if is_behavioral:
+                sys_inst = (
+                    "You are an executive behavioral interviewer conducting an Amazon/Google leadership & cultural fit round. "
+                    "The candidate just responded to a behavioral interview question. "
+                    "Ask ONE concise, sharp follow-up question (1-2 sentences maximum) probing their STAR story. "
+                    "Probe for: quantifiable metrics/outcomes, their personal individual contribution vs the team, "
+                    "how they resolved interpersonal friction, or what they would do differently. "
+                    "DO NOT ASK ANY PROGRAMMING, CODING, OR ALGORITHMIC QUESTIONS. Output ONLY the follow-up question."
+                )
+            elif is_system_design:
+                sys_inst = (
+                    "You are a Principal Distributed Systems Architect conducting a System Design round at Google. "
+                    "The candidate just presented a distributed system architecture. "
+                    "Ask ONE sharp, high-level architectural follow-up probing: database sharding/partitioning bottlenecks, "
+                    "cache invalidation/thundering herd, single points of failure, or replication lag during network partitions. "
+                    "DO NOT ASK FOR CODE IMPLEMENTATION. Output ONLY the architectural follow-up question."
+                )
+            else:
+                sys_inst = (
+                    "You are an elite technical interviewer at Google or Meta conducting a coding round. "
+                    "The candidate just provided a code snippet or algorithmic explanation. "
+                    "Ask ONE concise, sharp follow-up probing their solution: worst-case time/space Big-O bounds, "
+                    "subtle edge cases (overflow, duplicates, negative numbers), or memory optimization. Output ONLY the follow-up question."
+                )
+
             user_content = f"""Original Question: {q_title}
 Question Prompt: {q_prompt}
 Candidate Spoken Answer: {transcript or '[No verbal answer provided]'}
@@ -702,28 +785,43 @@ Generate a sharp, realistic interviewer follow-up question for this exact situat
             )
             if resp and resp.text:
                 followup_prompt = resp.text.strip().strip('"')
-                if has_code:
+                if is_behavioral:
+                    probe_type = 'star_outcome_probe'
+                elif is_system_design:
+                    probe_type = 'system_design_bottleneck_probe'
+                elif has_code:
                     probe_type = 'code_complexity_and_edge_cases'
-                elif has_speech:
-                    probe_type = 'architecture_and_tradeoffs'
                 else:
-                    probe_type = 'intuition_scaffolding'
+                    probe_type = 'algorithmic_approach'
         except Exception as e:
             logger.info(f"Gemini probe notice: {e}")
 
     if not followup_prompt:
-        if has_code:
-            probe_type = 'code_complexity'
-            if 'for ' in code or 'while ' in code:
-                followup_prompt = "Looking at the loop structure in your implementation, what is the worst-case asymptotic time complexity, and how would you optimize this if memory was severely constrained?"
+        if is_behavioral:
+            probe_type = "star_outcome_probe"
+            if has_speech:
+                followup_prompt = "What specific quantifiable metric or KPI measured the ultimate business impact of that action, and what would you do differently if you faced the exact same situation today?"
             else:
-                followup_prompt = "How would your implementation behave if the input contains unexpected duplicates, negative values, or null pointers?"
-        elif has_speech:
-            probe_type = "architecture_tradeoffs"
-            followup_prompt = "You explained the high-level intuition. Could you walk me through the specific edge cases (such as high concurrency or network partitions) that could break this approach?"
+                followup_prompt = "Could you walk me through a specific real-world scenario from your career using the STAR method: Situation, Task, Action, and Result?"
+        elif is_system_design:
+            probe_type = "system_design_bottleneck_probe"
+            if has_speech:
+                followup_prompt = "What happens if the primary database partition fails during peak write volume? How does your design ensure high availability without data loss or replication lag?"
+            else:
+                followup_prompt = "To start scoping the system, what are the primary read-versus-write ratio assumptions and peak latency constraints you would design for?"
         else:
-            probe_type = "approach_scaffolding"
-            followup_prompt = "To help us get started, could you share your initial first-principles intuition on what data structure or pattern would best model this problem?"
+            if has_code:
+                probe_type = "code_complexity"
+                if 'for ' in code or 'while ' in code:
+                    followup_prompt = "Looking at the loop structure in your implementation, what is the worst-case asymptotic time complexity, and how would you optimize this if memory was severely constrained?"
+                else:
+                    followup_prompt = "How would your implementation behave if the input contains unexpected duplicates, negative values, or null pointers?"
+            elif has_speech:
+                probe_type = "algorithmic_edge_cases"
+                followup_prompt = "You explained the high-level approach well. What specific input edge cases (such as empty inputs, single elements, or extreme values) could break this logic?"
+            else:
+                probe_type = "approach_scaffolding"
+                followup_prompt = "To help us get started, could you share your initial first-principles intuition on what data structure or pattern would best model this problem?"
 
     try:
         from api.models import FollowUpDialogue
@@ -820,20 +918,36 @@ def submit_interview_session(request, session_id):
         ans_telemetry = ans.get('telemetry') or raw_telemetry
         followup_resp = ans.get('followup_response', '')
 
-        # Check if candidate actually attempted the question
-        has_real_speech = bool(transcript and not transcript.startswith('[No') and len(transcript.strip().split()) >= 3)
-        has_real_code = bool(code and len(code.strip()) > 30 and not code.strip().startswith('// Problem:') and not code.strip().startswith('# Problem:'))
+        # Strict attempt check: Exclude placeholder comments, unmodified starters, or fake text
+        fake_markers = ['demonstrated systematic algorithm', '[no verbal', '[no follow-up', 'listening to your']
+        is_fake_transcript = any(m in transcript.lower() for m in fake_markers)
+        has_real_speech = bool(transcript and not is_fake_transcript and len(transcript.strip().split()) >= 3)
+
+        # Detect unmodified starter code (e.g. only return {}; or pass or empty comments)
+        stripped_code = code.strip()
+        is_starter_stub = (
+            not stripped_code or
+            stripped_code.startswith('// Problem:') and stripped_code.count('\n') <= 3 or
+            stripped_code.startswith('# Problem:') and stripped_code.count('\n') <= 3 or
+            'return {};' in stripped_code and len(stripped_code) < 160 or
+            stripped_code.endswith('pass') and len(stripped_code) < 120 or
+            stripped_code.endswith('return None') and len(stripped_code) < 120
+        )
+        has_real_code = bool(stripped_code and not is_starter_stub and len(stripped_code) > 25)
 
         if not has_real_speech and not has_real_code:
             q_breakdown_card = {
                 'question_index': q_idx,
                 'question_title': q_title,
-                'transcript': transcript or '[No verbal response provided]',
+                'transcript': '[No verbal response provided]',
                 'code': code or '',
                 'score': 0,
                 'covered_concepts': [],
-                'missing_concepts': [{'concept': 'No answer or code submitted'}],
-                'feedback': 'This question was skipped or no answer/code was recorded. 0 technical points awarded.',
+                'missing_concepts': [
+                    {'concept': 'Technical implementation omitted'},
+                    {'concept': 'Verbal reasoning omitted'}
+                ],
+                'feedback': 'No spoken response or implementation was provided for this question. 0 points awarded.',
                 'flagged_moments': []
             }
             per_question_breakdown.append(q_breakdown_card)
@@ -923,8 +1037,9 @@ def submit_interview_session(request, session_id):
 
         for tip in scorecard.get("targeted_coaching_tips", []):
             fix_desc = tip.get("actionable_fix") if isinstance(tip, dict) else str(tip)
-            if fix_desc and fix_desc not in all_recommendations:
-                all_recommendations.append({"title": tip.get("focus", "Architectural Growth"), "description": fix_desc})
+            fix_focus = tip.get("focus", "Architectural Growth") if isinstance(tip, dict) else "Growth"
+            if fix_desc and not any(r.get("description") == fix_desc for r in all_recommendations):
+                all_recommendations.append({"title": fix_focus, "description": fix_desc})
             obs = tip.get("observation") if isinstance(tip, dict) else ""
             if obs and obs not in all_critical_gaps:
                 all_critical_gaps.append(obs)
@@ -1106,11 +1221,11 @@ def get_session_report(request, session_id):
         "strengths": ["Demonstrated systematic structural logic decomposition."]
     }
 
-    delivery_score = session.score_body_language or 85.0
-    tech_score = session.score_technical_depth or 82.0
-    speech_score = session.score_speech_clarity or 84.0
-    struct_score = session.score_structural_logic or 80.0
-    comp_score = session.overall_score or round(tech_score * 0.45 + struct_score * 0.25 + speech_score * 0.15 + delivery_score * 0.15, 1)
+    delivery_score = session.score_body_language if session.score_body_language is not None else 85.0
+    tech_score = session.score_technical_depth if session.score_technical_depth is not None else 0.0
+    speech_score = session.score_speech_clarity if session.score_speech_clarity is not None else 70.0
+    struct_score = session.score_structural_logic if session.score_structural_logic is not None else 0.0
+    comp_score = session.overall_score if session.overall_score is not None else round(tech_score * 0.45 + struct_score * 0.25 + speech_score * 0.15 + delivery_score * 0.15, 1)
 
     if comp_score >= 90:
         grade = "S"
@@ -1141,18 +1256,18 @@ def get_session_report(request, session_id):
 
     metrics = {
         "bodyLanguage": {
-            "rating": "Poised & Centered" if delivery_score >= 80 else "Developing Presence",
-            "notes": f"Maintained {int(gaze_pct)}% eye contact with poised, upright posture.",
+            "rating": "Poised & Centered" if delivery_score >= 80 else ("Developing Presence" if delivery_score > 0 else "No Camera Activity"),
+            "notes": f"Maintained {int(gaze_pct)}% eye contact with poised, upright posture." if delivery_score > 0 else "Camera activity was minimal or unrecorded.",
             "recommendation": "Keep camera at natural eye level and maintain steady webcam focus."
         },
         "technicalDepth": {
-            "rating": "Proficient" if tech_score >= 80 else "Adequate",
-            "notes": f"Demonstrated consistent technical decomposition with {int(round(tech_score))}% rubric coverage.",
-            "recommendation": "Articulate asymptotic memory fragmentation and cache locality trade-offs upfront."
+            "rating": "Proficient" if tech_score >= 80 else ("Adequate" if tech_score > 0 else "Unattempted"),
+            "notes": f"Demonstrated consistent technical decomposition with {int(round(tech_score))}% rubric coverage." if tech_score > 0 else "No technical explanations or code solutions were submitted.",
+            "recommendation": "Articulate asymptotic memory fragmentation and cache locality trade-offs upfront." if tech_score > 0 else "State initial algorithmic intuitions and complexity constraints even when uncertain."
         },
         "speechClarity": {
-            "rating": "Clear & Articulate" if speech_score >= 80 else "Monotone Inflection",
-            "notes": f"Pitch variance measured at {pitch_var} Hz with natural conversational cadence.",
+            "rating": "Clear & Articulate" if speech_score >= 80 else ("Monotone Inflection" if speech_score > 0 else "No Audio Recorded"),
+            "notes": f"Pitch variance measured at {pitch_var} Hz with natural conversational cadence." if speech_score > 0 else "Microphone audio was silent or unrecorded.",
             "recommendation": "Vary vocal tone when contrasting architectural trade-offs."
         }
     }

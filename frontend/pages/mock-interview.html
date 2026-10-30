@@ -1164,6 +1164,89 @@
       const compLower = (companyName || '').toLowerCase();
       const isTech = (track === 'Tech' || track === 'Engineering');
 
+      // STRICT TRACK & ROUND SEGREGATION: Never mix questions across rounds!
+      if (round === 'Behavioral' || track === 'Behavioral' || round === 'Warm Up') {
+        return [
+          {
+            title: "Production Incident & Accountability",
+            type: "Behavioral",
+            prompt: "Tell me about a time you took a calculated technical risk or made a critical mistake in production that resulted in customer disruption. How did you handle remediation, communication, and long-term prevention?",
+            input: "STAR format scenario",
+            output: "Accountability outcome with quantifiable post-mortem learnings",
+            constraints: "Highlight Ownership, Blameless RCA, and Customer Trust",
+            starterCode: ""
+          },
+          {
+            title: "Technical Disagreement & Conflict Resolution",
+            type: "Behavioral",
+            prompt: "Describe an architectural decision where you strongly disagreed with a senior engineer or product manager. How did you advocate your perspective with data, and how did you resolve the deadlock?",
+            input: "Cross-functional deadlock scenario",
+            output: "Constructive pushback and collaborative alignment",
+            constraints: "Must embody respectful dissent, data-driven alignment, and commitment",
+            starterCode: ""
+          },
+          {
+            title: "Ambiguity & Critical Priority Pivot",
+            type: "Behavioral",
+            prompt: "Walk me through a project where the requirements were ambiguous or shifting rapidly mid-quarter. How did you structure milestones and drive delivery?",
+            input: "High-uncertainty roadmap scenario",
+            output: "Framework for iterative prioritization and stakeholder consensus",
+            constraints: "Focus on proactive leadership and risk de-escalation",
+            starterCode: ""
+          },
+          {
+            title: "Proactive Mentorship & Team Elevation",
+            type: "Behavioral",
+            prompt: "Give an example of how you actively elevated the engineering quality or mentorship culture of your team beyond your immediate day-to-day tickets.",
+            input: "Team leverage scenario",
+            output: "Multiplied engineering impact across junior engineers",
+            constraints: "Demonstrate empathy, continuous learning, and scalable team practices",
+            starterCode: ""
+          }
+        ];
+      }
+
+      if (round === 'Role Related' || track === 'System Design' || track === 'Architecture') {
+        return [
+          {
+            title: "Design Pastebin or Bit.ly Scaled Service",
+            type: "System Design",
+            prompt: "Design a high-throughput URL shortening and raw paste storage service capable of handling 100M daily active writes, with sub-15ms global read latency and automatic TTL expiration.",
+            input: "System Architecture Scenario",
+            output: "Storage estimation, hash collision resolution & cache tiering",
+            constraints: "Active writes: 1,000 writes/sec, read/write ratio 10:1",
+            starterCode: "# System Design Architecture Notes\n# 1. Functional & Non-Functional Requirements\n# 2. Capacity Estimation (Storage, QPS, Bandwidth)\n# 3. High-Level Architecture (CDN, API Gateway, DB)\n# 4. Deep Dive: Key Generation Service & Caching\n\n"
+          },
+          {
+            title: "Design Scaled Distributed Web Crawler",
+            type: "System Design",
+            prompt: "Design a distributed web crawler that can discover and index 10 billion web pages per month. Address politeness policies, duplicate URL filtering via Bloom Filters, and distributed URL frontier queues.",
+            input: "High-volume web indexing",
+            output: "URL Frontier design, DNS cache & distributed worker fleet",
+            constraints: "Bandwidth: 1 GB/sec sustained throughput",
+            starterCode: "# Web Crawler Architecture Notes\n# 1. Scope & Politeness Rules\n# 2. URL Frontier & Priority Queues\n# 3. Bloom Filter Deduplication\n# 4. Storage & Indexing Pipeline\n\n"
+          },
+          {
+            title: "Design Twitter / Social Feed Timeline & Fanout",
+            type: "System Design",
+            prompt: "Design the real-time social timeline and search system for Twitter. Compare fanout-on-write versus fanout-on-read for celebrity users with 50M+ followers, ensuring sub-50ms feed rendering latency.",
+            input: "High read-to-write social graph",
+            output: "Hybrid fanout architecture & Redis timeline cache design",
+            constraints: "P99 feed delivery < 50ms at 50,000 tweets/sec",
+            starterCode: "# Social Timeline Architecture Notes\n# 1. Fanout-on-Write vs Fanout-on-Read Hybrid\n# 2. Redis List In-Memory Caching\n# 3. Celebrity User De-coupling\n# 4. Search & Ranking Indexing\n\n"
+          },
+          {
+            title: "Design Distributed Real-Time Key-Value Cache",
+            type: "System Design",
+            prompt: "Design an in-memory distributed key-value cache cluster (like Memcached/Redis) supporting consistent hashing with virtual nodes, automatic failover under node crashes, and write-through persistence.",
+            input: "Ultra-low latency storage tier",
+            output: "Consistent hash ring, gossip protocol & eviction policy",
+            constraints: "Sub-2ms latency for 10M operations/second",
+            starterCode: "# Distributed Cache Architecture Notes\n# 1. Consistent Hashing & Virtual Nodes\n# 2. Gossip Protocol for Node Discovery\n# 3. Replication & Eviction (LRU/LFU)\n# 4. Network Partition Recovery\n\n"
+          }
+        ];
+      }
+
       // 1. Check for Company-Specific Questions first (Google, Amazon, Meta, Apple, Microsoft, Netflix, etc.)
       if (compLower.includes('google')) {
         return [
@@ -2957,7 +3040,7 @@
           if (callRecEl) callRecEl.textContent = hrs + ":" + mins + ":" + secs;
         }, 1000);
 
-        // Connect to Django backend session
+        // Connect to Django backend session with strict round & track alignment
         tryApiFetch('/sessions/start/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -2965,6 +3048,7 @@
             role: pendingTitle,
             company: pendingCompany || 'Google',
             track: pendingTrack,
+            round: selectedRound,
             level: pendingLevel,
             interviewer_name: chosen.name,
             interviewer_accent: chosen.accentLabel,
@@ -2973,6 +3057,20 @@
         }).then(data => {
           if (data && data.session_id) {
             activeSessionId = data.session_id;
+          }
+          if (data && Array.isArray(data.questions) && data.questions.length > 0) {
+            currentQuestions = data.questions.map((q, idx) => ({
+              id: q.source_id || q.title,
+              title: q.title,
+              type: q.type || (selectedRound === 'Behavioral' ? 'Behavioral' : (selectedRound === 'Role Related' ? 'System Design' : 'Coding')),
+              prompt: q.prompt || q.text,
+              input: q.input || "Standard I/O stream",
+              output: q.output || "Standard I/O format",
+              constraints: q.constraints || "Optimal complexity constraints",
+              instructions: q.explanation || "Provide comprehensive structured solution.",
+              starterCode: q.starter_code || (q.type === 'Behavioral' ? '' : `// Problem: ${q.title}\n\n`)
+            }));
+            updateQuestionView(0);
           }
         }).catch(() => {});
       } catch (err) {
@@ -3047,6 +3145,17 @@
       const techOutput = document.getElementById('tech-problem-output');
       const techConstraints = document.getElementById('tech-problem-constraints');
       const techInstructionsText = document.getElementById('tech-instructions-text');
+
+      // Strictly hide IDE split-view toggle in Behavioral round to prevent mixing
+      const viewToggleBtn = document.getElementById('btn-stage-view-toggle');
+      if (viewToggleBtn) {
+        if (q.type === 'Behavioral' || selectedRound === 'Behavioral') {
+          viewToggleBtn.classList.add('hidden');
+          switchStageView('video');
+        } else {
+          viewToggleBtn.classList.remove('hidden');
+        }
+      }
 
       if (codeQNum) codeQNum.textContent = "• " + qCategoryText + " •";
       if (techInstructionTitle) techInstructionTitle.textContent = q.title || "Write a code solution for the situation described below.";
@@ -3143,6 +3252,8 @@
         }, 1800);
       }
       overlay.classList.remove('hidden');
+      overlay.style.removeProperty('display');
+      overlay.style.setProperty('display', 'flex', 'important');
     }
 
     async function submitCurrentAnswer() {

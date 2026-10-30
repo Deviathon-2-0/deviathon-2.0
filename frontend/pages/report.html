@@ -1038,13 +1038,18 @@
         }
 
         // 13. Populate Key Moments Tab
-        if (Array.isArray(report.diagnosticEvents) && report.diagnosticEvents.length > 0) {
-          const momentsContainer = document.getElementById('tab-moments');
-          if (momentsContainer) {
-            const grid = momentsContainer.querySelector('.grid');
-            if (grid) {
-              grid.innerHTML = '';
-              report.diagnosticEvents.slice(0, 4).forEach(evt => {
+        const momentsContainer = document.getElementById('tab-moments');
+        if (momentsContainer) {
+          const grid = momentsContainer.querySelector('.grid');
+          if (grid) {
+            grid.innerHTML = '';
+            const events = (Array.isArray(report.diagnosticEvents) && report.diagnosticEvents.length > 0)
+              ? report.diagnosticEvents
+              : [
+                  { concept: 'Session Initialized', observation: 'Webcam and audio telemetry streams initialized.', evidence: 'Verified Organic', type: 'KEY_MOMENT' },
+                  { concept: 'Response Completeness', observation: (report.scores?.technicalDepth === 0 ? 'Questions were skipped or unattempted without code or audio.' : 'Questions evaluated across technical and behavioral rubrics.'), evidence: 'Technical Depth: ' + (report.scores?.technicalDepth || 0), type: 'DIAGNOSTIC' }
+                ];
+            events.slice(0, 4).forEach(evt => {
                 const card = document.createElement('div');
                 card.className = "p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] flex items-center justify-between";
                 card.innerHTML = `

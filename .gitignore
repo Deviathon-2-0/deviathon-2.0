@@ -54,3 +54,7 @@ __pycache__/
 
 # Leetcode company raw clone
 data/leetcode_companies/
+
+# Raw interview question dataset repos
+data/system_design_primer/
+data/awesome_interview_questions/
