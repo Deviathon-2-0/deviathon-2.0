@@ -1,18 +1,106 @@
 """
 Phonetic & Lexicon Normalizer (evaluator/normalizer.py)
-Normalizes candidate speech transcripts using exact dictionary lookups,
-phonetic soundex/metaphone keys, and RapidFuzz token matching to bridge
-speech-to-text mishearings (e.g., 'thats why we need has aman' -> 'thats why we need hashmap').
+Implements Layer 2 (Phonemic & Lexicon Alignment):
+- Accent Substitution Matrix (v/w interchange, retroflex consonant drops, vowel shifts)
+- Double Metaphone + RapidFuzz Levenshtein phonetic matching (threshold > 0.82)
+- Dialect and colloquial phrasing tolerance
+- Decoupled technical vocabulary normalization
 """
 import re
 from typing import Dict, List, Tuple, Any, Optional
-from evaluator.catalog import PHONETIC_CORRECTIONS
+
+try:
+    import jellyfish
+    JELLYFISH_AVAILABLE = True
+except ImportError:
+    JELLYFISH_AVAILABLE = False
 
 try:
     from rapidfuzz import fuzz
     RAPIDFUZZ_AVAILABLE = True
 except ImportError:
     RAPIDFUZZ_AVAILABLE = False
+
+from evaluator.catalog import PHONETIC_CORRECTIONS
+
+
+# ---------------------------------------------------------------------------
+# Accent Substitution Matrix (Acoustic drift across regional dialects)
+# ---------------------------------------------------------------------------
+ACCENT_SUBSTITUTION_RULES: List[Tuple[re.Pattern, str]] = [
+    # 1. /v/ and /w/ interchange (e.g., "wector" -> "vector", "wariable" -> "variable")
+    (re.compile(r'\bwector\b', re.IGNORECASE), "vector"),
+    (re.compile(r'\bwectors\b', re.IGNORECASE), "vectors"),
+    (re.compile(r'\bwariable\b', re.IGNORECASE), "variable"),
+    (re.compile(r'\bwariables\b', re.IGNORECASE), "variables"),
+    (re.compile(r'\bwirtual\b', re.IGNORECASE), "virtual"),
+    (re.compile(r'\bwalue\b', re.IGNORECASE), "value"),
+    (re.compile(r'\bwalues\b', re.IGNORECASE), "values"),
+    (re.compile(r'\bwalidation\b', re.IGNORECASE), "validation"),
+
+    # 2. Vowel shifts & homophone drift for common tech terms
+    (re.compile(r'\b(cashe|kaysh|cash memory|kash)\b', re.IGNORECASE), "cache"),
+    (re.compile(r'\bdemon process\b', re.IGNORECASE), "daemon process"),
+    (re.compile(r'\bdemon thread\b', re.IGNORECASE), "daemon thread"),
+    (re.compile(r'\broute(r)?\b', re.IGNORECASE), "router"),
+    (re.compile(r'\bbyt(es)?\b', re.IGNORECASE), "bytes"),
+
+    # 3. Retroflex consonant & consonant cluster drops
+    (re.compile(r'\bstuck\b(?=\s+(array|pointer|data|overflow))', re.IGNORECASE), "stack"),
+    (re.compile(r'\btread\b(?=\s+(pool|safety|safe|lock))', re.IGNORECASE), "thread"),
+    (re.compile(r'\bmulti tread(ed)?\b', re.IGNORECASE), "multithreaded"),
+    (re.compile(r'\basink\b', re.IGNORECASE), "async"),
+    (re.compile(r'\ba sink\b', re.IGNORECASE), "async"),
+    (re.compile(r'\bsinkronous\b', re.IGNORECASE), "synchronous"),
+    (re.compile(r'\bque\b', re.IGNORECASE), "queue"),
+    (re.compile(r'\bcue\b(?=\s+(message|priority|fifo))', re.IGNORECASE), "queue"),
+
+    # 4. Distributed consensus & infrastructure phonetics
+    (re.compile(r'\bpack sauce\b', re.IGNORECASE), "paxos"),
+    (re.compile(r'\bpax os\b', re.IGNORECASE), "paxos"),
+    (re.compile(r'\brafft\b', re.IGNORECASE), "raft"),
+    (re.compile(r'\bcore um\b', re.IGNORECASE), "quorum"),
+    (re.compile(r'\bshart(ing)?\b', re.IGNORECASE), "sharding"),
+    (re.compile(r'\bsarding\b', re.IGNORECASE), "sharding"),
+    (re.compile(r'\btwo phase com(m)?it\b', re.IGNORECASE), "two_phase_commit"),
+    (re.compile(r'\b2 phase com(m)?it\b', re.IGNORECASE), "two_phase_commit"),
+    (re.compile(r'\bto phase com(m)?it\b', re.IGNORECASE), "two_phase_commit"),
+
+    # 5. Colloquial syntax normalization (Semantic Fairness: never penalize regional phrasing)
+    (re.compile(r'\bwe will be doing\b', re.IGNORECASE), "we will do"),
+    (re.compile(r'\bi will be creating\b', re.IGNORECASE), "I create"),
+    (re.compile(r'\brevert back\b', re.IGNORECASE), "respond"),
+    (re.compile(r'\bdo one thing\b', re.IGNORECASE), "proceed to"),
+    (re.compile(r'\bprepone\b', re.IGNORECASE), "advance"),
+]
+
+# Stopwords that should never be phonetically transformed into technical terms
+COMMON_STOPWORDS = {
+    "a", "an", "the", "in", "on", "at", "to", "for", "with", "by", "from", "of",
+    "is", "are", "was", "were", "be", "been", "being", "do", "does", "did", "doing",
+    "will", "would", "shall", "should", "can", "could", "may", "might", "must",
+    "we", "i", "you", "he", "she", "it", "they", "this", "that", "these", "those",
+    "and", "or", "but", "so", "if", "then", "else", "when", "where", "why", "how",
+    "not", "no", "yes", "all", "any", "some", "first", "next", "then", "now", "here"
+}
+
+CANONICAL_TECH_DICTIONARY: List[str] = [
+    "hashmap", "hashtable", "linked_list", "doubly_linked_list", "binary_search",
+    "binary_search_tree", "trie", "heap", "priority_queue", "graph", "vector",
+    "dynamic_programming", "memoization", "recursion", "two_pointers", "sliding_window",
+    "fast_slow_pointers", "breadth_first_search", "depth_first_search", "topological_sort",
+    "time_complexity", "space_complexity", "O(1)", "O(n)", "O(log_n)", "O(n^2)",
+    "amortized", "worst_case", "best_case", "in_place", "divide_and_conquer",
+    "distributed_systems", "microservices", "load_balancer", "consistent_hashing",
+    "database_sharding", "replication", "partitioning", "read_replica",
+    "acid_transactions", "cap_theorem", "eventual_consistency", "linearizability",
+    "paxos", "raft", "quorum", "two_phase_commit", "write_ahead_log", "lsm_tree",
+    "b_tree", "bloom_filter", "redis", "memcached", "message_broker", "kafka",
+    "idempotency", "rate_limiter", "token_bucket", "leaky_bucket", "circuit_breaker",
+    "cache_stampede", "cache_invalidation", "horizontal_scaling", "vertical_scaling",
+    "star_framework", "conflict_resolution", "root_cause_analysis", "post_mortem",
+    "customer_obsession", "leadership_principles", "trade_offs"
+]
 
 
 def compute_soundex(token: str) -> str:
@@ -21,7 +109,6 @@ def compute_soundex(token: str) -> str:
     if not token:
         return ""
     first_letter = token[0]
-    
     mapping = {
         'B': '1', 'F': '1', 'P': '1', 'V': '1',
         'C': '2', 'G': '2', 'J': '2', 'K': '2', 'Q': '2', 'S': '2', 'X': '2', 'Z': '2',
@@ -30,10 +117,8 @@ def compute_soundex(token: str) -> str:
         'M': '5', 'N': '5',
         'R': '6'
     }
-    
     digits = [first_letter]
     last_code = mapping.get(first_letter, '0')
-    
     for char in token[1:]:
         code = mapping.get(char, '0')
         if code != '0' and code != last_code:
@@ -43,30 +128,45 @@ def compute_soundex(token: str) -> str:
             last_code = '0'
         if len(digits) == 4:
             break
-            
     while len(digits) < 4:
         digits.append('0')
-        
     return "".join(digits[:4])
 
 
+def get_metaphone_code(token: str) -> str:
+    """Computes Metaphone code using jellyfish or fallback Soundex."""
+    cleaned = re.sub(r'[^a-zA-Z]', '', token).lower()
+    if not cleaned:
+        return ""
+    if JELLYFISH_AVAILABLE:
+        try:
+            return jellyfish.metaphone(cleaned)
+        except Exception:
+            pass
+    return compute_soundex(cleaned)
+
+
 class PhoneticNormalizer:
-    def __init__(self, dictionary: Optional[Dict[str, str]] = None, fuzzy_threshold: float = 85.0):
+    def __init__(self, dictionary: Optional[Dict[str, str]] = None, fuzzy_threshold: float = 84.0):
         self.dictionary: Dict[str, str] = dictionary or PHONETIC_CORRECTIONS
         self.fuzzy_threshold = fuzzy_threshold
         # Pre-sort phrases by word count descending to greedily match longest n-grams first
         self.sorted_phrases = sorted(self.dictionary.keys(), key=lambda p: len(p.split()), reverse=True)
-        # Pre-compute phonetic soundex mappings for single-word targets
-        self.phonetic_index = {}
-        for phrase, target in self.dictionary.items():
-            compact = phrase.replace(" ", "")
-            sx = compute_soundex(compact)
-            if sx and sx not in self.phonetic_index:
-                self.phonetic_index[sx] = target
+        
+        # Pre-compute phonetic codes for canonical vocabulary
+        self.canonical_vocab = list(set(list(self.dictionary.values()) + CANONICAL_TECH_DICTIONARY))
+        self.canonical_metaphones = {
+            term: get_metaphone_code(term.replace("_", ""))
+            for term in self.canonical_vocab
+            if get_metaphone_code(term.replace("_", ""))
+        }
 
     def normalize(self, text: str) -> Tuple[str, List[Dict[str, Any]]]:
         """
-        Normalizes a raw transcript into canonical technical terminology.
+        Normalizes candidate transcript:
+        1. Applies Accent Substitution Matrix (v/w interchange, vowel shifts, colloquialisms).
+        2. Applies exact phrase dictionary matching.
+        3. Applies Double Metaphone + Fuzzy Levenshtein phonetic alignment (threshold > 0.82).
         Returns:
             (normalized_text, list of applied corrections with metadata)
         """
@@ -76,11 +176,23 @@ class PhoneticNormalizer:
         corrections: List[Dict[str, Any]] = []
         normalized = text.strip()
 
-        # Step 1: Direct phrase substitution (Case-insensitive regex boundary match)
+        # Step 1: Accent Substitution Matrix
+        for pattern, replacement in ACCENT_SUBSTITUTION_RULES:
+            if pattern.search(normalized):
+                matches = list(pattern.finditer(normalized))
+                for match in matches:
+                    corrections.append({
+                        "original": match.group(0),
+                        "canonical": replacement,
+                        "confidence": 0.95,
+                        "method": "accent_substitution_matrix"
+                    })
+                normalized = pattern.sub(replacement, normalized)
+
+        # Step 2: Direct phrase substitution (Case-insensitive regex boundary match)
         for phrase in self.sorted_phrases:
             target = self.dictionary[phrase]
             pattern = re.compile(rf'(?<!\w){re.escape(phrase)}(?!\w)', re.IGNORECASE)
-            
             matches = list(pattern.finditer(normalized))
             if matches:
                 for match in matches:
@@ -88,76 +200,71 @@ class PhoneticNormalizer:
                         "original": match.group(0),
                         "canonical": target,
                         "confidence": 1.0,
-                        "method": "exact_phrase_match",
-                        "start": match.start(),
-                        "end": match.end()
+                        "method": "exact_phrase_match"
                     })
                 normalized = pattern.sub(target, normalized)
 
-        # Step 2: N-gram sliding window fuzzy matching (RapidFuzz)
+        # Step 3: Double Metaphone + Fuzzy Levenshtein Sliding Window
         words = normalized.split()
-        if RAPIDFUZZ_AVAILABLE and len(words) > 0:
-            modified = False
-            for n in [3, 2, 1]:  # Check trigrams, bigrams, unigrams
-                i = 0
-                while i <= len(words) - n:
-                    window = " ".join(words[i:i+n])
-                    cleaned_window = re.sub(r'[^\w\s]', '', window).lower()
-                    
-                    best_match = None
-                    best_score = 0.0
-                    
-                    for phrase in self.sorted_phrases:
-                        target = self.dictionary[phrase]
-                        # Exact ratio test
-                        score = fuzz.ratio(cleaned_window, phrase)
-                        if score > best_score and score >= self.fuzzy_threshold:
-                            best_score = score
-                            best_match = (phrase, target)
+        if len(words) > 0 and (JELLYFISH_AVAILABLE or RAPIDFUZZ_AVAILABLE):
+            new_words = []
+            i = 0
+            while i < len(words):
+                matched = False
+                raw_token = words[i].lower()
+                cleaned_token = re.sub(r'[^a-zA-Z0-9]', '', raw_token)
 
-                    if best_match and best_match[1] != cleaned_window:
-                        matched_phrase, target_term = best_match
-                        corrections.append({
-                            "original": window,
-                            "canonical": target_term,
-                            "confidence": round(best_score / 100.0, 2),
-                            "method": "fuzzy_ngram_match",
-                            "score": best_score
-                        })
-                        # Replace the slice
-                        words = words[:i] + [target_term] + words[i+n:]
-                        modified = True
+                # Skip stopwords and short common words from phonetic drift replacement
+                if cleaned_token in COMMON_STOPWORDS or len(cleaned_token) < 4:
+                    new_words.append(words[i])
+                    i += 1
+                    continue
+
+                chunk_meta = get_metaphone_code(cleaned_token)
+                best_term = None
+                best_score = 0.0
+
+                for term, term_meta in self.canonical_metaphones.items():
+                    term_clean = term.replace("_", "").lower()
+                    if len(term_clean) < 4:
+                        continue
+
+                    # 1. Metaphone match
+                    meta_match = (chunk_meta == term_meta) and bool(chunk_meta)
+                    # 2. Surface similarity check
+                    surface_sim = (fuzz.ratio(cleaned_token, term_clean) / 100.0) if RAPIDFUZZ_AVAILABLE else 0.0
+
+                    if meta_match and surface_sim >= 0.65:
+                        score = 0.92 + (surface_sim * 0.08)
+                    elif meta_match:
+                        score = 0.83
+                    elif surface_sim >= 0.85:
+                        score = surface_sim
                     else:
+                        score = 0.0
+
+                    if score > best_score:
+                        best_score = score
+                        best_term = term
+
+                # If phonetic match exceeds user threshold (> 0.82), substitute
+                if best_term and best_score >= (self.fuzzy_threshold / 100.0):
+                    clean_best = best_term.replace("_", " ")
+                    if clean_best.lower() != raw_token:
+                        corrections.append({
+                            "original": words[i],
+                            "canonical": clean_best,
+                            "confidence": round(best_score, 2),
+                            "method": "metaphone_fuzzy_alignment"
+                        })
+                        new_words.append(clean_best)
                         i += 1
-                        
-            if modified:
-                normalized = " ".join(words)
+                        matched = True
 
-        # Step 3: Phonetic Soundex check for single word mishearings
-        words = normalized.split()
-        modified = False
-        for idx, word in enumerate(words):
-            clean_w = re.sub(r'[^\w]', '', word).lower()
-            if len(clean_w) >= 4 and clean_w not in self.dictionary.values():
-                sx = compute_soundex(clean_w)
-                if sx in self.phonetic_index:
-                    target_term = self.phonetic_index[sx]
-                    # Verify similarity before replacing to prevent false positives
-                    if RAPIDFUZZ_AVAILABLE:
-                        ratio = fuzz.ratio(clean_w, target_term.replace("_", ""))
-                        if ratio >= 60.0:
-                            corrections.append({
-                                "original": word,
-                                "canonical": target_term,
-                                "confidence": 0.85,
-                                "method": "soundex_phonetic_match"
-                            })
-                            words[idx] = target_term
-                            modified = True
-        if modified:
-            normalized = " ".join(words)
+                if not matched:
+                    new_words.append(words[i])
+                    i += 1
 
-        # Clean multiple spaces and formatting
-        normalized = re.sub(r'\s+', ' ', normalized).strip()
+            normalized = " ".join(new_words)
+
         return normalized, corrections
-

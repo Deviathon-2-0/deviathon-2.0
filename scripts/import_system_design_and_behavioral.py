@@ -289,3 +289,4 @@ if __name__ == "__main__":
     import_behavioral_questions()
     import_core_engineering_concepts()
     print("PostgreSQL Ingestion Complete!")
+

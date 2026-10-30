@@ -27,3 +27,4 @@ for t in tests:
         print(f"  [{q.get('type')}] Q{q.get('index') + 1}: {q.get('title')}")
         print(f"     Prompt preview: {q.get('text')[:80]}...")
         print(f"     Starter Code present: {bool(q.get('starter_code'))}")
+

@@ -959,11 +959,16 @@ def submit_interview_session(request, session_id):
         # 2. Determine Question ID & Rubric
         catalog_qid = ans.get('question_id') or _match_catalog_question_id(q_title, q_prompt)
 
-        # 3. Deterministic Scorer
+        # 3. Calibrated Deterministic Scorer (Layer 1 & Layer 3 Decoupled Evaluation)
+        calibrated_baseline = matrix_input.get("calibrated_baseline") or data.get("calibrated_baseline") or {}
+        q_duration = float(ans.get("duration_sec") or 35.0)
+
         det_result = _deterministic_scorer.evaluate(
             question_id=catalog_qid,
             normalized_transcript=normalized_transcript,
-            telemetry=ans_telemetry
+            telemetry=ans_telemetry,
+            calibrated_baseline=calibrated_baseline,
+            duration_sec=q_duration
         )
 
         # 4. Temporal Slice Analysis
@@ -988,11 +993,18 @@ def submit_interview_session(request, session_id):
             timeline_moments=flagged_moments
         )
 
-        q_score = float(scorecard.get("overall_score", 82.0))
+        # Decoupled Scoring: Technical Score is strictly semantic & algorithmic
+        det_tech = float(det_result.get("technical_score", 80.0))
+        gem_tech = float(scorecard.get("overall_score", 80.0))
+        q_score = round(det_tech * 0.6 + gem_tech * 0.4, 1)
+
+        prosody = det_result.get("acoustic_prosodic_analysis", {})
+        visual_delivery = det_result.get("visual_delivery_analysis", {})
+
         total_tech_score += q_score
-        total_struct_score += float(det_result.get("rubric_breakdown", {}).get("mechanism", 35.0)) * 2.5
-        total_delivery_score += max(60.0, 100.0 - float(det_result.get("total_penalty_deduction", 0.0)) * 3)
-        total_speech_score += 85.0 if len(normalized_transcript.split()) >= 15 else 70.0
+        total_struct_score += float(det_result.get("rubric_breakdown", {}).get("mechanism", 30.0)) * 2.5
+        total_speech_score += float(prosody.get("speech_clarity_score", 85.0))
+        total_delivery_score += float(visual_delivery.get("body_language_score", 86.0))
 
         found_kw = det_result.get("keyword_coverage", {}).get("found_required", []) + det_result.get("keyword_coverage", {}).get("found_bonus", [])
         missed_kw = det_result.get("keyword_coverage", {}).get("missed_required", [])
@@ -1018,7 +1030,9 @@ def submit_interview_session(request, session_id):
             "covered_concepts": covered_concepts,
             "missing_concepts": missing_concepts,
             "feedback": scorecard.get("executive_summary") or f"Delivered comprehensive technical reasoning with {int(round(q_score))}/100 evaluation score.",
-            "flagged_moments": flagged_moments
+            "flagged_moments": flagged_moments,
+            "followup_prompt": ans.get("followup_prompt", ""),
+            "followup_response": ans.get("followup_response", "")
         }
         per_question_breakdown.append(q_breakdown_card)
 
@@ -1152,6 +1166,37 @@ def submit_interview_session(request, session_id):
     session.concept_breakdown = per_question_breakdown
     session.telemetry_matrix = matrix_input
     session.save()
+
+    # Persist QuestionRecords and FollowUpDialogues in PostgreSQL
+    try:
+        QuestionRecord.objects.filter(session=session).delete()
+        FollowUpDialogue.objects.filter(session=session).delete()
+        for q_card in per_question_breakdown:
+            QuestionRecord.objects.create(
+                session=session,
+                question_index=q_card.get("question_index", 0),
+                title=q_card.get("question_title", "Interview Question"),
+                text=q_card.get("transcript", ""),
+                candidate_code=q_card.get("code", ""),
+                candidate_transcript=q_card.get("transcript", ""),
+                score=q_card.get("score", 0),
+                evaluation_details={
+                    "covered_concepts": q_card.get("covered_concepts", []),
+                    "missing_concepts": q_card.get("missing_concepts", []),
+                    "feedback": q_card.get("feedback", "")
+                }
+            )
+            if q_card.get("followup_prompt"):
+                FollowUpDialogue.objects.create(
+                    session=session,
+                    question_index=q_card.get("question_index", 0),
+                    candidate_initial_answer=q_card.get("transcript", ""),
+                    probe_type="dynamic_cross_examination",
+                    ai_followup_prompt=q_card.get("followup_prompt", ""),
+                    candidate_followup_answer=q_card.get("followup_response", "")
+                )
+    except Exception as persist_err:
+        print("[Database Persist Notice]:", persist_err)
 
     report_payload = {
         "sessionId": str(session.id),

@@ -3397,7 +3397,8 @@
             seniority_level: pendingLevel,
             integrity_matrix: matrixReport,
             telemetry_matrix: matrixReport,
-            timeline_telemetry: fullTimeline
+            timeline_telemetry: fullTimeline,
+            calibrated_baseline: matrixReport ? matrixReport.calibrated_baseline : null
           };
           evalResult = await tryApiFetch(`/sessions/${activeSessionId || 'general'}/submit/`, {
             method: 'POST',
