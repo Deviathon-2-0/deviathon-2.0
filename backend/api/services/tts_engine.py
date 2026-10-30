@@ -22,91 +22,133 @@ try:
 except ImportError:
     HAS_GENAI = False
 
-# 6 Focused, Iconic Evaluators with Unmistakable Human Voice & Gender Realism
+# 6 Focused, Iconic Evaluators with Unmistakable Authentic Accents
 INTERVIEWER_PROFILES = {
     "kabir": {
         "name": "Kabir",
         "gender": "male",
-        "region": "India",
+        "region": "India (South)",
         "region_flag": "🇮🇳",
-        "accent_label": "Indian English (North)",
+        "accent_label": "South Indian English (Male)",
         "sub_label": "Senior Systems Architect",
         "bcp47": "en-IN",
         "neural_voice": "en-IN-PrabhatNeural",
         "gemini_voice": "Puck",
         "pitch": 0.90,
         "rate": 1.0,
-        "sample_intro": "Hello! I am Kabir. Let's delve into your technical architecture and problem-solving strategy."
+        "sample_intro": "Hello! I am Kabir. Let's delve into your technical architecture, data flow, and problem-solving strategy."
     },
     "payal": {
         "name": "Payal",
         "gender": "female",
-        "region": "India",
+        "region": "India (North)",
         "region_flag": "🇮🇳",
-        "accent_label": "Indian English (Standard)",
+        "accent_label": "North Indian English (Female)",
         "sub_label": "VP of Engineering",
         "bcp47": "en-IN",
         "neural_voice": "en-IN-NeerjaExpressiveNeural",
         "gemini_voice": "Kore",
-        "pitch": 1.18,
+        "pitch": 1.15,
         "rate": 1.02,
-        "sample_intro": "Hi there! I am Payal. I look forward to exploring your distributed systems and algorithmic trade-offs."
-    },
-    "charlotte": {
-        "name": "Charlotte",
-        "gender": "female",
-        "region": "UK & Europe",
-        "region_flag": "🇬🇧",
-        "accent_label": "British English (London RP)",
-        "sub_label": "Principal Systems Lead",
-        "bcp47": "en-GB",
-        "neural_voice": "en-GB-SoniaNeural",
-        "gemini_voice": "Aoede",
-        "pitch": 1.14,
-        "rate": 0.98,
-        "sample_intro": "Good day. I am Charlotte. We shall be exploring system constraints, latency guarantees, and failure modes."
+        "sample_intro": "Hi there! I am Payal. I look forward to exploring your algorithmic trade-offs and scalable software patterns."
     },
     "john": {
-        "name": "John",
+        "name": "Arthur",
+        "gender": "male",
+        "region": "UK (London)",
+        "region_flag": "🇬🇧",
+        "accent_label": "UK English (Male)",
+        "sub_label": "Principal Systems Lead",
+        "bcp47": "en-GB",
+        "neural_voice": "en-GB-ThomasNeural",
+        "gemini_voice": "Puck",
+        "pitch": 0.94,
+        "rate": 0.98,
+        "sample_intro": "Good day. I am Arthur. We shall examine system concurrency, latency guarantees, and resilience under load."
+    },
+    "arthur": {
+        "name": "Arthur",
+        "gender": "male",
+        "region": "UK (London)",
+        "region_flag": "🇬🇧",
+        "accent_label": "UK English (Male)",
+        "sub_label": "Principal Systems Lead",
+        "bcp47": "en-GB",
+        "neural_voice": "en-GB-ThomasNeural",
+        "gemini_voice": "Puck",
+        "pitch": 0.94,
+        "rate": 0.98,
+        "sample_intro": "Good day. I am Arthur. We shall examine system concurrency, latency guarantees, and resilience under load."
+    },
+    "david": {
+        "name": "David",
         "gender": "male",
         "region": "North America",
         "region_flag": "🇺🇸",
-        "accent_label": "US English (West Coast)",
+        "accent_label": "US English (Male)",
         "sub_label": "Silicon Valley Tech Lead",
         "bcp47": "en-US",
         "neural_voice": "en-US-ChristopherNeural",
         "gemini_voice": "Puck",
         "pitch": 0.92,
         "rate": 1.04,
-        "sample_intro": "Hey there! I am John. Excited to chat through your approach and see how you tackle scaling bottlenecks."
+        "sample_intro": "Hey! I am David. Excited to dive into your implementation and discuss how you tackle bottlenecks at scale."
     },
     "sarah": {
-        "name": "Sarah",
-        "gender": "female",
+        "name": "David",
+        "gender": "male",
         "region": "North America",
         "region_flag": "🇺🇸",
-        "accent_label": "US English (Standard)",
-        "sub_label": "Engineering Director",
+        "accent_label": "US English (Male)",
+        "sub_label": "Silicon Valley Tech Lead",
         "bcp47": "en-US",
-        "neural_voice": "en-US-JennyNeural",
+        "neural_voice": "en-US-ChristopherNeural",
+        "gemini_voice": "Puck",
+        "pitch": 0.92,
+        "rate": 1.04,
+        "sample_intro": "Hey! I am David. Excited to dive into your implementation and discuss how you tackle bottlenecks at scale."
+    },
+    "charlotte": {
+        "name": "Charlotte",
+        "gender": "female",
+        "region": "Scotland (UK)",
+        "region_flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+        "accent_label": "Scottish English (Female)",
+        "sub_label": "Principal Infrastructure Lead",
+        "bcp47": "en-GB",
+        "neural_voice": "en-GB-MaisieNeural",
         "gemini_voice": "Aoede",
-        "pitch": 1.16,
+        "pitch": 1.12,
         "rate": 1.00,
-        "sample_intro": "Welcome! I am Sarah. We will examine your architectural tradeoffs, data structures, and edge case mitigation."
+        "sample_intro": "Hello there! I am Charlotte. Let us examine your fault tolerance, algorithmic constraints, and edge cases."
     },
     "kenji": {
-        "name": "Kenji",
-        "gender": "male",
-        "region": "East & SE Asia",
+        "name": "Yuki",
+        "gender": "female",
+        "region": "Japan (Tokyo)",
         "region_flag": "🇯🇵",
-        "accent_label": "Japanese English (Tokyo)",
-        "sub_label": "Robotics & Backend Lead",
+        "accent_label": "Japanese English (Female)",
+        "sub_label": "Robotics & AI Systems Lead",
         "bcp47": "ja-JP",
-        "neural_voice": "en-US-EricNeural",
-        "gemini_voice": "Charon",
-        "pitch": 0.88,
+        "neural_voice": "ja-JP-NanamiNeural",
+        "gemini_voice": "Aoede",
+        "pitch": 1.10,
         "rate": 0.95,
-        "sample_intro": "Konnichiwa. I am Kenji. Please walk through your architectural assumptions step-by-step with clarity."
+        "sample_intro": "Konnichiwa! I am Yuki. Please walk through your architectural assumptions and step-by-step logic with clarity."
+    },
+    "yuki": {
+        "name": "Yuki",
+        "gender": "female",
+        "region": "Japan (Tokyo)",
+        "region_flag": "🇯🇵",
+        "accent_label": "Japanese English (Female)",
+        "sub_label": "Robotics & AI Systems Lead",
+        "bcp47": "ja-JP",
+        "neural_voice": "ja-JP-NanamiNeural",
+        "gemini_voice": "Aoede",
+        "pitch": 1.10,
+        "rate": 0.95,
+        "sample_intro": "Konnichiwa! I am Yuki. Please walk through your architectural assumptions and step-by-step logic with clarity."
     }
 }
 

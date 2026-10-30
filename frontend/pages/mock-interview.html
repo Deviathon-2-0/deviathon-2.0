@@ -755,7 +755,7 @@
         <div class="relative flex-1 w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
           
           <!-- 1. MAIN INTERVIEWER VIDEO (100% Real Video, No Static Images, No Glitch) -->
-          <video id="call-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
+          <video id="call-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center scale-[1.06] transition-transform duration-300"></video>
           
           <!-- 2. CANDIDATE PICTURE-IN-PICTURE (Top-Right Floating 1-on-1 Persona Tile) -->
           <div id="call-candidate-tile" class="absolute top-4 right-4 w-36 sm:w-44 md:w-52 aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-white/20 shadow-2xl z-20 group bg-[#1A1208] backdrop-blur-sm">
@@ -942,7 +942,7 @@
           <!-- PiP Tiles inside IDE (Interviewer + Candidate Live Video) -->
           <div class="absolute top-12 right-4 z-30 flex flex-col gap-2 pointer-events-auto">
             <div class="w-44 aspect-video rounded-xl overflow-hidden bg-[#1A1208] border border-white/20 shadow-2xl relative">
-              <video id="pip-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
+              <video id="pip-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center scale-[1.06] transition-transform duration-300"></video>
               <div class="absolute bottom-1 left-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[9px] text-white font-semibold flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 <span id="pip-interviewer-name">Kabir</span>
@@ -993,14 +993,14 @@
         id: "kabir",
         name: "Kabir",
         gender: "male",
-        region: "India",
+        region: "India (South)",
         regionFlag: "🇮🇳",
-        accentLabel: "Indian English (North)",
+        accentLabel: "South Indian English (Male)",
         subLabel: "Senior Systems Architect",
         bcp47: "en-IN",
         pitch: 0.90,
         rate: 1.0,
-        sampleIntro: "Hello! I am Kabir. Let's delve into your technical architecture and problem-solving strategy.",
+        sampleIntro: "Hello! I am Kabir. Let's delve into your technical architecture, data flow, and problem-solving strategy.",
         avatar: "/assets/interviewers/kabir.jpg",
         videoListening: "/assets/interviewers/kabir_listening.mp4",
         videoTalking: "/assets/interviewers/kabir_talking.mp4",
@@ -1010,48 +1010,31 @@
         id: "payal",
         name: "Payal",
         gender: "female",
-        region: "India",
+        region: "India (North)",
         regionFlag: "🇮🇳",
-        accentLabel: "Indian English (Standard)",
+        accentLabel: "North Indian English (Female)",
         subLabel: "VP of Engineering",
         bcp47: "en-IN",
-        pitch: 1.18,
+        pitch: 1.15,
         rate: 1.02,
-        sampleIntro: "Hi there! I am Payal. I look forward to exploring your distributed systems and algorithmic trade-offs.",
+        sampleIntro: "Hi there! I am Payal. I look forward to exploring your algorithmic trade-offs and scalable software patterns.",
         avatar: "/assets/interviewers/payal.jpg",
         videoListening: "/assets/interviewers/payal_listening.mp4",
         videoTalking: "/assets/interviewers/payal_talking.mp4",
         introAudio: "/assets/interviewers/payal_intro.mp3"
       },
       {
-        id: "charlotte",
-        name: "Charlotte",
-        gender: "female",
-        region: "UK & Europe",
+        id: "john",
+        name: "Arthur",
+        gender: "male",
+        region: "UK (London)",
         regionFlag: "🇬🇧",
-        accentLabel: "British English (London RP)",
+        accentLabel: "UK English (Male)",
         subLabel: "Principal Systems Lead",
         bcp47: "en-GB",
-        pitch: 1.14,
+        pitch: 0.94,
         rate: 0.98,
-        sampleIntro: "Good day. I am Charlotte. We shall explore system constraints, latency guarantees, and failure modes.",
-        avatar: "/assets/interviewers/charlotte.jpg",
-        videoListening: "/assets/interviewers/charlotte_listening.mp4",
-        videoTalking: "/assets/interviewers/charlotte_talking.mp4",
-        introAudio: "/assets/interviewers/charlotte_intro.mp3"
-      },
-      {
-        id: "john",
-        name: "John",
-        gender: "male",
-        region: "North America",
-        regionFlag: "🇺🇸",
-        accentLabel: "US English (West Coast)",
-        subLabel: "Silicon Valley Tech Lead",
-        bcp47: "en-US",
-        pitch: 0.92,
-        rate: 1.04,
-        sampleIntro: "Hey there! I am John. Excited to chat through your approach and see how you tackle scaling bottlenecks.",
+        sampleIntro: "Good day. I am Arthur. We shall examine system concurrency, latency guarantees, and resilience under load.",
         avatar: "/assets/interviewers/john.jpg",
         videoListening: "/assets/interviewers/john_listening.mp4",
         videoTalking: "/assets/interviewers/john_talking.mp4",
@@ -1059,33 +1042,50 @@
       },
       {
         id: "sarah",
-        name: "Sarah",
-        gender: "female",
+        name: "David",
+        gender: "male",
         region: "North America",
         regionFlag: "🇺🇸",
-        accentLabel: "US English (Standard)",
-        subLabel: "Engineering Director",
+        accentLabel: "US English (Male)",
+        subLabel: "Silicon Valley Tech Lead",
         bcp47: "en-US",
-        pitch: 1.16,
-        rate: 1.00,
-        sampleIntro: "Welcome. I am Sarah. Let's walk through your engineering background and architectural decisions.",
+        pitch: 0.92,
+        rate: 1.04,
+        sampleIntro: "Hey! I am David. Excited to dive into your implementation and discuss how you tackle bottlenecks at scale.",
         avatar: "/assets/interviewers/sarah.jpg",
         videoListening: "/assets/interviewers/sarah_listening.mp4",
         videoTalking: "/assets/interviewers/sarah_talking.mp4",
         introAudio: "/assets/interviewers/sarah_intro.mp3"
       },
       {
+        id: "charlotte",
+        name: "Charlotte",
+        gender: "female",
+        region: "Scotland (UK)",
+        regionFlag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+        accentLabel: "Scottish English (Female)",
+        subLabel: "Principal Infrastructure Lead",
+        bcp47: "en-GB",
+        pitch: 1.12,
+        rate: 1.00,
+        sampleIntro: "Hello there! I am Charlotte. Let us examine your fault tolerance, algorithmic constraints, and edge cases.",
+        avatar: "/assets/interviewers/charlotte.jpg",
+        videoListening: "/assets/interviewers/charlotte_listening.mp4",
+        videoTalking: "/assets/interviewers/charlotte_talking.mp4",
+        introAudio: "/assets/interviewers/charlotte_intro.mp3"
+      },
+      {
         id: "kenji",
-        name: "Kenji",
-        gender: "male",
-        region: "East & SE Asia",
+        name: "Yuki",
+        gender: "female",
+        region: "Japan (Tokyo)",
         regionFlag: "🇯🇵",
-        accentLabel: "Japanese English (Tokyo)",
-        subLabel: "Robotics & Backend Lead",
-        bcp47: "en-US",
-        pitch: 0.88,
-        rate: 0.98,
-        sampleIntro: "Hello, I am Kenji. We will focus on data consensus, partitioning, and resilience today.",
+        accentLabel: "Japanese English (Female)",
+        subLabel: "Robotics & AI Systems Lead",
+        bcp47: "ja-JP",
+        pitch: 1.10,
+        rate: 0.95,
+        sampleIntro: "Konnichiwa! I am Yuki. Please walk through your architectural assumptions and step-by-step logic with clarity.",
         avatar: "/assets/interviewers/kenji.jpg",
         videoListening: "/assets/interviewers/kenji_listening.mp4",
         videoTalking: "/assets/interviewers/kenji_talking.mp4",
@@ -2393,7 +2393,7 @@
       }
     }
 
-    async function testSystemAudio() {
+        async function testSystemAudio() {
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const btn = document.getElementById('play-sound-btn');
       const btnText = document.getElementById('play-sound-text');
@@ -2402,6 +2402,24 @@
       const indicator = document.getElementById('prereq-speech-indicator');
       const subText = document.getElementById('prereq-subtitle-text');
       const audibleBox = document.getElementById('audible-confirm-box');
+
+      // 1. Immediately silence any existing audio and speech synthesis to prevent ANY overlap
+      if (currentAudioPlayback) {
+        try {
+          currentAudioPlayback.pause();
+          currentAudioPlayback.src = '';
+          currentAudioPlayback.onended = null;
+          currentAudioPlayback.onerror = null;
+        } catch(e) {}
+        currentAudioPlayback = null;
+      }
+      if (audioPlaybackTimeout) {
+        clearTimeout(audioPlaybackTimeout);
+        audioPlaybackTimeout = null;
+      }
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch(e) {}
+      }
 
       if (btn) {
         btn.classList.remove('animate-pulse', 'ring-2');
@@ -2413,8 +2431,10 @@
         btnIcon.className = "material-symbols-outlined text-sm animate-pulse";
       }
 
-      // Switch Prerequisite Video to Talking Loop
+      // Switch Preview Video to Talking Loop
       if (vid && chosen.videoTalking) {
+        vid.muted = true;
+        vid.defaultMuted = true;
         const talkingSrc = chosen.videoTalking.startsWith('/') ? chosen.videoTalking : ('/' + chosen.videoTalking.replace(/^(\.\.\/|\.\/)/, ''));
         vid.src = talkingSrc;
         vid.load();
@@ -2422,20 +2442,8 @@
       }
 
       if (indicator) indicator.classList.remove('hidden');
-      const introText = chosen.sampleIntro || ("Hello! I am " + chosen.name + ". Let's delve into your technical architecture and problem-solving strategy.");
+      const introText = chosen.sampleIntro || ("Hello! I am " + chosen.name + ". Let's delve into your technical architecture, data flow, and problem-solving strategy.");
       if (subText) subText.textContent = introText;
-
-      if (currentAudioPlayback) {
-        try { currentAudioPlayback.pause(); } catch(e) {}
-        currentAudioPlayback = null;
-      }
-      if (audioPlaybackTimeout) {
-        clearTimeout(audioPlaybackTimeout);
-        audioPlaybackTimeout = null;
-      }
-
-      // 1. Play high-volume acoustic attention chime through physical speakers
-      await playReliableAcousticChime();
 
       let audioDone = false;
       const onAudioFinished = () => {
@@ -2447,7 +2455,10 @@
           audioPlaybackTimeout = null;
         }
 
+        // Return preview video to listening loop
         if (vid && chosen.videoListening) {
+          vid.muted = true;
+          vid.defaultMuted = true;
           const listeningSrc = chosen.videoListening.startsWith('/') ? chosen.videoListening : ('/' + chosen.videoListening.replace(/^(\.\.\/|\.\/)/, ''));
           vid.src = listeningSrc;
           vid.load();
@@ -2461,7 +2472,7 @@
           btnIcon.className = "material-symbols-outlined text-sm";
         }
         if (btn) {
-          btn.className = "flex-1 py-2.5 rounded-xl bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#2C1F0E] border border-[#E8DFD0] text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+          btn.className = "flex-1 py-2.5 rounded-xl bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#2C1F0E] border border-[#E8DFD0] text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer";
         }
 
         if (audibleBox) {
@@ -2469,7 +2480,6 @@
           audibleBox.classList.add('ring-2', 'ring-[#4F6B2D]/40');
         }
 
-        // Activate START INTERVIEW button immediately
         const startBtn = document.getElementById('prereq-start-btn');
         if (startBtn) {
           startBtn.disabled = false;
@@ -2479,66 +2489,57 @@
         }
       };
 
-      // 4-second safety timeout so UI always resets smoothly
-      audioPlaybackTimeout = setTimeout(onAudioFinished, 4200);
-
-      // 2. Play physical MP3 through DOM Audio Player with guaranteed fallbacks
-      let player = document.getElementById('evaluator-voice-player');
-      if (!player) {
-        player = document.createElement('audio');
-        player.id = 'evaluator-voice-player';
-        document.body.appendChild(player);
-      }
-      player.volume = 1.0;
-      currentAudioPlayback = player;
-      player.onended = onAudioFinished;
-
-      const rawAudio = chosen.introAudio || '';
-      const localAudioUrl = rawAudio.startsWith('/') ? rawAudio : ('/' + rawAudio.replace(/^(\.\.\/|\.\/)/, ''));
-
-      player.onerror = async () => {
-        // Fallback to Edge TTS backend
-        try {
-          const data = await tryApiFetch('/tts/generate/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              text: introText,
-              interviewer_name: chosen.name
-            })
-          });
-          if (data && data.audio_url) {
-            player.src = data.audio_url.startsWith('http') ? data.audio_url : ('http://localhost:8000' + data.audio_url);
-            player.onended = onAudioFinished;
-            player.onerror = onAudioFinished;
-            await player.play();
-            return;
-          }
-        } catch(e) {}
-
-        // Fallback to SpeechSynthesis
-        try {
-          if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(introText);
-            utterance.volume = 1.0;
-            utterance.pitch = chosen.pitch || 1.0;
-            utterance.rate = chosen.rate || 1.0;
-            utterance.onend = onAudioFinished;
-            utterance.onerror = onAudioFinished;
-            window.speechSynthesis.speak(utterance);
-          } else {
-            onAudioFinished();
-          }
-        } catch(e) {
-          onAudioFinished();
-        }
-      };
-
+      // Play server neural TTS with authentic accent (no chime overlap!)
       try {
-        player.src = localAudioUrl;
-        await player.play();
-      } catch (err) {
-        player.onerror();
+        const data = await tryApiFetch('/tts/generate/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: introText,
+            interviewer_name: chosen.name
+          })
+        });
+        if (data && data.audio_url) {
+          const audioSrc = data.audio_url.startsWith('http') ? data.audio_url : ('http://localhost:8000' + data.audio_url);
+          const audio = new Audio();
+          currentAudioPlayback = audio;
+          audio.volume = 1.0;
+          audio.src = audioSrc;
+          audio.onended = onAudioFinished;
+          audio.onerror = () => { fallbackClientSample(introText, chosen, onAudioFinished); };
+          await audio.play();
+          return;
+        }
+      } catch(err) {}
+
+      // Fallback
+      fallbackClientSample(introText, chosen, onAudioFinished);
+    }
+
+    function fallbackClientSample(text, chosen, onFinished) {
+      if (!('speechSynthesis' in window)) {
+        onFinished();
+        return;
+      }
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.volume = 1.0;
+        utterance.pitch = chosen.pitch || 1.0;
+        utterance.rate = chosen.rate || 1.0;
+        utterance.onend = onFinished;
+        utterance.onerror = onFinished;
+
+        const voices = window.speechSynthesis.getVoices();
+        if (voices && voices.length > 0) {
+          const targetBcp = (chosen.bcp47 || 'en-US').toLowerCase();
+          const targetPrefix = targetBcp.split('-')[0];
+          const matched = voices.find(v => v.lang.toLowerCase() === targetBcp) || voices.find(v => v.lang.toLowerCase().startsWith(targetPrefix));
+          if (matched) utterance.voice = matched;
+        }
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        onFinished();
       }
     }
 
@@ -2759,7 +2760,7 @@
       }
     }
 
-    // Seamless Video Loop State Switcher (Zero Glitching, Never Image)
+        // Seamless Video Loop State Switcher (Zero Glitching, Never Static Image)
     function setInterviewerVideoState(state) {
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const targetSrc = (state === 'talking') ? chosen.videoTalking : chosen.videoListening;
@@ -2770,10 +2771,17 @@
 
       [vCall, vPip].forEach(vid => {
         if (vid) {
+          vid.muted = true;
+          vid.defaultMuted = true;
           const cur = vid.getAttribute('src') || vid.src || '';
-          if (!cur.endsWith(targetSrc.replace('..', ''))) {
+          const cleanTarget = targetSrc.replace(/^(\.\.\/|\.\/)/, '');
+          if (!cur.endsWith(cleanTarget)) {
             vid.src = targetSrc;
-            vid.play().catch(() => {});
+            vid.load();
+            const p = vid.play();
+            if (p && typeof p.catch === 'function') {
+              p.catch(() => {});
+            }
           }
         }
       });
@@ -3480,8 +3488,7 @@
       // - NON-CODING: Route to Interviewer (Full-Stage Video Call), interviewer speaks prompt
       if (isCodingQ) {
         switchStageView('code');
-        setInterviewerVideoState('listening');
-        toggleCandidateAnswerRecording(true);
+        speakQuestion(q.title || q.prompt);
       } else {
         switchStageView('video');
         speakQuestion(q.prompt);
@@ -3752,39 +3759,36 @@
 
     let currentSpeechToken = 0;
 
-    async function speakQuestion(text) {
+        async function speakQuestion(text) {
       const token = ++currentSpeechToken;
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const pacingVal = parseFloat(document.getElementById('modal-speech-pacing')?.value || '1.0');
 
+      // Stop any existing audio & speech synthesis instantly to prevent overlap
       if (currentAudioPlayback) {
-        try { currentAudioPlayback.pause(); currentAudioPlayback.src = ''; } catch(e) {}
+        try {
+          currentAudioPlayback.pause();
+          currentAudioPlayback.src = '';
+          currentAudioPlayback.onended = null;
+          currentAudioPlayback.onerror = null;
+        } catch(e) {}
         currentAudioPlayback = null;
       }
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch(e) {}
       }
 
-      // Never speak the coding prompt (interviewer remains silent while candidate reads & codes)
-      const currentQ = currentQuestions[currentQIndex];
-      const isCodingQ = (currentQ && (currentQ.type === 'Coding' || (pendingTrack === 'Tech' && selectedRound !== 'Behavioral')));
-      if (isCodingQ && !isFollowUpActive) {
-        setInterviewerVideoState('listening');
-        toggleCandidateAnswerRecording(true);
-        return;
-      }
-
-      // Switch Interviewer Video to Talking Loop
+      // Switch Interviewer Video to Talking Loop immediately
       setInterviewerVideoState('talking');
 
       const onPlaybackEnded = () => {
         if (token !== currentSpeechToken) return;
+        // When question finishes speaking, switch immediately to listening loop and enable STT
         setInterviewerVideoState('listening');
-        // Auto-activate voice channel listening once interviewer finishes speaking
         toggleCandidateAnswerRecording(true);
       };
 
-      // 1. Try server neural TTS first (Edge TTS realistic human voices with distinct male/female timbre)
+      // 1. Try server neural TTS with authentic human accents & gender
       try {
         const data = await tryApiFetch('/tts/generate/', {
           method: 'POST',
@@ -3798,56 +3802,52 @@
         if (token !== currentSpeechToken) return;
         if (data && data.audio_url) {
           const audioSrc = data.audio_url.startsWith('http') ? data.audio_url : ('http://localhost:8000' + data.audio_url);
-          currentAudioPlayback = new Audio(audioSrc);
-          currentAudioPlayback.onended = onPlaybackEnded;
-          currentAudioPlayback.onerror = onPlaybackEnded;
-          await currentAudioPlayback.play();
+          const audio = new Audio();
+          currentAudioPlayback = audio;
+          audio.volume = 1.0;
+          audio.src = audioSrc;
+          audio.onended = onPlaybackEnded;
+          audio.onerror = () => {
+            if (token === currentSpeechToken) fallbackClientSpeech(text, chosen, pacingVal, onPlaybackEnded);
+          };
+          await audio.play();
           return;
         }
-      } catch (err) {}
+      } catch (err) {
+        console.warn('[IMAIRA+ TTS] Server TTS unavailable, falling back to speech synthesis:', err);
+      }
 
       if (token !== currentSpeechToken) return;
 
-      // 2. High-Fidelity Client Fallback: Distinct Male vs Female Vocal Modulation
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        const isMale = (chosen.gender === 'male');
+      // 2. High-Fidelity Client SpeechSynthesis Fallback
+      fallbackClientSpeech(text, chosen, pacingVal, onPlaybackEnded);
+    }
 
-        // Male voices: lower pitch for deep, natural, authoritative resonance
-        // Female voices: higher pitch and melodic cadence for clear, articulate female leader
-        utterance.pitch = isMale ? (0.88 * (chosen.pitch || 0.90)) : (1.18 * (chosen.pitch || 1.15));
+    function fallbackClientSpeech(text, chosen, pacingVal, onEnded) {
+      if (!('speechSynthesis' in window)) {
+        if (onEnded) onEnded();
+        return;
+      }
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.volume = 1.0;
+        const isMale = (chosen.gender === 'male');
+        utterance.pitch = isMale ? (0.90 * (chosen.pitch || 0.90)) : (1.15 * (chosen.pitch || 1.15));
         utterance.rate = (chosen.rate || 1.0) * pacingVal;
-        utterance.onend = onPlaybackEnded;
-        utterance.onerror = onPlaybackEnded;
+        utterance.onend = onEnded;
+        utterance.onerror = onEnded;
 
         const voices = window.speechSynthesis.getVoices();
         if (voices && voices.length > 0) {
-          const targetLang = (chosen.bcp47 || 'en').toLowerCase().split('-')[0];
-          
-          // Male voice keywords vs Female voice keywords
-          const maleKeywords = ['david', 'george', 'mark', 'prabhat', 'ryan', 'guy', 'christopher', 'daniel', 'eric', 'male', 'james', 'richard'];
-          const femaleKeywords = ['zira', 'jenny', 'aria', 'neerja', 'sonia', 'libby', 'susan', 'catherine', 'female', 'karen', 'samantha', 'victoria', 'heera'];
-
-          let matchedVoice = null;
-
-          if (isMale) {
-            // First look for a language-matched male voice
-            matchedVoice = voices.find(v => v.lang.toLowerCase().includes(targetLang) && maleKeywords.some(k => v.name.toLowerCase().includes(k)))
-                        || voices.find(v => maleKeywords.some(k => v.name.toLowerCase().includes(k)))
-                        || voices.find(v => !femaleKeywords.some(k => v.name.toLowerCase().includes(k)));
-          } else {
-            // First look for a language-matched female voice
-            matchedVoice = voices.find(v => v.lang.toLowerCase().includes(targetLang) && femaleKeywords.some(k => v.name.toLowerCase().includes(k)))
-                        || voices.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)))
-                        || voices.find(v => !maleKeywords.some(k => v.name.toLowerCase().includes(k)));
-          }
-
-          if (matchedVoice) {
-            utterance.voice = matchedVoice;
-          }
+          const targetBcp = (chosen.bcp47 || 'en-US').toLowerCase();
+          const targetPrefix = targetBcp.split('-')[0];
+          const matchedVoice = voices.find(v => v.lang.toLowerCase() === targetBcp) || voices.find(v => v.lang.toLowerCase().startsWith(targetPrefix));
+          if (matchedVoice) utterance.voice = matchedVoice;
         }
-
         window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        if (onEnded) onEnded();
       }
     }
 
