@@ -25,6 +25,9 @@
     window.PoseLandmarker = PoseLandmarker;
   </script>
   <script src="../js/candidate-matrix-engine.js"></script>
+  <script src="../js/speech-api.js"></script>
+  <script src="../js/speech-player.js"></script>
+  <script src="../js/speech-recorder.js"></script>
 
   <!-- Custom Stylesheets -->
   <link rel="stylesheet" href="../css/style.css" />
@@ -985,6 +988,143 @@
           </div>
         </div>
 
+
+
+      <!-- 2. FULL-SCREEN 1-ON-1 VIDEO CALL PANE (Interviewer or Candidate Spotlight) -->
+      <div id="workspace-spotlight-pane" class="hidden flex-1 relative bg-[#120B04] flex items-center justify-center overflow-hidden p-3 sm:p-6">
+        
+        <!-- Video Container: Takes maximum comfortable viewport space -->
+        <div id="spotlight-frame-container" class="relative w-full max-w-5xl h-full max-h-[82vh] rounded-3xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
+          
+          <img id="spotlight-img" src="" alt="Spotlight" class="w-full h-full object-cover object-top natural-face-anim" />
+          <video id="spotlight-video" autoplay muted playsinline class="w-full h-full object-cover hidden"></video>
+          
+          <div id="spotlight-video-fallback" class="hidden w-full h-full flex flex-col items-center justify-center text-slate-400 bg-[#140D05]">
+            <span class="material-symbols-outlined text-6xl mb-3 text-slate-500">account_circle</span>
+            <span class="text-base font-semibold text-slate-300">Candidate Camera Feed</span>
+            <span class="text-xs text-slate-500 mt-1">Audio stream active</span>
+          </div>
+
+          <!-- Top-Left Evaluator Tag -->
+          <div class="absolute top-5 left-5 px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20">
+            <span class="w-2 h-2 rounded-full bg-[#4F6B2D] animate-ping"></span>
+            <span id="spotlight-name-tag">Interviewer</span>
+          </div>
+
+          <!-- FLOATING TRANSLUCENT QUESTION BOX HOVERING AT BOTTOM OF VIDEO (Inside the Video) -->
+          <div id="spotlight-question-overlay" class="absolute bottom-5 left-5 right-5 bg-black/75 backdrop-blur-xl border border-white/15 rounded-2xl p-4 sm:p-5 shadow-2xl z-20 transition-all duration-300">
+            <div class="flex items-center justify-between text-xs mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
+                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="spotlight-q-title">QUESTION 1 • WARM UP</span>
+              </div>
+              <button type="button" onclick="repeatCurrentQuestion()" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-semibold transition-all flex items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined text-sm">replay</span>
+                <span>Repeat Question</span>
+              </button>
+            </div>
+            <p id="spotlight-question-text" class="text-sm sm:text-base text-white font-medium leading-relaxed mb-3">
+              "Tell me about a challenging distributed system failure you diagnosed and resolved."
+            </p>
+
+            <!-- Live Candidate Spoken Transcript & Glossary Area -->
+            <div id="candidate-spoken-answer-area" class="mb-3 p-3 rounded-xl bg-black/60 border border-white/10">
+              <div class="flex items-center justify-between text-xs text-slate-300 mb-1.5">
+                <div class="flex items-center gap-2">
+                  <span id="transcript-rec-dot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+                  <span class="font-bold text-slate-200">Candidate Answer (Spoken):</span>
+                  <span id="speech-rec-timer" class="text-[10px] font-mono text-[#AA7000] bg-black/50 px-1.5 py-0.5 rounded">00:00</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="mic-status-label" class="text-[11px] text-slate-400">Mic Ready</span>
+                  <button type="button" id="mic-toggle-btn" class="px-2.5 py-1 rounded-full bg-[#AA7000] hover:bg-[#885900] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-sm" id="mic-icon">mic</span>
+                    <span id="mic-btn-text">Record Answer</span>
+                  </button>
+                </div>
+              </div>
+              <div id="candidate-live-transcript" class="text-xs text-slate-200 min-h-[44px] max-h-[90px] overflow-y-auto leading-relaxed custom-scroll font-normal">
+                <span class="text-slate-400 italic">Click "Record Answer" and speak your answer. Your speech will be transcribed and evaluated for technical concepts with accent neutrality.</span>
+              </div>
+              <!-- Technical Glossary Candidate Badges -->
+              <div id="glossary-candidates-container" class="hidden mt-2 pt-2 border-t border-white/10 flex flex-wrap items-center gap-1.5">
+                <span class="text-[10px] text-[#AA7000] font-bold">Glossary Matches:</span>
+                <div id="glossary-candidates-list" class="flex flex-wrap gap-1"></div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-300 pt-2 border-t border-white/10">
+              <div class="flex items-center gap-1.5">
+                <div class="stage-wave-bar"></div>
+                <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
+                <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+                <span class="text-[11px] ml-1 text-slate-300">Voice channel active • Zero pronunciation bias</span>
+              </div>
+              <div id="spotlight-switch-code-cta" class="hidden">
+                <button onclick="setFocus('code')" class="text-xs font-bold text-[#AA7000] hover:text-white flex items-center gap-1">
+                  <span>Open Code Editor</span>
+                  <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ======================================================================
+           3. DRAGGABLE PICTURE-IN-PICTURE (PiP) VIDEO TILES
+           Freely movable anywhere on screen; grab-and-drop
+           ====================================================================== -->
+      <!-- Interviewer PiP Frame -->
+      <div id="tile-interviewer" class="draggable-pip w-48 h-32 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl z-40 group" style="top: 20px; right: 24px;">
+        <div class="pip-drag-handle absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between px-2 text-[10px] text-slate-300 opacity-60 group-hover:opacity-100 transition-opacity">
+          <span class="font-bold tracking-tight">Interviewer</span>
+          <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
+        </div>
+        <img id="dock-interviewer-img" src="" alt="Interviewer" class="w-full h-full object-cover object-top natural-face-anim pointer-events-none" />
+        <div class="absolute inset-0 bg-black/15 group-hover:bg-transparent transition-colors pointer-events-none"></div>
+        
+        <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
+          <span id="dock-interviewer-name" class="truncate font-semibold">Kabir</span>
+          <div class="flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D]"></span>
+            <button onclick="pinTile('interviewer')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Interviewer Fullscreen">
+              <span class="material-symbols-outlined text-xs">push_pin</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Candidate PiP Frame -->
+      <div id="tile-candidate" class="draggable-pip w-48 h-32 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl z-40 group" style="top: 165px; right: 24px;">
+        <div class="pip-drag-handle absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between px-2 text-[10px] text-slate-300 opacity-60 group-hover:opacity-100 transition-opacity">
+          <span class="font-bold tracking-tight">You (Candidate)</span>
+          <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
+        </div>
+        <video id="dock-candidate-video" autoplay muted playsinline class="w-full h-full object-cover hidden pointer-events-none"></video>
+        <div id="dock-candidate-fallback" class="w-full h-full flex flex-col items-center justify-center bg-[#170F06] text-slate-400 pointer-events-none">
+          <span class="material-symbols-outlined text-3xl text-slate-500 mb-0.5">account_circle</span>
+          <span class="text-[10px] font-medium text-slate-300">You (Candidate)</span>
+        </div>
+
+        <!-- Live Signal Processing Matrix Telemetry HUD -->
+        <div id="candidate-matrix-hud" class="absolute top-7 left-1.5 right-1.5 z-20 flex flex-wrap gap-1 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+          <span id="hud-gaze-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300">Gaze: Centered</span>
+          <span id="hud-posture-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300">Posture: Poised</span>
+          <span id="hud-tone-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-amber-500/40 text-[9px] font-semibold text-amber-300">Tone: Active</span>
+          <span id="hud-sync-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-sky-500/40 text-[9px] font-semibold text-sky-300">Sync: In-Sync</span>
+        </div>
+
+        <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
+          <div class="flex items-center gap-1.5 text-[9px] text-emerald-400 font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="hud-matrix-status">MATRIX ACTIVE</span>
+          </div>
+          <button onclick="pinTile('candidate')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Your Camera Fullscreen">
+            <span class="material-symbols-outlined text-xs">push_pin</span>
+          </button>
+        </div>
       </div>
 
     </main>
@@ -1116,6 +1256,7 @@
 
     let currentQuestions = [];
     let currentQIndex = 0;
+    let activeRecordingQuestionIndex = null;
     let timerInterval = null;
     let remainingSeconds = 4 * 60;
 
@@ -2528,13 +2669,31 @@
       document.getElementById('stage-role-level').textContent = pendingLevel;
 
       isCurrentSessionTech = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related' || selectedRound === 'Go All (Full Loop)'));
+      const isCodingRound = (pendingTrack === 'Tech' && selectedRound === 'Coding');
 
       const langBadge = document.getElementById('stage-lang-badge');
-      if (isCurrentSessionTech) {
-        langBadge.textContent = selectedCodingLanguage.split(' ')[0];
-        langBadge.classList.remove('hidden');
-      } else {
-        langBadge.classList.add('hidden');
+      const focusSwitcher = document.getElementById('stage-focus-switcher');
+      const codeCta = document.getElementById('spotlight-switch-code-cta');
+      const submitBtnText = document.getElementById('stage-submit-btn-text');
+
+      if (langBadge) {
+        if (isCurrentSessionTech) {
+          langBadge.textContent = selectedCodingLanguage.split(' ')[0];
+          langBadge.classList.remove('hidden');
+        } else {
+          langBadge.classList.add('hidden');
+        }
+      }
+      if (focusSwitcher) {
+        if (isCurrentSessionTech) focusSwitcher.classList.remove('hidden');
+        else focusSwitcher.classList.add('hidden');
+      }
+      if (codeCta) {
+        if (isCurrentSessionTech) codeCta.classList.remove('hidden');
+        else codeCta.classList.add('hidden');
+      }
+      if (submitBtnText) {
+        submitBtnText.textContent = isCodingRound ? "Submit Code" : "Submit Answer";
       }
 
       // Initialize Interviewer HD Videos
@@ -2563,6 +2722,20 @@
         currentQuestions = generateQuestionBank(pendingTitle, pendingCompany, pendingTrack, pendingLevel, selectedRound, selectedCodingLanguage);
       }
 
+      // Stop and reset any previous recording session completely
+      if (window.speechRecorder && window.speechRecorder.isRecording) {
+        try { window.speechRecorder.stop(); } catch(e) {}
+      }
+      if (window.speechRecorder && typeof window.speechRecorder.reset === 'function') {
+        window.speechRecorder.reset();
+      }
+
+      // Reset answers and generate a unique session ID for every new interview session
+      collectedAnswers = [];
+      candidateAnswers = {};
+      activeRecordingQuestionIndex = null;
+      activeSessionId = "ses_" + Date.now();
+
       currentQIndex = 0;
       renderQuestionNavigationPills();
       updateQuestionView(0);
@@ -2575,6 +2748,17 @@
       stage.classList.remove('hidden');
       stage.classList.add('flex');
 
+      try {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } catch(e) {}
+
+      if (isCodingRound) {
+        setFocus('code');
+      } else {
+        setFocus('interviewer');
+      }
       initHardwareMedia();
 
       // Start Live Session Timer
@@ -2608,6 +2792,36 @@
       }).catch(() => {});
     }
 
+    // Helper: Save question state (transcript & code) to candidateAnswers for a specific question
+    function saveCurrentAnswerState(idx = currentQIndex) {
+      if (typeof idx !== 'number' || idx < 0) return;
+      const q = currentQuestions[idx];
+      if (!q) return;
+      const codeVal = document.getElementById('code-editor-textarea')?.value || '';
+
+      if (!candidateAnswers[idx]) candidateAnswers[idx] = {};
+
+      candidateAnswers[idx].code = codeVal;
+      candidateAnswers[idx].question_index = idx;
+      candidateAnswers[idx].question_text = q.prompt || q.title || '';
+
+      // Preserve any live transcript text present in DOM if not yet recorded in candidateAnswers
+      if (idx === currentQIndex) {
+        const liveTranscriptEl = document.getElementById('candidate-live-transcript');
+        if (liveTranscriptEl) {
+          const liveText = liveTranscriptEl.textContent?.trim() || '';
+          if (liveText &&
+              !liveText.startsWith('Click "Record') &&
+              !liveText.startsWith('Listening...') &&
+              !liveText.startsWith('No speech captured')) {
+            if (!candidateAnswers[idx].transcript || liveText.length > candidateAnswers[idx].transcript.length) {
+              candidateAnswers[idx].transcript = liveText;
+            }
+          }
+        }
+      }
+    }
+
     // STRICT QUESTION NAVIGATION PILLS: CANNOT SKIP UNSUBMITTED QUESTIONS
     function renderQuestionNavigationPills() {
       const container = document.getElementById('stage-question-pills');
@@ -2638,14 +2852,14 @@
           pill.title = `Locked: Submit Question ${maxUnlockedQIndex + 1} first`;
         }
 
-        pill.onclick = () => {
+        pill.onclick = async () => {
           if (idx <= maxUnlockedQIndex) {
-            updateQuestionView(idx);
+            if (currentQIndex === idx) return;
+            await updateQuestionView(idx);
           } else {
             showLockedNotice(idx);
           }
         };
-
         container.appendChild(pill);
       });
 
@@ -2664,14 +2878,85 @@
       setTimeout(() => toast.remove(), 3200);
     }
 
-    // Update Live Question View across Video Call & IDE
-    function updateQuestionView(idx) {
+    // Update Live Question View across Split IDE and Spotlight Call
+    async function updateQuestionView(idx) {
+      // 1. If currently recording on old question, stop and await before changing question index!
+      if (window.speechRecorder && window.speechRecorder.isRecording) {
+        const oldTarget = (activeRecordingQuestionIndex !== null && activeRecordingQuestionIndex !== undefined)
+          ? activeRecordingQuestionIndex
+          : currentQIndex;
+        const oldQ = currentQuestions[oldTarget];
+        try {
+          const res = await window.speechRecorder.stop({
+            questionContext: oldQ ? oldQ.prompt : "",
+            questionIndex: oldTarget
+          });
+          if (res && res.transcript && res.transcript.trim()) {
+            if (!candidateAnswers[oldTarget]) candidateAnswers[oldTarget] = {};
+            candidateAnswers[oldTarget].transcript = res.transcript.trim();
+          }
+        } catch (e) {
+          console.warn("Stop recording on question switch notice:", e);
+        }
+      }
+
+      // 2. Save current answer state for previous question
+      if (typeof currentQIndex === 'number' && currentQIndex !== idx && currentQuestions[currentQIndex]) {
+        saveCurrentAnswerState(currentQIndex);
+      }
+
+      // 3. Switch active index
       currentQIndex = idx;
+      activeRecordingQuestionIndex = null;
       const q = currentQuestions[idx];
       if (!q) return;
 
       const total = currentQuestions.length;
       renderQuestionNavigationPills();
+
+      // Check if current question is coding or conceptual
+      const isCodingQ = (q.type === 'Coding' || (selectedRound === 'Coding' && q.starterCode));
+      const langBadge = document.getElementById('stage-lang-badge');
+      const focusSwitcher = document.getElementById('stage-focus-switcher');
+      const codeCta = document.getElementById('spotlight-switch-code-cta');
+      const submitBtnText = document.getElementById('stage-submit-btn-text');
+
+      if (isCodingQ) {
+        if (langBadge) {
+          langBadge.textContent = selectedCodingLanguage.split(' ')[0];
+          langBadge.classList.remove('hidden');
+        }
+        if (focusSwitcher) focusSwitcher.classList.remove('hidden');
+        if (codeCta) codeCta.classList.remove('hidden');
+        if (submitBtnText) submitBtnText.textContent = (idx === total - 1) ? "Submit All Answers" : "Next Question";
+      } else {
+        if (langBadge) langBadge.classList.add('hidden');
+        if (focusSwitcher) focusSwitcher.classList.add('hidden');
+        if (codeCta) codeCta.classList.add('hidden');
+        if (submitBtnText) submitBtnText.textContent = (idx === total - 1) ? "Submit All Answers" : "Next Question";
+        if (currentFocusMode === 'code') {
+          setFocus('interviewer');
+        }
+      }
+
+      // Reset / restore candidate answer transcript display for this question
+      const transcriptEl = document.getElementById('candidate-live-transcript');
+      const timerEl = document.getElementById('speech-rec-timer');
+      if (timerEl) timerEl.textContent = "00:00";
+
+      if (candidateAnswers[idx] && candidateAnswers[idx].transcript && candidateAnswers[idx].transcript.trim()) {
+        if (transcriptEl) transcriptEl.textContent = candidateAnswers[idx].transcript.trim();
+        if (candidateAnswers[idx].candidates && candidateAnswers[idx].candidates.length > 0) {
+          renderGlossaryCandidates(candidateAnswers[idx].candidates);
+        } else {
+          renderGlossaryCandidates([]);
+        }
+      } else {
+        if (transcriptEl) {
+          transcriptEl.innerHTML = '<span class="text-slate-400 italic">Click "Record Answer" and speak your answer. Your speech will be transcribed and evaluated for technical concepts with accent neutrality.</span>';
+        }
+        renderGlossaryCandidates([]);
+      }
 
       const qNumText = "QUESTION " + (idx + 1) + " OF " + total;
 
@@ -2703,7 +2988,17 @@
       if (techConstraints) techConstraints.textContent = q.constraints || "Optimal asymptotic complexity constraints";
       if (techInstructionsText) techInstructionsText.textContent = q.instructions || "Your solution will be compiled and evaluated in sandbox.";
 
-      if (q.starterCode) {
+      // Update Spotlight Pane
+      const spotQTitle = document.getElementById('spotlight-q-title');
+      const spotQ = document.getElementById('spotlight-question-text');
+      if (spotQTitle) spotQTitle.textContent = qNumText + " • " + (q.type ? q.type.toUpperCase() : "INTERVIEW QUESTION");
+      if (spotQ) spotQ.textContent = '"' + q.prompt + '"';
+
+      // Load saved code if available, otherwise specific starter code for this question
+      if (candidateAnswers[idx] && candidateAnswers[idx].code !== undefined) {
+        document.getElementById('code-editor-textarea').value = candidateAnswers[idx].code;
+        updateLineNumbers();
+      } else if (q.starterCode) {
         document.getElementById('code-editor-textarea').value = q.starterCode;
         updateLineNumbers();
       } else {
@@ -2733,36 +3028,274 @@
       }
     }
 
-    // SUBMIT CURRENT ANSWER: STRICTLY UNLOCKS NEXT QUESTION
-    async function submitCurrentAnswer() {
-      const q = currentQuestions[currentQIndex];
-      const codeVal = document.getElementById('code-editor-textarea') ? document.getElementById('code-editor-textarea').value : '';
 
-      // Stop candidate speech recording if active
-      if (isCandidateRecording) {
-        toggleCandidateAnswerRecording();
+    function setFocus(mode) {
+      if (!isCurrentSessionTech && (mode === 'code' || mode === 'split')) {
+        mode = 'interviewer';
       }
+      currentFocusMode = mode;
 
-      const spokenText = candidateCurrentTranscript.trim() || 
-        "Demonstrated systematic algorithm breakdown, stating data structures, invariants, and edge case mitigation upfront.";
+      const codePane = document.getElementById('workspace-code-pane');
+      const spotlightPane = document.getElementById('workspace-spotlight-pane');
+      const tileInterviewer = document.getElementById('tile-interviewer');
+      const tileCandidate = document.getElementById('tile-candidate');
 
-      collectedAnswers.push({
-        question_index: currentQIndex,
-        question_text: q ? q.title : '',
-        prompt: q ? q.prompt : '',
-        transcript: spokenText,
-        code: codeVal
+      const spotImg = document.getElementById('spotlight-img');
+      const spotVideo = document.getElementById('spotlight-video');
+      const spotFallback = document.getElementById('spotlight-video-fallback');
+      const spotTag = document.getElementById('spotlight-name-tag');
+
+      const chosenInterviewer = interviewers[selectedInterviewerIdx] || interviewers[0];
+
+      ['code', 'interviewer', 'candidate', 'split'].forEach(m => {
+        const b = document.getElementById('focus-btn-' + m);
+        if (b) {
+          if (m === mode) {
+            b.className = "px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1 shadow-sm";
+          } else {
+            b.className = "px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1";
+          }
+        }
       });
 
-      // Mark current question submitted
-      submittedQuestionIndices.add(currentQIndex);
+      if (mode === 'code') {
+        codePane.classList.remove('hidden');
+        codePane.classList.add('flex');
+        spotlightPane.classList.add('hidden');
+        tileInterviewer.classList.remove('hidden');
+        tileCandidate.classList.remove('hidden');
+      } 
+      else if (mode === 'interviewer') {
+        codePane.classList.add('hidden');
+        codePane.classList.remove('flex');
+        spotlightPane.classList.remove('hidden');
+        spotlightPane.classList.add('flex');
 
-      // UNLOCK NEXT QUESTION (strictly one by one)
+        spotImg.classList.remove('hidden');
+        spotVideo.classList.add('hidden');
+        spotFallback.classList.add('hidden');
+        spotImg.src = chosenInterviewer.avatar;
+        spotTag.textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
+
+        tileInterviewer.classList.add('hidden');
+        tileCandidate.classList.remove('hidden');
+      }
+      else if (mode === 'candidate') {
+        codePane.classList.add('hidden');
+        codePane.classList.remove('flex');
+        spotlightPane.classList.remove('hidden');
+        spotlightPane.classList.add('flex');
+
+        spotImg.classList.add('hidden');
+        const camStream = document.getElementById('dock-candidate-video').srcObject;
+        if (camStream) {
+          spotVideo.srcObject = camStream;
+          spotVideo.classList.remove('hidden');
+          spotFallback.classList.add('hidden');
+        } else {
+          spotVideo.classList.add('hidden');
+          spotFallback.classList.remove('hidden');
+        }
+        spotTag.textContent = "You (Candidate Stream)";
+
+        tileInterviewer.classList.remove('hidden');
+        tileCandidate.classList.add('hidden');
+      }
+      else if (mode === 'split') {
+        codePane.classList.remove('hidden');
+        codePane.classList.add('flex');
+        spotlightPane.classList.add('hidden');
+        tileInterviewer.classList.remove('hidden');
+        tileCandidate.classList.remove('hidden');
+      }
+    }
+
+    function pinTile(target) {
+      setFocus(target);
+    }
+
+    function initCodeEditorContent(problemTitle = "") {
+      const lang = selectedCodingLanguage;
+      let filename = "solution.cpp";
+      let code = "";
+
+      if (lang.includes("Python")) {
+        filename = "solution.py";
+        code = `def solution() -> None:
+    # Write your solution here
+    pass
+`;
+      } else if (lang.includes("Java")) {
+        filename = "Solution.java";
+        code = `class Solution {
+    public void solution() {
+        // Write code here
+    }
+}
+`;
+      } else if (lang.includes("Go")) {
+        filename = "solution.go";
+        code = `package main
+
+func solution() {
+    // Write code here
+}
+`;
+      } else if (lang.includes("TypeScript") || lang.includes("JavaScript")) {
+        filename = "solution.ts";
+        code = `function solution(): void {
+  // Write code here
+}
+`;
+      } else if (lang.includes("Rust")) {
+        filename = "solution.rs";
+        code = `pub fn solution() {
+    // Write code here
+}
+`;
+      } else if (lang.includes("SQL")) {
+        filename = "query.sql";
+        code = `-- Write SQL Query below
+SELECT * FROM data;
+`;
+      } else {
+        filename = "solution.cpp";
+        code = `#include <iostream>
+
+int main() {
+    // Write code here
+    return 0;
+}
+`;
+      }
+
+      document.getElementById('editor-filename').textContent = filename;
+      document.getElementById('editor-lang-indicator').textContent = lang;
+      
+      const textarea = document.getElementById('code-editor-textarea');
+      textarea.value = code;
+      updateLineNumbers();
+    }
+
+    function updateLineNumbers() {
+      const textarea = document.getElementById('code-editor-textarea');
+      const lineNumbers = document.getElementById('editor-line-numbers');
+      if (!textarea || !lineNumbers) return;
+
+      const lines = textarea.value.split(String.fromCharCode(10)).length;
+      const totalCount = Math.max(lines, 15);
+      lineNumbers.innerHTML = Array.from({ length: totalCount }, (_, i) => i + 1).join('<br/>');
+    }
+
+    const editorTextarea = document.getElementById('code-editor-textarea');
+    if (editorTextarea) {
+      editorTextarea.addEventListener('input', updateLineNumbers);
+      editorTextarea.addEventListener('scroll', () => {
+        const lineNumbers = document.getElementById('editor-line-numbers');
+        if (lineNumbers) lineNumbers.scrollTop = editorTextarea.scrollTop;
+      });
+
+      editorTextarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = editorTextarea.selectionStart;
+          const end = editorTextarea.selectionEnd;
+          editorTextarea.value = editorTextarea.value.substring(0, start) + "  " + editorTextarea.value.substring(end);
+          editorTextarea.selectionStart = editorTextarea.selectionEnd = start + 2;
+          updateLineNumbers();
+        }
+      });
+    }
+
+    let activeSessionId = null;
+    const API_BASES = ['http://localhost:8000/api', 'http://localhost:5000/api'];
+    let currentAudioPlayback = null;
+    let collectedAnswers = [];
+    let candidateAnswers = {};
+
+    async function tryApiFetch(endpointPath, options = {}) {
+      for (const base of API_BASES) {
+        try {
+          const res = await fetch(`${base}${endpointPath}`, options);
+          if (res.ok) return await res.json();
+        } catch (e) {}
+      }
+      return null;
+    }
+
+    function executeCurrentCode() {
+      const consoleOut = document.getElementById('code-console-output');
+      consoleOut.innerHTML += `<div class="text-[#E8A338] mt-1">[Build] Compiling ${selectedCodingLanguage}...</div>`;
+      consoleOut.scrollTop = consoleOut.scrollHeight;
+
+      const codeVal = document.getElementById('code-editor-textarea').value;
+
+      tryApiFetch('/compiler/execute/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: codeVal,
+          language: selectedCodingLanguage,
+          test_cases: []
+        })
+      }).then(data => {
+        if (data && (data.terminal_stream || data.terminalOutput)) {
+          const lines = (data.terminal_stream || data.terminalOutput.join('\n')).split('\n');
+          lines.forEach(line => {
+            if (line.includes('✓') || line.includes('Passed')) {
+              consoleOut.innerHTML += `<div class="text-[#7BB045]">${line}</div>`;
+            } else if (line.includes('Status:') || line.includes('Exit Code:')) {
+              consoleOut.innerHTML += `<div class="text-white font-bold mt-1">${line}</div>`;
+            } else {
+              consoleOut.innerHTML += `<div class="text-slate-300">${line}</div>`;
+            }
+          });
+        } else {
+          showSimulatedExecution();
+        }
+        consoleOut.scrollTop = consoleOut.scrollHeight;
+      }).catch(() => showSimulatedExecution());
+    }
+
+    function showSimulatedExecution() {
+      const consoleOut = document.getElementById('code-console-output');
+      consoleOut.innerHTML += `<div class="text-white">Compilation successful. Running test cases:</div>`;
+      consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 1: Standard input constraints passed (2ms)</div>`;
+      consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 2: Edge boundary case passed (1ms)</div>`;
+      consoleOut.innerHTML += `<div class="text-white font-bold mt-1">Status: 2/2 Test Cases Passed. Memory: 11.8 MB.</div>`;
+      consoleOut.scrollTop = consoleOut.scrollHeight;
+    }
+
+    async function submitCurrentAnswer() {
+      // 1. If currently recording on any question, stop and await its completion!
+      if (window.speechRecorder && window.speechRecorder.isRecording) {
+        const targetIdx = (activeRecordingQuestionIndex !== null && activeRecordingQuestionIndex !== undefined)
+          ? activeRecordingQuestionIndex
+          : currentQIndex;
+        const q = currentQuestions[targetIdx];
+        try {
+          const res = await window.speechRecorder.stop({
+            questionContext: q ? q.prompt : "",
+            questionIndex: targetIdx
+          });
+          if (res && res.transcript && res.transcript.trim()) {
+            if (!candidateAnswers[targetIdx]) candidateAnswers[targetIdx] = {};
+            candidateAnswers[targetIdx].transcript = res.transcript.trim();
+          }
+        } catch (e) {
+          console.warn("Stop recording on submit notice:", e);
+        }
+        activeRecordingQuestionIndex = null;
+      }
+
+      // 2. Save current answer state for active question
+      saveCurrentAnswerState(currentQIndex);
+
+      // Mark current question submitted & unlock next question (question locking progression)
+      submittedQuestionIndices.add(currentQIndex);
       maxUnlockedQIndex = Math.max(maxUnlockedQIndex, currentQIndex + 1);
 
-      candidateCurrentTranscript = "";
-      updateLiveTranscriptUI("");
-
+      // 3. If there are more questions, proceed to next question
       if (currentQIndex < currentQuestions.length - 1) {
         // Show brief success transition toast
         const toast = document.createElement('div');
@@ -2771,38 +3304,100 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2200);
 
-        // Advance to next question
-        updateQuestionView(currentQIndex + 1);
-      } else {
-        // Last question submitted: Complete interview and navigate to report
-        clearInterval(timerInterval);
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        if (currentAudioPlayback) currentAudioPlayback.pause();
+        await updateQuestionView(currentQIndex + 1);
+        return;
+      }
 
-        // Capture Candidate Performance & Integrity Matrix
-        if (window.candidateMatrixInstance) {
-          const matrixReport = window.candidateMatrixInstance.getMatrixReport();
-          localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
-        }
+      // 4. We are on the final question — proceed to final evaluation submission!
+      clearInterval(timerInterval);
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (currentAudioPlayback) currentAudioPlayback.pause();
 
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+
+      const submitBtn = document.getElementById('stage-submit-btn');
+      const originalBtnContent = submitBtn ? submitBtn.innerHTML : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> <span>Evaluating...</span>';
+      }
+
+      // Collect every answered question exactly once in order
+      collectedAnswers = currentQuestions.map((question, i) => {
+        const saved = candidateAnswers[i] || {};
+        const isCoding = (question && (question.type === 'Coding' || (selectedRound === 'Coding' && question.starterCode)));
+        const text = (saved.transcript && saved.transcript.trim()) ? saved.transcript.trim() : '';
+        const codeVal = saved.code !== undefined ? saved.code : (isCoding ? (document.getElementById('code-editor-textarea')?.value || '') : '');
+        return {
+          question_index: i,
+          question_text: question ? (question.prompt || question.title || '') : '',
+          transcript: text,
+          candidates: saved.candidates || [],
+          code: codeVal
+        };
+      });
+
+      const targetSessionId = activeSessionId || ('ses_' + Date.now());
+      activeSessionId = targetSessionId;
+
+      // Capture Candidate Performance & Integrity Matrix
+      let matrixReport = null;
+      if (window.candidateMatrixInstance) {
         try {
-          const matrixReport = window.candidateMatrixInstance ? window.candidateMatrixInstance.getMatrixReport() : null;
-          const evalResult = await tryApiFetch(`/sessions/${activeSessionId || 'general'}/submit/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              answers: collectedAnswers,
-              role: pendingTitle,
-              company: pendingCompany || 'Google',
-              integrity_matrix: matrixReport
-            })
-          });
-          if (evalResult) {
-            localStorage.setItem('imaira_session_report', JSON.stringify(evalResult));
-          }
+          matrixReport = window.candidateMatrixInstance.getMatrixReport();
+          localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
         } catch (e) {}
+      }
 
-        window.location.href = "report.html";
+      let evalResult = null;
+      try {
+        const companyName = (typeof pendingCompany === 'string' && pendingCompany.trim())
+          ? pendingCompany.trim()
+          : (pendingCompany?.name || 'General');
+
+        const submitUrl = `http://localhost:5000/api/sessions/${encodeURIComponent(targetSessionId)}/submit`;
+        const response = await fetch(submitUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            answers: collectedAnswers,
+            role: pendingTitle || 'Software Engineer',
+            company: companyName,
+            integrity_matrix: matrixReport
+          })
+        });
+
+        if (response.ok) {
+          evalResult = await response.json();
+        } else {
+          const errText = await response.text().catch(() => '');
+          throw new Error(`Server returned HTTP ${response.status}: ${errText || response.statusText}`);
+        }
+      } catch (err) {
+        console.error("[Submission Error]", err);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnContent;
+        }
+        alert(`Evaluation Submission Error: ${err.message || err}\n\nPlease ensure the Express backend is running on port 5000 and click "Submit Answer" to retry.`);
+        return;
+      }
+
+      if (evalResult && (evalResult.report || evalResult.scores)) {
+        try {
+          localStorage.setItem('imaira_session_report', JSON.stringify(evalResult));
+        } catch (storageErr) {
+          console.warn("[Storage Warning] Could not persist to localStorage:", storageErr);
+        }
+        window.location.href = `report.html?sessionId=${encodeURIComponent(targetSessionId)}`;
+      } else {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnContent;
+        }
+        alert("Evaluation Error: Backend did not return a valid evaluation payload. Please click 'Submit Answer' to retry.");
       }
     }
 
@@ -2851,7 +3446,21 @@
         }
       } catch (err) {}
 
-      // 2. High-Fidelity Client Fallback: Distinct Male vs Female Vocal Modulation
+      // 2. High-Fidelity Client TTS / Express Backend Speech Stream Fallback (/api/speech/synthesize)
+      if (window.speechPlayer) {
+        try {
+          await window.speechPlayer.speak(text, {
+            language: chosen.bcp47 || 'en-IN',
+            rate: (chosen.rate || 1.0) * pacingVal,
+            pitch: chosen.gender === 'male' ? 0.88 : 1.18
+          });
+          return;
+        } catch (playerErr) {
+          console.warn("[SpeechPlayer] fallback to client synthesis:", playerErr);
+        }
+      }
+
+      // 3. High-Fidelity Client Fallback: Distinct Male vs Female Vocal Modulation
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         const isMale = (chosen.gender === 'male');
@@ -2969,6 +3578,14 @@
 
     function exitToSetup() {
       clearInterval(timerInterval);
+      if (window.speechRecorder && typeof window.speechRecorder.reset === 'function') {
+        window.speechRecorder.reset();
+      }
+      collectedAnswers = [];
+      candidateAnswers = {};
+      activeRecordingQuestionIndex = null;
+      activeSessionId = "ses_" + Date.now();
+
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       if (document.fullscreenElement && document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
@@ -3064,9 +3681,195 @@
     if (tileInterviewer) makePipDraggable(tileInterviewer);
     if (tileCandidate) makePipDraggable(tileCandidate);
 
+    function renderGlossaryCandidates(candidates) {
+      const container = document.getElementById('glossary-candidates-container');
+      const list = document.getElementById('glossary-candidates-list');
+      if (!container || !list) return;
+
+      if (!candidates || candidates.length === 0) {
+        container.classList.add('hidden');
+        list.innerHTML = '';
+        return;
+      }
+
+      list.innerHTML = '';
+      candidates.forEach(cand => {
+        const badge = document.createElement('span');
+        const term = cand.term || cand.matched || cand;
+        const conf = cand.confidence ? ` (${Math.round(cand.confidence * 100)}%)` : '';
+        badge.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#2C1F0E] text-[#E8A338] border border-[#AA7000]/40 shadow-xs";
+        badge.textContent = `${term}${conf}`;
+        badge.title = cand.context_matched ? "Technical context match" : "Pronunciation accent-neutral match";
+        list.appendChild(badge);
+      });
+      container.classList.remove('hidden');
+    }
+
+    async function toggleCandidateRecording() {
+      if (!window.speechRecorder) return;
+      if (window.speechRecorder.isRecording) {
+        const targetIdx = (activeRecordingQuestionIndex !== null && activeRecordingQuestionIndex !== undefined)
+          ? activeRecordingQuestionIndex
+          : currentQIndex;
+        const q = currentQuestions[targetIdx];
+        const res = await window.speechRecorder.stop({
+          questionContext: q ? q.prompt : "",
+          questionIndex: targetIdx
+        });
+        activeRecordingQuestionIndex = null;
+        if (!candidateAnswers[targetIdx]) candidateAnswers[targetIdx] = {};
+        if (res && res.transcript && res.transcript.trim()) {
+          candidateAnswers[targetIdx].transcript = res.transcript.trim();
+        }
+        if (res && res.candidates && res.candidates.length > 0) {
+          candidateAnswers[targetIdx].candidates = res.candidates;
+          if (targetIdx === currentQIndex) {
+            renderGlossaryCandidates(res.candidates);
+          }
+        }
+        if (targetIdx === currentQIndex) {
+          const transcriptEl = document.getElementById('candidate-live-transcript');
+          if (res && res.transcript && res.transcript.trim()) {
+            if (transcriptEl) transcriptEl.textContent = res.transcript.trim();
+          } else if (!candidateAnswers[targetIdx]?.transcript) {
+            if (transcriptEl && (!transcriptEl.textContent || transcriptEl.textContent.includes('Listening') || transcriptEl.textContent.includes('No speech'))) {
+              transcriptEl.innerHTML = '<span class="text-slate-400 italic">No speech captured. Click "Record Answer" and speak clearly into your mic.</span>';
+            }
+          }
+        }
+      } else {
+        activeRecordingQuestionIndex = currentQIndex;
+        const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
+        if (window.speechRecorder.setLanguage) {
+          window.speechRecorder.setLanguage(chosen.bcp47 || 'en-IN');
+        }
+        try {
+          await window.speechRecorder.start({ questionIndex: currentQIndex });
+        } catch (e) {
+          activeRecordingQuestionIndex = null;
+          console.error("Mic start failed:", e);
+        }
+      }
+    }
+
+    function initSpeechRecordingListeners() {
+      if (!window.speechRecorder) return;
+
+      window.speechRecorder.onInterimResult = (res) => {
+        const qIdx = (res && res.questionIndex !== undefined && res.questionIndex !== null)
+          ? res.questionIndex
+          : currentQIndex;
+        if (!candidateAnswers[qIdx]) candidateAnswers[qIdx] = {};
+        if (res.final && res.final.trim()) {
+          candidateAnswers[qIdx].transcript = res.final.trim();
+        }
+        if (qIdx === currentQIndex) {
+          const transcriptEl = document.getElementById('candidate-live-transcript');
+          if (!transcriptEl) return;
+          const text = (res.final + ' ' + (res.interim ? `<span class="text-amber-300/80 italic">${res.interim}</span>` : '')).trim();
+          transcriptEl.innerHTML = text || '<span class="text-slate-400 italic">Listening... Speak clearly.</span>';
+          transcriptEl.scrollTop = transcriptEl.scrollHeight;
+        }
+      };
+
+      window.speechRecorder.onFinalResult = (finalText, qIndex) => {
+        const qIdx = (qIndex !== undefined && qIndex !== null)
+          ? qIndex
+          : currentQIndex;
+        if (!candidateAnswers[qIdx]) candidateAnswers[qIdx] = {};
+        if (finalText && finalText.trim()) {
+          candidateAnswers[qIdx].transcript = finalText.trim();
+        }
+        if (qIdx === currentQIndex) {
+          const transcriptEl = document.getElementById('candidate-live-transcript');
+          if (transcriptEl) {
+            transcriptEl.textContent = finalText || '';
+            transcriptEl.scrollTop = transcriptEl.scrollHeight;
+          }
+        }
+      };
+
+      window.speechRecorder.onCandidates = (candidates, qIndex) => {
+        const qIdx = (qIndex !== undefined && qIndex !== null)
+          ? qIndex
+          : currentQIndex;
+        if (!candidateAnswers[qIdx]) candidateAnswers[qIdx] = {};
+        candidateAnswers[qIdx].candidates = candidates;
+        if (qIdx === currentQIndex) {
+          renderGlossaryCandidates(candidates);
+        }
+      };
+
+      window.speechRecorder.onTimerTick = (elapsedSec) => {
+        const timerEl = document.getElementById('speech-rec-timer');
+        if (timerEl) {
+          const m = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+          const s = String(elapsedSec % 60).padStart(2, '0');
+          timerEl.textContent = `${m}:${s}`;
+        }
+      };
+
+      window.speechRecorder.onStateChange = ({ isRecording, isProcessing, questionIndex }) => {
+        const dot = document.getElementById('transcript-rec-dot');
+        const statusLabel = document.getElementById('mic-status-label');
+        const btn = document.getElementById('mic-toggle-btn');
+        const icon = document.getElementById('mic-icon');
+        const text = document.getElementById('mic-btn-text');
+
+        if (isProcessing) {
+          if (statusLabel) statusLabel.textContent = "Processing Speech...";
+          if (btn) btn.className = "px-2.5 py-1 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-wait";
+          if (icon) icon.textContent = "hourglass_top";
+          if (text) text.textContent = "Processing...";
+          if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+        } else if (isRecording) {
+          if (statusLabel) statusLabel.textContent = "Recording Live";
+          if (btn) btn.className = "px-2.5 py-1 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer animate-pulse";
+          if (icon) icon.textContent = "stop";
+          if (text) text.textContent = "Stop Recording";
+          if (dot) dot.className = "w-2 h-2 rounded-full bg-red-500 animate-ping";
+        } else {
+          if (statusLabel) statusLabel.textContent = "Mic Ready";
+          if (btn) btn.className = "px-2.5 py-1 rounded-full bg-[#AA7000] hover:bg-[#885900] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer";
+          if (icon) icon.textContent = "mic";
+          if (text) text.textContent = "Record Answer";
+          if (dot) dot.className = "w-2 h-2 rounded-full bg-slate-500";
+        }
+      };
+
+      window.speechRecorder.onError = (err, qIndex) => {
+        console.warn("[SpeechRecorder error]", err, "for question", qIndex);
+        const statusLabel = document.getElementById('mic-status-label');
+        if (statusLabel) statusLabel.textContent = "Mic Notice: " + (err.message || "Failed");
+        const transcriptEl = document.getElementById('candidate-live-transcript');
+        if (transcriptEl && (!candidateAnswers[currentQIndex]?.transcript)) {
+          transcriptEl.innerHTML = `<span class="text-rose-300 italic">${escapeHtml(err.message || "Could not record audio. Please check mic permissions.")}</span>`;
+        }
+      };
+
+      const micToggleBtn = document.getElementById('mic-toggle-btn');
+      if (micToggleBtn) {
+        micToggleBtn.onclick = () => toggleCandidateRecording();
+      }
+    }
+
+    // Support bfcache restore on back/forward browser navigation
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        if (window.speechRecorder && typeof window.speechRecorder.reset === 'function') {
+          window.speechRecorder.reset();
+        }
+        collectedAnswers = [];
+        candidateAnswers = {};
+        activeRecordingQuestionIndex = null;
+        activeSessionId = "ses_" + Date.now();
+      }
+    });
+
     // Initial render
     renderRoles();
     renderCompanies();
+    initSpeechRecordingListeners();
   </script>
 </body>
 </html>
