@@ -36,6 +36,7 @@
       background: #AA7000;
     }
   </style>
+  <script src="../js/user-session.js"></script>
 </head>
 
 <body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased selection:bg-[#AA7000] selection:text-white flex h-screen overflow-hidden">
@@ -356,41 +357,53 @@
     // 1. Load Stored Profile with Active User Integration
     function loadProfile() {
       const user = window.userSession ? window.userSession.getActiveUser() : null;
-      const saved = localStorage.getItem('imaira_profile');
-      let p = {};
+      let settings = {};
       try {
-        if (saved) p = JSON.parse(saved);
+        const raw = localStorage.getItem('imaira_settings') || localStorage.getItem('imaira_profile');
+        if (raw) settings = JSON.parse(raw);
       } catch (e) {}
 
-      const name = p.name || (user ? user.name : "Ravi Kisan");
-      const targetRole = p.targetRole || p.role || (user ? user.role : "Senior Distributed Systems Architect");
-      const company = p.company || (user ? user.company : "Google");
-      const bio = p.bio || (user ? user.bio : "");
+      const name = settings.name || (user ? user.name : "Ravi Kisan");
+      const targetRole = settings.targetRole || settings.role || (user ? user.role : "Senior Distributed Systems Architect");
+      const level = settings.level || (user ? user.level : "Senior / Staff");
+      const headline = settings.headline || (user ? user.headline : (targetRole + " • High-Scale Systems"));
+      const bio = settings.bio || (user ? user.bio : "");
+      const age = settings.age || 28;
+      const interests = settings.interests || "Distributed consensus, storage engines, fault-tolerant architectures.";
+      const accomplishment = settings.accomplishment || "";
+      const evaluator = settings.evaluator || "kabir";
+      const lang = settings.lang || "python";
 
       if (document.getElementById('prof-name')) document.getElementById('prof-name').value = name;
-      if (document.getElementById('prof-age') && p.age) document.getElementById('prof-age').value = p.age;
-      if (document.getElementById('prof-headline')) document.getElementById('prof-headline').value = p.headline || (targetRole + " at " + company);
+      if (document.getElementById('prof-age')) document.getElementById('prof-age').value = age;
+      if (document.getElementById('prof-headline')) document.getElementById('prof-headline').value = headline;
       if (document.getElementById('prof-bio')) document.getElementById('prof-bio').value = bio;
-      if (document.getElementById('prof-interests') && p.interests) document.getElementById('prof-interests').value = p.interests;
+      if (document.getElementById('prof-interests')) document.getElementById('prof-interests').value = interests;
       if (document.getElementById('prof-target-role')) document.getElementById('prof-target-role').value = targetRole;
-      if (document.getElementById('prof-level') && p.level) document.getElementById('prof-level').value = p.level;
-      if (document.getElementById('prof-accomplishment') && p.accomplishment) document.getElementById('prof-accomplishment').value = p.accomplishment;
-      if (document.getElementById('pref-evaluator') && p.evaluator) document.getElementById('pref-evaluator').value = p.evaluator;
-      if (document.getElementById('pref-lang') && p.lang) document.getElementById('pref-lang').value = p.lang;
+      if (document.getElementById('prof-level')) document.getElementById('prof-level').value = level;
+      if (document.getElementById('prof-accomplishment')) document.getElementById('prof-accomplishment').value = accomplishment;
+      if (document.getElementById('pref-evaluator')) document.getElementById('pref-evaluator').value = evaluator;
+      if (document.getElementById('pref-lang')) document.getElementById('pref-lang').value = lang;
+
+      const pfp = localStorage.getItem('imaira_user_pfp') || (user ? user.avatar : null);
+      if (pfp) {
+        updatePfpDisplay(pfp);
+      }
     }
 
     // 2. Save Profile
     function saveProfile() {
-      const name = document.getElementById('prof-name').value || "Alex Morgan";
+      const name = document.getElementById('prof-name').value.trim() || "Candidate";
       const age = document.getElementById('prof-age').value;
-      const headline = document.getElementById('prof-headline').value;
-      const bio = document.getElementById('prof-bio').value;
-      const interests = document.getElementById('prof-interests').value;
-      const targetRole = document.getElementById('prof-target-role').value;
+      const headline = document.getElementById('prof-headline').value.trim();
+      const bio = document.getElementById('prof-bio').value.trim();
+      const interests = document.getElementById('prof-interests').value.trim();
+      const targetRole = document.getElementById('prof-target-role').value.trim() || "Software Engineer";
       const level = document.getElementById('prof-level').value;
-      const accomplishment = document.getElementById('prof-accomplishment').value;
+      const accomplishment = document.getElementById('prof-accomplishment').value.trim();
       const evaluator = document.getElementById('pref-evaluator').value;
       const lang = document.getElementById('pref-lang').value;
+      const pfp = localStorage.getItem('imaira_user_pfp') || null;
 
       const profileData = {
         name,
@@ -399,25 +412,42 @@
         bio,
         interests,
         targetRole,
+        role: targetRole,
         level,
         accomplishment,
         evaluator,
-        lang
+        lang,
+        avatar: pfp
       };
 
-      localStorage.setItem('imaira_profile', JSON.stringify(profileData));
+      // Save complete settings object
+      localStorage.setItem('imaira_settings', JSON.stringify(profileData));
+
       if (window.userSession) {
         window.userSession.updateProfile({
           name: name,
           role: targetRole,
+          targetRole: targetRole,
           bio: bio,
-          headline: headline
+          headline: headline,
+          level: level,
+          evaluator: evaluator,
+          lang: lang,
+          avatar: pfp
         });
+      } else {
+        const existing = JSON.parse(localStorage.getItem('imaira_profile') || '{}');
+        const merged = { ...existing, ...profileData };
+        localStorage.setItem('imaira_profile', JSON.stringify(merged));
       }
 
+      window.dispatchEvent(new CustomEvent('imaira:profile-updated', { detail: profileData }));
+
       const toast = document.getElementById('save-toast');
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 4000);
+      if (toast) {
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 4000);
+      }
     }
 
     function updateSidebarProfile(name, role) {
@@ -467,6 +497,9 @@
       reader.onload = function(evt) {
         const dataUrl = evt.target.result;
         localStorage.setItem('imaira_user_pfp', dataUrl);
+        if (window.userSession) {
+          window.userSession.updateProfile({ avatar: dataUrl });
+        }
         updatePfpDisplay(dataUrl);
       };
       reader.readAsDataURL(file);
@@ -474,6 +507,9 @@
 
     function removePfp() {
       localStorage.removeItem('imaira_user_pfp');
+      if (window.userSession) {
+        window.userSession.updateProfile({ avatar: null });
+      }
       updatePfpDisplay(null);
     }
 
@@ -539,7 +575,6 @@
     // Initialize
     loadProfile();
   </script>
-  <script src="../js/user-session.js"></script>
 </body>
 </html>
 

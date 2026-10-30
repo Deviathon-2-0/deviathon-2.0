@@ -91,10 +91,23 @@ class UserSessionManager {
     try {
       const data = localStorage.getItem(this.storageKey);
       if (data) {
-        return JSON.parse(data);
+        const user = JSON.parse(data);
+        if (!user.role && user.targetRole) {
+          user.role = user.targetRole;
+        }
+        const customPfp = localStorage.getItem('imaira_user_pfp');
+        if (customPfp) {
+          user.avatar = customPfp;
+        }
+        return user;
       }
     } catch (e) {}
-    return this.mockUsers[0];
+    const defaultUser = { ...this.mockUsers[0] };
+    const customPfp = localStorage.getItem('imaira_user_pfp');
+    if (customPfp) {
+      defaultUser.avatar = customPfp;
+    }
+    return defaultUser;
   }
 
   setActiveUserById(userId) {
@@ -109,6 +122,13 @@ class UserSessionManager {
     const current = this.getActiveUser();
     const updated = { ...current, ...updates };
     
+    if (updates.targetRole && !updates.role) {
+      updated.role = updates.targetRole;
+    }
+    if (updates.role && !updates.targetRole) {
+      updated.targetRole = updates.role;
+    }
+
     // Auto calculate initials if name changed
     if (updates.name) {
       const parts = updates.name.trim().split(/\s+/);

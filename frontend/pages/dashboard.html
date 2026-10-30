@@ -18,6 +18,7 @@
 
   <!-- Custom Stylesheets -->
   <link rel="stylesheet" href="../css/style.css" />
+  <script src="../js/user-session.js"></script>
 </head>
 
 <body class="bg-[#FAF6EE] text-[#2C1F0E] font-sans antialiased selection:bg-[#AA7000] selection:text-white flex h-screen overflow-hidden">
@@ -95,10 +96,16 @@
       <!-- PRIMARY HERO CARD: Clean, Simple & Balanced -->
       <div class="bg-gradient-to-r from-[#FBF3E0] via-white to-[#FBF3E0] border border-[#E8C97A] rounded-3xl p-7 sm:p-9 shadow-card flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
         <div class="relative z-10 max-w-xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-[#E8C97A] text-[11px] font-bold text-[#AA7000] mb-3 shadow-xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Target Track: <strong id="dash-hero-role" class="text-[#2C1F0E]">Senior Distributed Systems Architect</strong></span>
+            <span class="text-[#E8DFD0]">•</span>
+            <span>Level: <strong id="dash-hero-level" class="text-[#AA7000]">Senior / Staff</strong></span>
+          </div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-[#2C1F0E] tracking-tight mb-2">
             Start Technical Mock Interview
           </h2>
-          <p class="text-xs sm:text-sm text-[#7F766C] leading-relaxed">
+          <p id="dash-hero-desc" class="text-xs sm:text-sm text-[#7F766C] leading-relaxed">
             Practice distributed systems, algorithms, and architectural trade-offs with objective, dialect-neutral scoring.
           </p>
         </div>
@@ -262,38 +269,47 @@
     }
   </script>
   <script>
-    // Synchronize User Profile & PFP from LocalStorage
+    // Synchronize User Profile, Target Role, and Settings Across Dashboard
     function syncDashboardUser() {
       try {
-        const rawProf = localStorage.getItem('imaira_profile');
-        const rawUser = localStorage.getItem('imaira_user');
-        const pfp = localStorage.getItem('imaira_user_pfp');
+        const user = window.userSession ? window.userSession.getActiveUser() : null;
+        let settings = {};
+        try {
+          const raw = localStorage.getItem('imaira_settings') || localStorage.getItem('imaira_profile');
+          if (raw) settings = JSON.parse(raw);
+        } catch (e) {}
 
-        const prof = rawProf ? JSON.parse(rawProf) : {};
-        const user = rawUser ? JSON.parse(rawUser) : {};
+        const name = (user && user.name) || settings.name || "Candidate";
+        const role = (user && user.role) || settings.targetRole || settings.role || "Senior Distributed Systems Architect";
+        const level = (user && user.level) || settings.level || "Senior / Staff";
+        const headline = (user && user.headline) || settings.headline || "";
 
-        const name = prof.name || user.name || "Candidate";
-        const role = prof.targetRole || user.role || "Software Engineer";
+        const heroRole = document.getElementById('dash-hero-role');
+        const heroLevel = document.getElementById('dash-hero-level');
+        const heroDesc = document.getElementById('dash-hero-desc');
 
-        const nameEl = document.getElementById('dash-sidebar-name');
-        const roleEl = document.getElementById('dash-sidebar-role');
-        const avatarEl = document.getElementById('dash-sidebar-avatar');
-
-        if (nameEl) nameEl.textContent = name;
-        if (roleEl) roleEl.textContent = role;
-
-        if (avatarEl) {
-          if (pfp) {
-            avatarEl.innerHTML = `<img src="${pfp}" alt="PFP" class="w-full h-full object-cover rounded-full" />`;
-          } else {
-            const inits = name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'AM';
-            avatarEl.innerHTML = `<span id="dash-sidebar-initials">${inits}</span>`;
-          }
+        if (heroRole) heroRole.textContent = role;
+        if (heroLevel) heroLevel.textContent = level;
+        if (heroDesc && headline) {
+          heroDesc.textContent = `Targeting ${role} (${level}): ${headline}`;
         }
       } catch (e) {
-        console.log("Profile sync notice:", e);
+        console.log("Dashboard profile sync notice:", e);
       }
     }
+
+    // Auto-sync on profile update and storage events
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'imaira_profile' || e.key === 'imaira_settings' || e.key === 'imaira_user_pfp') {
+        syncDashboardUser();
+      }
+    });
+    window.addEventListener('imaira:profile-updated', () => {
+      syncDashboardUser();
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      syncDashboardUser();
+    });
 
     // Fetch and populate recent sessions
     async function loadDashboardSessions() {
@@ -388,6 +404,5 @@
     syncDashboardUser();
     loadDashboardSessions();
   </script>
-  <script src="../js/user-session.js"></script>
 </body>
 </html>
