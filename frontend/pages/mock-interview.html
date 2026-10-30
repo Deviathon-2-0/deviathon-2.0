@@ -1177,6 +1177,25 @@
       }
     ];
 
+    // Backend API Integration Configuration
+    const API_BASE = 'http://localhost:8000/api';
+
+    async function tryApiFetch(endpoint, options = {}) {
+      const cleanEndpoint = endpoint.startsWith('/') ? endpoint : ('/' + endpoint);
+      const url = cleanEndpoint.startsWith('/api/') ? `http://localhost:8000${cleanEndpoint}` : `${API_BASE}${cleanEndpoint}`;
+      try {
+        const res = await fetch(url, options);
+        if (!res.ok) {
+          console.warn(`[IMAIRA+ API] Endpoint ${url} returned status ${res.status}`);
+          return null;
+        }
+        return await res.json();
+      } catch (err) {
+        console.warn(`[IMAIRA+ API] Network call to ${url} failed:`, err);
+        return null;
+      }
+    }
+
     let activeRoleCategory = 'Tech';
     let activeCompanySector = 'All';
     let pendingTitle = 'Software Engineer';
@@ -2180,6 +2199,46 @@
       }
     }
 
+    async function requestCameraAndMicrophone() {
+      setCheckRowState(3, 'checking', 'Requesting microphone permission...');
+      setCheckRowState(4, 'checking', 'Requesting camera permission...');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        localMediaStream = stream;
+        window.localMediaStream = stream;
+
+        const aTracks = stream.getAudioTracks();
+        const vTracks = stream.getVideoTracks();
+        const micLabel = (aTracks.length > 0 && aTracks[0].label) ? aTracks[0].label : 'Microphone enabled';
+        const camLabel = (vTracks.length > 0 && vTracks[0].label) ? vTracks[0].label : 'Camera stream active';
+
+        setCheckRowState(3, 'verified', micLabel.slice(0, 26));
+        setCheckRowState(4, 'verified', camLabel.slice(0, 26));
+
+        const permBox = document.getElementById('camera-perm-btn-container');
+        if (permBox) permBox.classList.add('hidden');
+
+        // Attach live stream to video elements so it is ready
+        const vCall = document.getElementById('call-candidate-video');
+        const vPip = document.getElementById('pip-candidate-video');
+        [vCall, vPip].forEach(v => {
+          if (v) {
+            v.srcObject = stream;
+            v.play().catch(() => {});
+          }
+        });
+
+        return true;
+      } catch (err) {
+        console.warn("Camera/Mic permission prompt notice:", err);
+        setCheckRowState(3, 'ready_to_play', 'Allow microphone in browser prompt');
+        setCheckRowState(4, 'ready_to_play', 'Allow camera in browser prompt');
+        const permBox = document.getElementById('camera-perm-btn-container');
+        if (permBox) permBox.classList.remove('hidden');
+        return false;
+      }
+    }
+
     async function runSystemPrerequisiteChecks() {
       if (isCheckingPrerequisites) return;
       isCheckingPrerequisites = true;
@@ -2207,71 +2266,46 @@
 
       // Check 1: Interview Setup Verified
       setCheckRowState(1, 'checking', 'Checking setup...');
-      await sleep(200);
+      await sleep(150);
       setCheckRowState(1, 'verified', `Setup verified (${pendingTitle || 'Software Engineer'})`);
       checklistProgress = 1;
       updatePrereqCounter(1);
 
       // Check 2: Browser Compatibility
-      setCheckRowState(2, 'checking', 'Verifying APIs...');
-      await sleep(220);
+      setCheckRowState(2, 'checking', 'Verifying WebRTC & Audio APIs...');
+      await sleep(150);
       const isCompat = !!(navigator.mediaDevices && window.AudioContext);
       setCheckRowState(2, 'verified', isCompat ? 'Compatible (WebRTC, AudioContext & H.264 OK)' : 'Modern WebRTC supported');
       checklistProgress = 2;
       updatePrereqCounter(2);
 
-      // Check 3: Microphone Input
-      setCheckRowState(3, 'checking', 'Detecting audio input...');
-      let micName = 'Microphone active (Default Audio Input)';
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        const tracks = stream.getAudioTracks();
-        if (tracks.length > 0 && tracks[0].label) {
-          micName = `Microphone active (${tracks[0].label.slice(0, 22)})`;
-        }
-        tracks.forEach(t => t.stop());
-      } catch(e) {}
-      await sleep(240);
-      setCheckRowState(3, 'verified', micName);
-      checklistProgress = 3;
-      updatePrereqCounter(3);
-
-      // Check 4: Camera Stream
-      setCheckRowState(4, 'checking', 'Testing video stream...');
-      let camName = 'Camera active (HD WebRTC Stream)';
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        const tracks = stream.getVideoTracks();
-        if (tracks.length > 0 && tracks[0].label) {
-          camName = `Camera active (${tracks[0].label.slice(0, 20)})`;
-        }
-        tracks.forEach(t => t.stop());
-      } catch(e) {}
-      await sleep(240);
-      setCheckRowState(4, 'verified', camName);
-      checklistProgress = 4;
-      updatePrereqCounter(4);
+      // Check 3 & 4: Live Hardware Camera & Microphone Permissions
+      const permGranted = await requestCameraAndMicrophone();
+      if (permGranted) {
+        checklistProgress = 4;
+        updatePrereqCounter(4);
+      }
 
       // Check 5: Upload Speed
       setCheckRowState(5, 'checking', 'Testing uplink latency...');
-      await sleep(280);
+      await sleep(180);
       setCheckRowState(5, 'verified', 'Upload stable (50ms latency • 0% loss)');
-      checklistProgress = 5;
-      updatePrereqCounter(5);
+      checklistProgress = Math.max(checklistProgress, 5);
+      updatePrereqCounter(checklistProgress);
 
       // Check 6: Download Speed
       setCheckRowState(6, 'checking', 'Testing downlink bandwidth...');
-      await sleep(260);
+      await sleep(180);
       setCheckRowState(6, 'verified', 'Download consistent (~125 Mbps • High Bandwidth)');
-      checklistProgress = 6;
-      updatePrereqCounter(6);
+      checklistProgress = Math.max(checklistProgress, 6);
+      updatePrereqCounter(checklistProgress);
 
       // Check 7: Voice Acoustic Quality
       setCheckRowState(7, 'checking', 'Analyzing SNR and background noise floor...');
-      await sleep(280);
+      await sleep(180);
       setCheckRowState(7, 'verified', 'Acoustic quality Good (Noise floor: -48dBFS)');
-      checklistProgress = 7;
-      updatePrereqCounter(7);
+      checklistProgress = Math.max(checklistProgress, 7);
+      updatePrereqCounter(checklistProgress);
 
       // Check 8: Evaluator Voice & Physical Sound Check
       isCheckingPrerequisites = false;
@@ -2413,66 +2447,66 @@
         }
       };
 
-      // 3.5-second max timeout so UI is never blocked
-      audioPlaybackTimeout = setTimeout(onAudioFinished, 3600);
+      // 4-second safety timeout so UI always resets smoothly
+      audioPlaybackTimeout = setTimeout(onAudioFinished, 4200);
 
-      // 2. Play physical MP3 through Web Audio API decodeAudioData (guaranteed speaker output)
-      const rawAudio = chosen.introAudio || '';
-      const audioUrl = rawAudio.startsWith('/') ? rawAudio : ('/' + rawAudio.replace(/^(\.\.\/|\.\/)/, ''));
-
-      let webAudioPlayed = false;
-      try {
-        const ctx = getOrCreateAudioContext();
-        if (ctx) {
-          if (ctx.state === 'suspended') await ctx.resume();
-          const resp = await fetch(audioUrl);
-          if (resp.ok) {
-            const buf = await resp.arrayBuffer();
-            const decoded = await ctx.decodeAudioData(buf);
-            const source = ctx.createBufferSource();
-            const gain = ctx.createGain();
-            gain.gain.value = 1.0;
-            source.buffer = decoded;
-            source.connect(gain);
-            gain.connect(ctx.destination);
-            source.onended = onAudioFinished;
-            source.start(ctx.currentTime + 0.2);
-            webAudioPlayed = true;
-          }
-        }
-      } catch (err) {
-        console.log("WebAudio decode notice:", err);
+      // 2. Play physical MP3 through DOM Audio Player with guaranteed fallbacks
+      let player = document.getElementById('evaluator-voice-player');
+      if (!player) {
+        player = document.createElement('audio');
+        player.id = 'evaluator-voice-player';
+        document.body.appendChild(player);
       }
+      player.volume = 1.0;
+      currentAudioPlayback = player;
+      player.onended = onAudioFinished;
 
-      // Fallback 1: HTML5 Audio
-      if (!webAudioPlayed) {
+      const rawAudio = chosen.introAudio || '';
+      const localAudioUrl = rawAudio.startsWith('/') ? rawAudio : ('/' + rawAudio.replace(/^(\.\.\/|\.\/)/, ''));
+
+      player.onerror = async () => {
+        // Fallback to Edge TTS backend
         try {
-          const audio = new Audio(audioUrl);
-          audio.volume = 1.0;
-          currentAudioPlayback = audio;
-          audio.onended = onAudioFinished;
-          audio.onerror = () => {
-            // Fallback 2: SpeechSynthesis
-            try {
-              if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(introText);
-                utterance.volume = 1.0;
-                utterance.pitch = chosen.pitch || 1.0;
-                utterance.rate = chosen.rate || 1.0;
-                utterance.onend = onAudioFinished;
-                utterance.onerror = onAudioFinished;
-                window.speechSynthesis.speak(utterance);
-              } else {
-                onAudioFinished();
-              }
-            } catch (e) {
-              onAudioFinished();
-            }
-          };
-          await audio.play();
-        } catch (err) {
+          const data = await tryApiFetch('/tts/generate/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: introText,
+              interviewer_name: chosen.name
+            })
+          });
+          if (data && data.audio_url) {
+            player.src = data.audio_url.startsWith('http') ? data.audio_url : ('http://localhost:8000' + data.audio_url);
+            player.onended = onAudioFinished;
+            player.onerror = onAudioFinished;
+            await player.play();
+            return;
+          }
+        } catch(e) {}
+
+        // Fallback to SpeechSynthesis
+        try {
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(introText);
+            utterance.volume = 1.0;
+            utterance.pitch = chosen.pitch || 1.0;
+            utterance.rate = chosen.rate || 1.0;
+            utterance.onend = onAudioFinished;
+            utterance.onerror = onAudioFinished;
+            window.speechSynthesis.speak(utterance);
+          } else {
+            onAudioFinished();
+          }
+        } catch(e) {
           onAudioFinished();
         }
+      };
+
+      try {
+        player.src = localAudioUrl;
+        await player.play();
+      } catch (err) {
+        player.onerror();
       }
     }
 
@@ -2507,9 +2541,21 @@
       closePracticePrerequisite();
       closeInterviewConfig();
       const prereqModal = document.getElementById('prerequisite-modal');
-      if (prereqModal) prereqModal.style.setProperty('display', 'none', 'important');
+      if (prereqModal) {
+        prereqModal.style.setProperty('display', 'none', 'important');
+        prereqModal.style.setProperty('visibility', 'hidden', 'important');
+        prereqModal.style.setProperty('pointer-events', 'none', 'important');
+        prereqModal.classList.add('hidden');
+        prereqModal.classList.remove('flex');
+      }
       const configModal = document.getElementById('interview-config-modal');
-      if (configModal) configModal.style.setProperty('display', 'none', 'important');
+      if (configModal) {
+        configModal.style.setProperty('display', 'none', 'important');
+        configModal.style.setProperty('visibility', 'hidden', 'important');
+        configModal.style.setProperty('pointer-events', 'none', 'important');
+        configModal.classList.add('hidden');
+        configModal.classList.remove('flex');
+      }
 
       // 2. Hide setup screen
       const setupScreen = document.getElementById('setup-screen');
@@ -2525,7 +2571,13 @@
         stage.classList.add('flex');
         stage.style.removeProperty('display');
         stage.style.setProperty('display', 'flex', 'important');
-        stage.style.setProperty('z-index', '9999', 'important');
+        stage.style.setProperty('visibility', 'visible', 'important');
+        stage.style.setProperty('pointer-events', 'auto', 'important');
+        stage.style.setProperty('z-index', '999999', 'important');
+        stage.style.setProperty('position', 'fixed', 'important');
+        stage.style.setProperty('inset', '0', 'important');
+        stage.style.setProperty('width', '100vw', 'important');
+        stage.style.setProperty('height', '100vh', 'important');
       }
 
       document.body.style.overflow = 'hidden';
@@ -2840,6 +2892,23 @@
       closePracticePrerequisite();
       closeInterviewConfig();
 
+      const prereqModal = document.getElementById('prerequisite-modal');
+      if (prereqModal) {
+        prereqModal.style.setProperty('display', 'none', 'important');
+        prereqModal.style.setProperty('visibility', 'hidden', 'important');
+        prereqModal.style.setProperty('pointer-events', 'none', 'important');
+        prereqModal.classList.add('hidden');
+        prereqModal.classList.remove('flex');
+      }
+      const configModal = document.getElementById('interview-config-modal');
+      if (configModal) {
+        configModal.style.setProperty('display', 'none', 'important');
+        configModal.style.setProperty('visibility', 'hidden', 'important');
+        configModal.style.setProperty('pointer-events', 'none', 'important');
+        configModal.classList.add('hidden');
+        configModal.classList.remove('flex');
+      }
+
       const setup = document.getElementById('setup-screen');
       if (setup) {
         setup.classList.add('hidden');
@@ -2852,7 +2921,13 @@
         stage.classList.add('flex');
         stage.style.removeProperty('display');
         stage.style.setProperty('display', 'flex', 'important');
-        stage.style.setProperty('z-index', '9999', 'important');
+        stage.style.setProperty('visibility', 'visible', 'important');
+        stage.style.setProperty('pointer-events', 'auto', 'important');
+        stage.style.setProperty('z-index', '999999', 'important');
+        stage.style.setProperty('position', 'fixed', 'important');
+        stage.style.setProperty('inset', '0', 'important');
+        stage.style.setProperty('width', '100vw', 'important');
+        stage.style.setProperty('height', '100vh', 'important');
       }
 
       document.body.style.overflow = 'hidden';
@@ -3468,5 +3543,6 @@
     renderRoles();
     renderCompanies();
   </script>
+  <audio id="evaluator-voice-player" preload="auto" class="hidden"></audio>
 </body>
 </html>
