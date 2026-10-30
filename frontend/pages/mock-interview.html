@@ -2679,23 +2679,45 @@
     // VIDEO CALL & INTERVIEW STAGE ENGINE
     // ========================================================================
 
-    // Switch between Full Video Call and Code Execution IDE
+    // Candidate in-memory code draft registry across questions
+    const candidateCodeDrafts = {};
+
+    // Helper: Determine if a question is a coding challenge vs conceptual / conversational
+    function isCodingQuestion(q) {
+      if (!q) return false;
+      const type = (q.type || '').trim().toLowerCase();
+      if (type === 'coding' || type === 'algorithm' || type === 'dsa') return true;
+      if (type === 'behavioral' || type === 'hr' || type === 'soft skills' || type === 'conceptual' || type === 'warmup' || type === 'warm-up') return false;
+      if (selectedRound === 'Behavioral' || selectedRound === 'HR' || selectedRound === 'Warmup') return false;
+      if (selectedRound === 'Coding') return true;
+      if (q.starterCode && q.starterCode.trim().length > 0 && !q.starterCode.startsWith('// Problem:') && !q.starterCode.startsWith('# Problem:')) return true;
+      if (q.testCases && q.testCases.length > 0) return true;
+      if (q.prompt && (q.prompt.includes('**Example 1:') || q.prompt.includes('Example 1:') || q.prompt.includes('**Constraints:**'))) return true;
+      return pendingTrack === 'Tech' && selectedRound !== 'Behavioral';
+    }
+
+    // Switch between Full-Stage Interviewer View and Editorial (Code) View
     function switchStageView(targetMode) {
       currentStageWorkspaceMode = targetMode;
       const videoView = document.getElementById('workspace-videocall-view');
       const compilerView = document.getElementById('workspace-compiler-view');
       const toggleText = document.getElementById('stage-view-toggle-text');
       const toggleIcon = document.getElementById('stage-view-toggle-icon');
+      const toggleBtn = document.getElementById('btn-stage-view-toggle');
 
       if (targetMode === 'code') {
+        // Editorial View: IDE, problem statement, terminal, test cases
         if (videoView) videoView.classList.add('hidden');
         if (compilerView) {
           compilerView.classList.remove('hidden');
           compilerView.classList.add('flex');
         }
-        if (toggleText) toggleText.textContent = "Video Call";
+        if (toggleText) toggleText.textContent = "Interviewer (Stage)";
         if (toggleIcon) toggleIcon.textContent = "videocam";
+        if (toggleBtn) toggleBtn.setAttribute('title', 'Switch to Full-Stage Interviewer View');
+        updateLineNumbers();
       } else {
+        // Interviewer View: Conversational avatar, centered video, acoustic telemetry
         if (compilerView) {
           compilerView.classList.add('hidden');
           compilerView.classList.remove('flex');
@@ -2704,8 +2726,9 @@
           videoView.classList.remove('hidden');
           videoView.classList.add('flex');
         }
-        if (toggleText) toggleText.textContent = "Code & Compiler";
-        if (toggleIcon) toggleIcon.textContent = "code";
+        if (toggleText) toggleText.textContent = "Editorial (Code)";
+        if (toggleIcon) toggleIcon.textContent = "terminal";
+        if (toggleBtn) toggleBtn.setAttribute('title', 'Switch to Editorial (Coding & Sandbox) View');
       }
     }
 
@@ -3364,6 +3387,12 @@
     }
 
     function updateQuestionView(idx) {
+      // 0. State Continuity: Save candidate's current drafted code before navigating
+      const codeEditor = document.getElementById('code-editor-textarea');
+      if (codeEditor && currentQIndex !== undefined && currentQIndex !== null) {
+        candidateCodeDrafts[currentQIndex] = codeEditor.value;
+      }
+
       currentQIndex = idx;
       const q = currentQuestions[idx];
       if (!q) return;
@@ -3371,7 +3400,7 @@
       const total = currentQuestions.length;
       renderQuestionNavigationPills();
 
-      const isCodingQ = (q.type === 'Coding' || selectedRound === 'Coding' || (pendingTrack === 'Tech' && selectedRound !== 'Behavioral'));
+      const isCodingQ = isCodingQuestion(q);
       const qCategoryText = (q.type ? q.type.toUpperCase() : (isCodingQ ? "CODING ROUND" : "TECHNICAL ROUND"));
 
       // 1. Update Video Call Overlay
@@ -3394,15 +3423,10 @@
       const techConstraints = document.getElementById('tech-problem-constraints');
       const techInstructionsText = document.getElementById('tech-instructions-text');
 
-      // Strictly hide IDE split-view toggle in Behavioral round to prevent mixing
+      // Preserve manual toggle visibility at all times so candidate can switch whenever needed
       const viewToggleBtn = document.getElementById('btn-stage-view-toggle');
       if (viewToggleBtn) {
-        if (q.type === 'Behavioral' || selectedRound === 'Behavioral') {
-          viewToggleBtn.classList.add('hidden');
-          switchStageView('video');
-        } else {
-          viewToggleBtn.classList.remove('hidden');
-        }
+        viewToggleBtn.classList.remove('hidden');
       }
 
       if (codeQNum) codeQNum.textContent = "• " + qCategoryText + " •";
@@ -3415,7 +3439,7 @@
         genericIO.style.display = (q.prompt && (q.prompt.includes('**Example') || q.prompt.length > 40)) ? 'none' : 'block';
       }
 
-      // 3. Language & Editor setup
+      // 3. Language & Editor setup with In-Memory Draft Persistence
       const langName = (selectedCodingLanguage || 'Python').toLowerCase();
       const editorFile = document.getElementById('editor-filename');
       const editorLang = document.getElementById('editor-lang-indicator');
@@ -3435,14 +3459,38 @@
         defaultBoilerplate = `# Problem: ${q.title || 'Technical Solution'}\n# Language: Python\n\nclass Solution:\n    # Write your solution below\n    pass\n`;
       }
 
-      const codeEditor = document.getElementById('code-editor-textarea');
       if (codeEditor) {
-        if (q.starterCode && !q.starterCode.startsWith('// Problem:') && !q.starterCode.startsWith('# Problem:')) {
+        // Restore existing drafted code if candidate already typed in this question
+        if (candidateCodeDrafts[idx] !== undefined) {
+          codeEditor.value = candidateCodeDrafts[idx];
+        } else if (q.starterCode && !q.starterCode.startsWith('// Problem:') && !q.starterCode.startsWith('# Problem:')) {
           codeEditor.value = q.starterCode;
+          candidateCodeDrafts[idx] = q.starterCode;
         } else {
           codeEditor.value = defaultBoilerplate;
+          candidateCodeDrafts[idx] = defaultBoilerplate;
         }
         updateLineNumbers();
+
+        // Listen for input events to continuously update in-memory draft
+        if (!codeEditor._hasDraftListener) {
+          codeEditor.addEventListener('input', () => {
+            candidateCodeDrafts[currentQIndex] = codeEditor.value;
+            updateLineNumbers();
+          });
+          codeEditor.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+              e.preventDefault();
+              const s = codeEditor.selectionStart;
+              const end = codeEditor.selectionEnd;
+              codeEditor.value = codeEditor.value.substring(0, s) + '    ' + codeEditor.value.substring(end);
+              codeEditor.selectionStart = codeEditor.selectionEnd = s + 4;
+              candidateCodeDrafts[currentQIndex] = codeEditor.value;
+              updateLineNumbers();
+            }
+          });
+          codeEditor._hasDraftListener = true;
+        }
       }
 
       // Reset console output
@@ -3451,7 +3499,9 @@
         consoleEl.innerHTML = `<div class="text-slate-500">[Sandbox] Compiler ready (${(editorLang ? editorLang.textContent : 'Python')}). Click 'Execute' to compile and test code in sandbox.</div>`;
       }
 
-      // DIRECTLY OPEN EDITOR FOR CODING ROUND & INTERVIEWER DOES NOT READ THE CODING PROMPT
+      // 4. AUTOMATIC VIEW NAVIGATION:
+      // - CODING: Route to Editorial (IDE + Sandbox + Testcases), interviewer silent while candidate codes
+      // - NON-CODING: Route to Interviewer (Full-Stage Video Call), interviewer speaks prompt
       if (isCodingQ) {
         switchStageView('code');
         setInterviewerVideoState('listening');
