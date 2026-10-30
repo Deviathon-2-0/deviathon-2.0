@@ -2525,22 +2525,36 @@
 
     // Start Practice Session (Failsafe: Auto-verifies Check 8 and starts)
     function startFinalPracticeSession() {
-      soundCheckPassed = true;
-      checklistProgress = 8;
-      updatePrereqCounter(8);
-      setCheckRowState(8, 'verified', 'Audio verified');
+      try {
+        soundCheckPassed = true;
+        checklistProgress = 8;
+        updatePrereqCounter(8);
+        setCheckRowState(8, 'verified', 'Audio verified');
 
-      if (currentAudioPlayback) {
-        try { currentAudioPlayback.pause(); } catch(e) {}
-        currentAudioPlayback = null;
-      }
-      if (audioPlaybackTimeout) {
-        clearTimeout(audioPlaybackTimeout);
-        audioPlaybackTimeout = null;
-      }
+        if (currentAudioPlayback) {
+          try { currentAudioPlayback.pause(); } catch(e) {}
+          currentAudioPlayback = null;
+        }
+        if (audioPlaybackTimeout) {
+          clearTimeout(audioPlaybackTimeout);
+          audioPlaybackTimeout = null;
+        }
 
-      closePracticePrerequisite();
-      confirmStartPractice();
+        closePracticePrerequisite();
+        confirmStartPractice();
+      } catch (err) {
+        console.error("Error in startFinalPracticeSession:", err);
+        // Absolute fallback to transition candidate to stage
+        closePracticePrerequisite();
+        const setup = document.getElementById('setup-screen');
+        if (setup) setup.classList.add('hidden');
+        const stage = document.getElementById('interview-stage');
+        if (stage) {
+          stage.classList.remove('hidden');
+          stage.classList.add('flex');
+        }
+        switchStageView('video');
+      }
     }
 
     function toggleStageFullscreen() {
@@ -2827,6 +2841,7 @@
 
     // Confirm Start Practice Session
     function confirmStartPractice() {
+      try {
       const termsEl = document.getElementById('setting-terms');
       if (termsEl && !termsEl.checked) {
         alert("Please accept the terms to proceed.");
@@ -2950,6 +2965,17 @@
           activeSessionId = data.session_id;
         }
       }).catch(() => {});
+      } catch (err) {
+        console.error("Notice during confirmStartPractice:", err);
+        const setup = document.getElementById('setup-screen');
+        if (setup) setup.classList.add('hidden');
+        const stage = document.getElementById('interview-stage');
+        if (stage) {
+          stage.classList.remove('hidden');
+          stage.classList.add('flex');
+        }
+        switchStageView('video');
+      }
     }
 
     // STRICT QUESTION NAVIGATION PILLS: CANNOT SKIP UNSUBMITTED QUESTIONS
@@ -3009,6 +3035,26 @@
     }
 
     // Update Live Question View across Video Call & IDE
+    
+    function updateLineNumbers() {
+      const editor = document.getElementById('code-editor-textarea');
+      const gutter = document.getElementById('code-editor-gutter');
+      if (!editor || !gutter) return;
+      const lines = (editor.value || '').split('\n').length;
+      let lineHtml = '';
+      for (let i = 1; i <= Math.max(lines, 1); i++) {
+        lineHtml += `<div>${i}</div>`;
+      }
+      gutter.innerHTML = lineHtml;
+    }
+
+    function initCodeEditorContent(title) {
+      const editor = document.getElementById('code-editor-textarea');
+      if (!editor) return;
+      editor.value = `// Problem: ${title || 'Technical Solution'}\n// Language: ${selectedCodingLanguage || 'Python'}\n\n`;
+      updateLineNumbers();
+    }
+
     function updateQuestionView(idx) {
       currentQIndex = idx;
       const q = currentQuestions[idx];
@@ -3047,11 +3093,14 @@
       if (techConstraints) techConstraints.textContent = q.constraints || "Optimal asymptotic complexity constraints";
       if (techInstructionsText) techInstructionsText.textContent = q.instructions || "Your solution will be compiled and evaluated in sandbox.";
 
-      if (q.starterCode) {
-        document.getElementById('code-editor-textarea').value = q.starterCode;
+      const codeEditor = document.getElementById('code-editor-textarea');
+      if (codeEditor) {
+        if (q.starterCode) {
+          codeEditor.value = q.starterCode;
+        } else {
+          codeEditor.value = `// Problem: ${q.title || 'Technical Solution'}\n// Language: ${selectedCodingLanguage || 'Python'}\n\n`;
+        }
         updateLineNumbers();
-      } else {
-        initCodeEditorContent(q.title);
       }
 
       speakQuestion(q.prompt);
