@@ -63,6 +63,20 @@ def _load_roles():
     return []
 
 def _load_companies():
+    try:
+        from api.models import Company
+        db_comps = list(Company.objects.all())
+        if db_comps:
+            return [{
+                'id': c.id,
+                'name': c.name,
+                'sector': c.sector,
+                'focus': c.focus or c.headquarters or c.sector,
+                'headquarters': c.headquarters or c.focus or c.sector,
+                'subroles': c.subroles or []
+            } for c in db_comps]
+    except Exception:
+        pass
     if COMPANIES_FILE.exists():
         with open(COMPANIES_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -574,9 +588,10 @@ def start_interview_session(request):
     else:
         # Technical / Coding Track: Prefer distinct company-specific LeetCode questions
         from api.models import CompanyQuestionMapping
-        company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company, time_window='Thirty Days').order_by('-frequency')
-        if not company_qs.exists():
-            company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company, time_window='All').order_by('-frequency')
+        first_word = (company or "").split()[0] if company else ""
+        company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company).order_by('-frequency')
+        if not company_qs.exists() and first_word:
+            company_qs = CompanyQuestionMapping.objects.filter(company_name__icontains=first_word).order_by('-frequency')
 
         seen_slugs = set()
         for cm in company_qs:
@@ -605,7 +620,7 @@ def start_interview_session(request):
         # Fallback to general coding CatalogQuestion if < 4
         if len(questions) < 4:
             rem = 4 - len(questions)
-            cat_qs = list(CatalogQuestion.objects.filter(category__in=['Coding', 'Algorithms', 'LeetCode']).exclude(question_id__in=seen_slugs).order_by('?')[:rem])
+            cat_qs = list(CatalogQuestion.objects.filter(category__in=['Coding', 'Algorithms', 'LeetCode']).exclude(question_key__in=seen_slugs).order_by('?')[:rem])
             for cq in cat_qs:
                 questions.append({
                     'index': len(questions),
@@ -935,10 +950,11 @@ def submit_interview_session(request, session_id):
         ans_telemetry = ans.get('telemetry') or raw_telemetry
         followup_resp = ans.get('followup_response', '')
 
-        # Strict attempt check: Exclude placeholder comments, unmodified starters, or fake text
+        # Strict attempt check: Exclude placeholder comments, unmodified starters, greetings, or fake text
         fake_markers = ['demonstrated systematic algorithm', '[no verbal', '[no follow-up', 'listening to your', 'speak your answer']
         is_fake_transcript = any(m in transcript.lower() for m in fake_markers)
-        has_real_speech = bool(transcript and not is_fake_transcript and len(transcript.strip().split()) >= 3)
+        words = [w for w in transcript.strip().split() if w.lower().strip('.,!?') not in ['hello', 'hi', 'hey', 'test', 'testing', 'mic', 'can', 'you', 'hear', 'me']]
+        has_real_speech = bool(transcript and not is_fake_transcript and len(words) >= 4)
         has_real_code = not _is_code_stub(code)
 
         if not has_real_speech and not has_real_code:
@@ -1024,7 +1040,10 @@ def submit_interview_session(request, session_id):
 
         total_tech_score += q_score
         total_struct_score += float(det_result.get("rubric_breakdown", {}).get("mechanism", 30.0)) * 2.5
-        total_speech_score += float(prosody.get("speech_clarity_score", 85.0))
+        if has_real_speech:
+            total_speech_score += float(prosody.get("speech_clarity_score", 75.0))
+        else:
+            total_speech_score += 0.0
         total_delivery_score += float(visual_delivery.get("body_language_score", 86.0))
 
         found_kw = det_result.get("keyword_coverage", {}).get("found_required", []) + det_result.get("keyword_coverage", {}).get("found_bonus", [])
@@ -1082,7 +1101,11 @@ def submit_interview_session(request, session_id):
     count = len(answers) or 1
     avg_tech = round(total_tech_score / count, 1)
     avg_struct = round(min(100.0, total_struct_score / count), 1)
-    avg_speech = round(min(100.0, total_speech_score / count), 1)
+    has_any_spoken_answer = any(
+        bool(ans.get('transcript') and not any(m in ans.get('transcript', '').lower() for m in ['[no verbal', '[no follow-up', 'listening to your', 'demonstrated systematic']) and len(ans.get('transcript', '').strip().split()) >= 3)
+        for ans in answers
+    )
+    avg_speech = round(min(100.0, total_speech_score / count), 1) if has_any_spoken_answer else 0.0
     avg_delivery = round(min(100.0, total_delivery_score / count), 1)
 
     # Telemetry extraction from matrix_input
@@ -1146,10 +1169,28 @@ def submit_interview_session(request, session_id):
             {"title": "Delivery Presence", "description": "Maintain direct webcam eye contact when formulating complex trade-offs."}
         ]
 
+    if not all_strengths:
+        if avg_tech > 0 or avg_speech > 0:
+            fallback_strengths = ["Structured algorithmic progression communicated with composure."]
+        else:
+            fallback_strengths = ["Technical workspace initialized and telemetry channels active."]
+    else:
+        fallback_strengths = all_strengths
+
+    if not has_any_spoken_answer and avg_tech == 0:
+        unique_gaps = [
+            "No verbal technical explanations or design trade-offs were articulated.",
+            "Code workspace was submitted without an algorithmic implementation."
+        ]
+        unique_recs = [
+            {"title": "Verbal Articulation", "description": "Speak your thought process aloud before and during code implementation."},
+            {"title": "Algorithmic Implementation", "description": "Write a complete functional solution with optimal time and space complexity."}
+        ]
+
     feedback_summary = {
         "criticalGaps": unique_gaps,
         "recommendations": unique_recs,
-        "strengths": (all_strengths or ["Preserved computational invariants and systematic logic breakdown."])[:4]
+        "strengths": fallback_strengths[:4]
     }
 
     metrics = {
@@ -1164,9 +1205,9 @@ def submit_interview_session(request, session_id):
             "recommendation": ("Articulate asymptotic memory fragmentation and cache locality trade-offs upfront." if avg_tech > 0 else "State initial algorithmic intuitions and complexity constraints even when uncertain.")
         },
         "speechClarity": {
-            "rating": "Clear & Articulate" if avg_speech >= 80 else "Monotone Inflection",
-            "notes": f"Pitch variance measured at {pitch_var} Hz with natural conversational cadence.",
-            "recommendation": "Vary vocal tone when contrasting architectural trade-offs."
+            "rating": ("Clear & Articulate" if avg_speech >= 80 else ("Developing Modulation" if avg_speech > 0 else "No Audio Detected")),
+            "notes": (f"Pitch variance measured at {pitch_var} Hz with natural conversational cadence." if avg_speech > 0 else "No verbal responses were recorded or detected for this interview session."),
+            "recommendation": ("Vary vocal tone when contrasting architectural trade-offs." if avg_speech > 0 else "Unmute your microphone and verbally articulate your technical design and trade-offs.")
         }
     }
 
@@ -1294,7 +1335,7 @@ def get_session_report(request, session_id):
 
     delivery_score = session.score_body_language if session.score_body_language is not None else 85.0
     tech_score = session.score_technical_depth if session.score_technical_depth is not None else 0.0
-    speech_score = session.score_speech_clarity if session.score_speech_clarity is not None else 70.0
+    speech_score = session.score_speech_clarity if session.score_speech_clarity is not None else 0.0
     struct_score = session.score_structural_logic if session.score_structural_logic is not None else 0.0
     comp_score = session.overall_score if session.overall_score is not None else round(tech_score * 0.45 + struct_score * 0.25 + speech_score * 0.15 + delivery_score * 0.15, 1)
 
@@ -1363,8 +1404,10 @@ def get_session_report(request, session_id):
         "evaluated_questions": per_q,
         "questions": per_q,
         "diagnosticEvents": [
-            {"concept": "Forward Engagement", "observation": "Maintained steady gaze during algorithmic breakdown.", "evidence": "Eye focus > 85%", "timestamp": 4.2},
-            {"concept": "Inflection Analysis", "observation": "Clear conversational cadence when contrasting trade-offs.", "evidence": f"Pitch variance {pitch_var} Hz", "timestamp": 12.8}
+            {"concept": "Forward Engagement", "observation": "Maintained steady gaze during interview session.", "evidence": f"Eye focus {int(gaze_pct)}%", "timestamp": 4.2},
+            ({"concept": "Inflection Analysis", "observation": "Clear conversational cadence when contrasting trade-offs.", "evidence": f"Pitch variance {pitch_var} Hz", "timestamp": 12.8}
+             if speech_score > 0 else
+             {"concept": "Audio Stream", "observation": "Microphone audio was silent or unrecorded.", "evidence": "0 dB vocal energy", "timestamp": 0.0})
         ],
         "integrity_telemetry": {
             "gaze_centered_percentage": int(gaze_pct),

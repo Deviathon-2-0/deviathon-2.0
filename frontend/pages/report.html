@@ -308,124 +308,6 @@
 
       </div>
 
-      <!-- CANDIDATE PERFORMANCE & INTEGRITY MATRIX (MULTI-SIGNAL EVENT PROCESSOR) -->
-      <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
-        <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#E8DFD0] gap-4">
-          <div>
-            <div class="flex items-center gap-2 mb-1">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#4F6B2D] animate-pulse"></span>
-              <span class="text-xs font-bold uppercase tracking-wider text-[#AA7000]">Multi-Signal Client Processor</span>
-            </div>
-            <h2 class="text-xl sm:text-2xl font-black text-[#2C1F0E]">Candidate Performance & Integrity Matrix</h2>
-            <p class="text-xs text-[#7F766C] mt-1">Continuous parallel browser streams feeding into tri-dimensional behavioral and authenticity benchmarks.</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="px-3.5 py-1.5 rounded-full bg-[#EFF4E8] border border-[#4F6B2D]/30 flex items-center gap-2">
-              <span class="material-symbols-outlined text-sm text-[#4F6B2D]">verified_user</span>
-              <span id="matrix-integrity-badge" class="text-xs font-bold text-[#4F6B2D]">Integrity: Verified Organic</span>
-            </div>
-            <div class="px-3.5 py-1.5 rounded-full bg-[#FBF3E0] border border-[#AA7000]/30 text-xs font-bold text-[#AA7000]">
-              Cross-Modal In-Sync
-            </div>
-          </div>
-        </div>
-
-        <!-- 3 Parallel Pipelines Architectural Telemetry Summary -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
-          <div class="p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0]">
-            <div class="flex items-center gap-2 text-xs font-bold text-[#2C1F0E] mb-2">
-              <span class="material-symbols-outlined text-sm text-[#AA7000]">visibility</span>
-              <span>Pipeline 1: Visual Tracking</span>
-            </div>
-            <p class="text-[11px] text-[#7F766C] mb-2">Eye & Gaze Module + Reading Saccade Detector + Posture Baseline Anchor</p>
-            <div class="flex items-center justify-between text-xs font-bold text-[#2C1F0E] pt-2 border-t border-[#E8DFD0]">
-              <span>Gaze Centered: <strong id="matrix-gaze-val" class="text-[#4F6B2D]">88%</strong></span>
-              <span>Saccades: <strong id="matrix-saccade-val" class="text-[#4F6B2D]">0 Flags</strong></span>
-            </div>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0]">
-            <div class="flex items-center gap-2 text-xs font-bold text-[#2C1F0E] mb-2">
-              <span class="material-symbols-outlined text-sm text-[#AA7000]">mic</span>
-              <span>Pipeline 2: Audio Dynamics</span>
-            </div>
-            <p class="text-[11px] text-[#7F766C] mb-2">F0 Autocorrelation Variance + Cadence & Dead-Air (>4s) Monitor</p>
-            <div class="flex items-center justify-between text-xs font-bold text-[#2C1F0E] pt-2 border-t border-[#E8DFD0]">
-              <span>Pitch F0 Variance: <strong id="matrix-pitch-val" class="text-[#2C1F0E]">13.2 Hz</strong></span>
-              <span>Pacing: <strong class="text-[#4F6B2D]">142 wpm</strong></span>
-            </div>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0]">
-            <div class="flex items-center gap-2 text-xs font-bold text-[#2C1F0E] mb-2">
-              <span class="material-symbols-outlined text-sm text-[#AA7000]">sync_alt</span>
-              <span>Pipeline 3: Cross-Modal Verification</span>
-            </div>
-            <p class="text-[11px] text-[#7F766C] mb-2">Lip Aperture (JawOpen) vs Mic Volume RMS Synchro Gate</p>
-            <div class="flex items-center justify-between text-xs font-bold text-[#2C1F0E] pt-2 border-t border-[#E8DFD0]">
-              <span>AV Alignment: <strong id="matrix-av-val" class="text-[#4F6B2D]">100% In-Sync</strong></span>
-              <span>Proxy Risk: <strong class="text-[#4F6B2D]">Zero Mismatch</strong></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Matrix Table -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="border-b border-[#E8DFD0] text-[#7F766C] font-bold uppercase tracking-wider text-[11px]">
-                <th class="py-3 px-4">Dimension</th>
-                <th class="py-3 px-4">Tracked Signals</th>
-                <th class="py-3 px-4">UI Status</th>
-                <th class="py-3 px-4">Constructive Feedback</th>
-              </tr>
-            </thead>
-            <tbody id="matrix-tbody" class="divide-y divide-[#E8DFD0] text-[#2C1F0E]">
-              <tr>
-                <td class="py-3.5 px-4 font-bold flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-[#4F6B2D]"></span>
-                  <span>Delivery & Presence</span>
-                </td>
-                <td class="py-3.5 px-4 text-[#7F766C]">Eye focus ratio + Upright posture baseline</td>
-                <td class="py-3.5 px-4">
-                  <span id="matrix-status-delivery" class="px-2.5 py-1 rounded-full bg-[#EFF4E8] text-[#4F6B2D] font-bold text-[11px]">82% (Strong)</span>
-                </td>
-                <td class="py-3.5 px-4 leading-relaxed" id="matrix-feedback-delivery">
-                  "Good eye engagement and steady forward gaze. Watch for a slight slouch during extended explanations."
-                </td>
-              </tr>
-              <tr>
-                <td class="py-3.5 px-4 font-bold flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
-                  <span>Vocal Engagement</span>
-                </td>
-                <td class="py-3.5 px-4 text-[#7F766C]">Pitch variance (F0) + Speech cadence</td>
-                <td class="py-3.5 px-4">
-                  <span id="matrix-status-vocal" class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-[11px]">78% (Dynamic)</span>
-                </td>
-                <td class="py-3.5 px-4 leading-relaxed" id="matrix-feedback-vocal">
-                  "Natural inflection with clear pacing. Vary your pitch to emphasize critical architectural trade-offs."
-                </td>
-              </tr>
-              <tr>
-                <td class="py-3.5 px-4 font-bold flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-[#4F6B2D]"></span>
-                  <span>Spontaneity</span>
-                </td>
-                <td class="py-3.5 px-4 text-[#7F766C]">Saccade rhythm + AV synchronization</td>
-                <td class="py-3.5 px-4">
-                  <span id="matrix-status-spont" class="px-2.5 py-1 rounded-full bg-[#EFF4E8] text-[#4F6B2D] font-bold text-[11px]">Verified (Organic)</span>
-                </td>
-                <td class="py-3.5 px-4 leading-relaxed" id="matrix-feedback-spont">
-                  "Natural delivery with no scripted reading patterns detected. Mouth aperture precisely matched vocal envelope."
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-
       <!-- TABS NAVIGATION: Overview | Breakdown | Transcript | Key Moments -->
       <div class="border-b border-[#E8DFD0]" id="tabs-header">
         <div class="flex items-center gap-8 -mb-px">
@@ -651,45 +533,6 @@
       });
     }
 
-    // Populate Candidate Performance & Integrity Matrix from client processor telemetry
-    try {
-      const storedMatrix = localStorage.getItem('imaira_integrity_matrix');
-      if (storedMatrix) {
-        const matrixData = JSON.parse(storedMatrix);
-        if (matrixData && matrixData.matrix && matrixData.matrix.length >= 3) {
-          const d1 = matrixData.matrix[0];
-          const d2 = matrixData.matrix[1];
-          const d3 = matrixData.matrix[2];
-
-          const statusDeliv = document.getElementById('matrix-status-delivery');
-          const fbDeliv = document.getElementById('matrix-feedback-delivery');
-          if (statusDeliv) statusDeliv.textContent = d1.ui_status;
-          if (fbDeliv) fbDeliv.textContent = `"${d1.constructive_feedback}"`;
-
-          const statusVocal = document.getElementById('matrix-status-vocal');
-          const fbVocal = document.getElementById('matrix-feedback-vocal');
-          if (statusVocal) statusVocal.textContent = d2.ui_status;
-          if (fbVocal) fbVocal.textContent = `"${d2.constructive_feedback}"`;
-
-          const statusSpont = document.getElementById('matrix-status-spont');
-          const fbSpont = document.getElementById('matrix-feedback-spont');
-          if (statusSpont) statusSpont.textContent = d3.ui_status;
-          if (fbSpont) fbSpont.textContent = `"${d3.constructive_feedback}"`;
-
-          if (matrixData.integrity_telemetry) {
-            const t = matrixData.integrity_telemetry;
-            const gazeVal = document.getElementById('matrix-gaze-val');
-            if (gazeVal) gazeVal.textContent = (t.gaze_centered_percentage || 88) + "%";
-            const pitchVal = document.getElementById('matrix-pitch-val');
-            if (pitchVal) pitchVal.textContent = (t.average_pitch_variance_hz || 13.2) + " Hz";
-          }
-        }
-      }
-    } catch (e) {
-      console.log("Matrix telemetry populate notice:", e);
-    }
-
-
     // Safely escape user text to prevent XSS
     function escapeHtml(str) {
       if (!str) return '';
@@ -912,17 +755,21 @@
         const sBar = document.getElementById('metric-speech-bar');
         if (sBar) sBar.style.width = `${Math.min(100, speechScore)}%`;
         const sPill = document.getElementById('metric-speech-pill');
-        if (sPill && speechMetrics) sPill.textContent = speechMetrics.rating || "Clear";
+        if (sPill && speechMetrics) sPill.textContent = speechMetrics.rating || (speechScore > 0 ? "Clear" : "No Audio");
         const sNotes = document.getElementById('metric-speech-notes');
-        if (sNotes && speechMetrics) sNotes.textContent = speechMetrics.notes || "";
+        if (sNotes && speechMetrics) sNotes.textContent = speechMetrics.notes || (speechScore > 0 ? "" : "No verbal speech was detected or recorded.");
         
         const sDetail = document.getElementById('metric-speech-detail');
         if (sDetail) {
-          sDetail.innerHTML = `<strong>Acoustics:</strong> Dialect-neutral engine scored conversational cadence without accent bias.`;
+          if (speechScore > 0) {
+            sDetail.innerHTML = `<strong>Acoustics:</strong> Dialect-neutral engine scored natural conversational cadence.`;
+          } else {
+            sDetail.innerHTML = `<strong>Acoustics:</strong> No spoken audio detected during answer recording.`;
+          }
         }
         const sTip = document.getElementById('metric-speech-tip');
         if (sTip && speechMetrics) {
-          sTip.innerHTML = `<strong>Tip:</strong> ${escapeHtml(speechMetrics.recommendation || "Use natural 1-second pauses when structuring trade-offs.")}`;
+          sTip.innerHTML = `<strong>Tip:</strong> ${escapeHtml(speechMetrics.recommendation || "Ensure microphone permissions are enabled and speak your thoughts aloud.")}`;
         }
       }
 

@@ -1703,27 +1703,35 @@
 
     function renderCompanies(sector = activeCompanySector, query = '') {
       const grid = document.getElementById('companies-grid');
+      if (!grid) return;
       grid.innerHTML = '';
+      const qLower = (query || '').toLowerCase().trim();
+
       const filtered = companiesData.filter(c => {
-        const matchSec = sector === 'All' || c.sector === sector;
-        const matchQ = query === '' || c.name.toLowerCase().includes(query.toLowerCase()) || c.headquarters.toLowerCase().includes(query.toLowerCase());
+        const cSec = (c.sector || 'Tech').toLowerCase();
+        const matchSec = sector === 'All' || cSec === sector.toLowerCase() || cSec.includes(sector.toLowerCase());
+        const cName = (c.name || '').toLowerCase();
+        const cFocus = (c.focus || c.headquarters || '').toLowerCase();
+        const matchQ = qLower === '' || cName.includes(qLower) || cFocus.includes(qLower);
         return matchSec && matchQ;
       });
 
       filtered.forEach(comp => {
         const card = document.createElement('div');
         card.className = "p-3.5 rounded-2xl bg-[#FFFDF8] border border-[#E8DFD0] hover:border-[#AA7000] hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between";
+        const subCount = (comp.subroles || []).length || 10;
+        const focusDisplay = comp.focus || comp.headquarters || comp.sector || "Top Tech Employer";
         card.innerHTML = `
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="w-7 h-7 rounded-lg bg-[#FAF6EE] border border-[#E8DFD0] font-mono font-bold text-xs text-[#2C1F0E] flex items-center justify-center">${comp.name.charAt(0)}</span>
-              <span class="text-[9px] font-bold text-[#AA7000] bg-[#FAF6EE] px-1.5 py-0.5 rounded">10 Tracks</span>
+              <span class="text-[9px] font-bold text-[#AA7000] bg-[#FAF6EE] px-1.5 py-0.5 rounded">${subCount} Tracks</span>
             </div>
             <h3 class="text-xs font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors truncate">${comp.name}</h3>
-            <p class="text-[10px] text-[#8C7B6B] truncate">${comp.headquarters}</p>
+            <p class="text-[10px] text-[#8C7B6B] truncate">${focusDisplay}</p>
           </div>
           <div class="mt-2.5 pt-2 border-t border-[#E8DFD0]/60 flex items-center justify-between text-[10px] text-[#8C7B6B]">
-            <span>Questions</span>
+            <span>LeetCode Questions</span>
             <span class="text-[#AA7000] font-bold">Curated &rarr;</span>
           </div>
         `;
@@ -1755,30 +1763,52 @@
 
       document.getElementById('company-detail-logo').textContent = comp.name.charAt(0);
       document.getElementById('company-detail-name').textContent = comp.name;
-      document.getElementById('company-detail-sector').textContent = comp.sector + " • " + comp.headquarters + " • 10 Standardized Tracks with Curated Questions";
+      const compFocus = comp.focus || comp.headquarters || comp.sector || "Global Technology";
+      document.getElementById('company-detail-sector').textContent = `${comp.sector || 'Tech'} • ${compFocus} • Company Specific Interview Tracks`;
 
       const grid = document.getElementById('company-roles-grid');
       grid.innerHTML = '';
       (comp.subroles || []).forEach(sub => {
+        const roleTitle = sub.role || sub.title || 'Software Engineer';
+        const trackName = sub.isTech !== undefined ? (sub.isTech ? 'Tech' : 'Behavioral') : (sub.track || 'Tech');
+        const levelStr = sub.level || 'SDE 2';
+        const typeStr = sub.type || 'Data Structures, Algorithms & Concurrency';
+
         const card = document.createElement('div');
         card.className = "p-4 rounded-2xl bg-[#FFFDF8] border border-[#E8DFD0] hover:border-[#AA7000] hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between";
         card.innerHTML = `
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-[#AA7000]">${sub.track}</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[#FAF6EE] text-[#7F766C] border border-[#E8DFD0]">${sub.level}</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[#AA7000]">${trackName}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[#FAF6EE] text-[#7F766C] border border-[#E8DFD0]">${levelStr}</span>
             </div>
-            <h3 class="text-sm font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors">${sub.title}</h3>
-            <p class="text-xs text-[#7F766C] mt-1">${comp.name} Standardized Evaluation Rubric</p>
+            <h3 class="text-sm font-bold text-[#2C1F0E] group-hover:text-[#AA7000] transition-colors">${roleTitle}</h3>
+            <p class="text-xs text-[#7F766C] mt-1">${typeStr}</p>
           </div>
           <div class="mt-4 pt-2.5 border-t border-[#E8DFD0]/60 flex items-center justify-between text-xs">
-            <span class="text-[#8C7B6B] text-[11px]">Round: <strong>${sub.track === 'Tech' ? 'Coding' : 'Role Related'}</strong></span>
+            <span class="text-[#8C7B6B] text-[11px]">Round: <strong>${trackName === 'Tech' ? 'Coding' : 'Role Related'}</strong></span>
             <span class="text-[#AA7000] font-bold flex items-center gap-1">Practice <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
           </div>
         `;
-        card.onclick = () => { customInterviewQuestions = null; openInterviewConfig(comp.name + " " + sub.title, sub.track, [sub.level], comp.name); };
+        card.onclick = () => {
+          customInterviewQuestions = null;
+          openInterviewConfig(roleTitle, trackName, [levelStr], comp.name);
+        };
         grid.appendChild(card);
       });
+    }
+
+    async function loadAllCompanies() {
+      try {
+        const res = await tryApiFetch('/companies/');
+        if (res && Array.isArray(res.companies) && res.companies.length > 0) {
+          companiesData = res.companies;
+          renderCompanies();
+    loadAllCompanies();
+        }
+      } catch (err) {
+        console.log("Using local companies array:", err);
+      }
     }
 
     function returnToCompanyCatalog() {
@@ -3992,6 +4022,7 @@
     // Initial render
     renderRoles();
     renderCompanies();
+    loadAllCompanies();
   </script>
   <audio id="evaluator-voice-player" preload="auto" class="hidden"></audio>
 </body>

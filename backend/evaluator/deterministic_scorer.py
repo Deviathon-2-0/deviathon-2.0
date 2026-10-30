@@ -134,13 +134,14 @@ class DeterministicScorer:
             if float(frame.get("pitch_hz", frame.get("pitch", 0.0))) > 55.0
         ]
 
+        has_vocal_audio = len(pitches) >= 3 and len(normalized_transcript.strip().split()) >= 3
         if pitches:
             mean_pitch = sum(pitches) / len(pitches)
             variance = sum((p - mean_pitch) ** 2 for p in pitches) / len(pitches)
             current_pitch_std = math.sqrt(variance)
         else:
-            mean_pitch = user_baseline_f0
-            current_pitch_std = user_baseline_std
+            mean_pitch = 0.0
+            current_pitch_std = 0.0
 
         # Syllables per second calculation
         syllables = estimate_syllables(normalized_transcript)
@@ -168,19 +169,27 @@ class DeterministicScorer:
                 current_silent_duration = 0.0
 
         # Dynamic Monotone Pitch Check:
-        # Instead of rigid 6.5 Hz, score relative to the candidate's personal calibrated range
         dynamic_pitch_cutoff = max(3.0, user_baseline_std * 0.40)
-        is_monotone = (current_pitch_std < dynamic_pitch_cutoff) and len(pitches) >= 8
+        is_monotone = (current_pitch_std < dynamic_pitch_cutoff) and len(pitches) >= 8 and has_vocal_audio
 
-        # Calculate Speech Clarity & Modulation Score (0 - 100)
-        base_speech_score = 88.0
-        if is_monotone:
-            base_speech_score -= 10.0
-        if dead_air_pauses > 0:
-            base_speech_score -= min(15.0, dead_air_pauses * 5.0)
-        if cognitive_pauses >= 1:
-            base_speech_score += min(6.0, cognitive_pauses * 2.0)  # Reward deliberate pacing
-        speech_clarity_score = round(max(50.0, min(98.0, base_speech_score)), 1)
+        if not has_vocal_audio:
+            speech_clarity_score = 0.0
+            is_monotone = False
+            modulation_feedback = "No spoken vocal audio detected during this question response."
+        else:
+            base_speech_score = 85.0
+            if is_monotone:
+                base_speech_score -= 10.0
+            if dead_air_pauses > 0:
+                base_speech_score -= min(15.0, dead_air_pauses * 5.0)
+            if cognitive_pauses >= 1:
+                base_speech_score += min(6.0, cognitive_pauses * 2.0)
+            speech_clarity_score = round(max(40.0, min(98.0, base_speech_score)), 1)
+            modulation_feedback = (
+                "Good conversational flow calibrated to your natural cadence."
+                if not is_monotone
+                else "Pitch variance remained relatively steady; add deliberate vocal emphasis when highlighting key architectural points."
+            )
 
         # ===================================================================
         # 3. Visual Tracking & Body Language Composure
@@ -238,12 +247,7 @@ class DeterministicScorer:
             "edge_cases": round((rubric.get("edge_cases", 20) / 100.0) * technical_depth_score, 1)
         }
 
-        # Calibrated channel feedback descriptions (Free of dialect bias)
-        modulation_feedback = (
-            "Good conversational flow calibrated to your natural cadence."
-            if not is_monotone
-            else "Pitch variance remained relatively steady; add deliberate vocal emphasis when highlighting key architectural invariants."
-        )
+        # Calibrated channel feedback descriptions (Preserve modulation_feedback already set above)
 
         return {
             "question_id": question.get("id", question_id),

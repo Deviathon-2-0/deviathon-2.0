@@ -174,10 +174,11 @@ Provide your assessment in the following JSON schema:
         if deterministic.get("technical_depth", {}).get("synergies_detected"):
             syn = deterministic["technical_depth"]["synergies_detected"][0]
             strengths.append(f"Strong concept linking between '{syn['parent']}' and {', '.join(syn['co_occurring_children'])}.")
-        if not penalties:
-            strengths.append("Maintained consistent gaze focus and vocal confidence throughout response.")
-        elif len(strengths) == 0:
-            strengths.append("Communicated clearly and attempted algorithmic breakdown.")
+        if score > 0:
+            if not penalties:
+                strengths.append("Maintained consistent gaze focus and vocal confidence throughout response.")
+            elif len(strengths) == 0:
+                strengths.append("Communicated clearly and attempted algorithmic breakdown.")
 
         # Construct Actionable Coaching Tips
         coaching_tips = []
