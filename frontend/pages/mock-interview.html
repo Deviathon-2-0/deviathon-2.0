@@ -792,7 +792,7 @@
           </div>
 
           <!-- TRANSLUCENT FLOATING QUESTION OVERLAY (Hovering over the Video Box) -->
-          <div id="call-question-overlay" class="absolute bottom-14 sm:bottom-14 left-4 right-4 max-w-xl mx-auto bg-black/80 backdrop-blur-2xl border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl z-20 transition-all">
+          <div id="call-question-overlay" class="absolute bottom-14 sm:bottom-14 left-4 right-4 max-w-xl mx-auto bg-black/85 backdrop-blur-2xl border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl z-20 transition-all max-h-[36vh] flex flex-col justify-between">
             
             <!-- Top Row: Question Pill & Mode Actions -->
             <div class="flex items-center justify-between text-xs mb-2">
@@ -809,9 +809,11 @@
             </div>
 
             <!-- Question Prompt Text (Crisp, High Contrast Typography) -->
-            <p id="call-question-prompt" class="text-xs sm:text-sm md:text-base text-white font-medium leading-relaxed mb-3">
-              "Write an optimal function to solve the system constraints described in this round."
-            </p>
+            <div class="overflow-y-auto custom-scroll pr-2 max-h-[16vh] mb-2">
+              <p id="call-question-prompt" class="text-xs sm:text-sm text-white font-medium leading-relaxed">
+                "Write an optimal function to solve the system constraints described in this round."
+              </p>
+            </div>
 
             <!-- Bottom Row: Candidate Spoken Answer & Submit Controls -->
             <div class="flex items-center justify-between pt-2 border-t border-white/10 gap-2 flex-wrap">
@@ -898,10 +900,10 @@
           <!-- Tab Content 1: Code Problem Description -->
           <div id="tab-content-prob-code" class="p-4 flex-1 overflow-y-auto custom-scroll space-y-3">
             <div id="tech-problem-card" class="p-4 rounded-xl bg-[#1B1207] border border-[#2E200E] text-xs text-slate-200 font-mono leading-relaxed space-y-3 shadow-inner">
-              <p id="tech-problem-description" class="text-white font-medium">
+              <div id="tech-problem-description" class="text-slate-200 leading-relaxed space-y-2">
                 Write a function to remove the minimum number of invalid parentheses to make the input string valid. Return all possible results.
-              </p>
-              <div class="bg-[#120B04] p-3 rounded-lg border border-[#2A1C0A] space-y-1.5 text-slate-300">
+              </div>
+              <div id="tech-generic-io-box" class="bg-[#120B04] p-3 rounded-lg border border-[#2A1C0A] space-y-1.5 text-slate-300">
                 <div><strong class="text-[#E8A338]">Input:</strong> <span id="tech-problem-input">"a)bc(d)"</span></div>
                 <div><strong class="text-[#4F6B2D]">Output:</strong> <span id="tech-problem-output">"abc(d)"</span></div>
                 <div id="tech-problem-constraints-wrap" class="pt-1 text-[11px] text-slate-400">
@@ -3021,10 +3023,16 @@
 
         currentQIndex = 0;
         renderQuestionNavigationPills();
-        updateQuestionView(0);
 
-        // Start in Video Call Mode
-        switchStageView('video');
+        // Cancel any lingering audio or speech synthesis before session begins
+        if (currentAudioPlayback) {
+          try { currentAudioPlayback.pause(); currentAudioPlayback.src = ''; } catch(e) {}
+          currentAudioPlayback = null;
+        }
+        if ('speechSynthesis' in window) {
+          try { window.speechSynthesis.cancel(); } catch(e) {}
+        }
+        currentSpeechToken++;
 
         initHardwareMedia();
 
@@ -3118,6 +3126,170 @@
       updateLineNumbers();
     }
 
+    function formatProblemDescription(rawText, q) {
+      if (!rawText) return '<p class="text-white">No problem description provided.</p>';
+      let text = rawText.replace(/\\\[/g, '[').replace(/\\\]/g, ']').replace(/\\/g, '');
+
+      // Extract Constraints
+      let constraintsHtml = '';
+      const constraintsMatch = text.match(/\*\*Constraints:\*\*([\s\S]*?)(?=\*\*Follow-up:|\*\*Example|\Z)/i);
+      if (constraintsMatch) {
+        const rawConst = constraintsMatch[1].trim();
+        const items = rawConst.split(/\n|\*|•/).map(c => c.trim()).filter(c => c.length > 2);
+        if (items.length > 0) {
+          constraintsHtml = `
+            <div class="mt-3 p-3 rounded-xl bg-[#140D05] border border-[#2E200E]">
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-xs text-[#AA7000]">tune</span> Constraints:
+              </div>
+              <ul class="list-disc list-inside space-y-1 text-slate-300 text-xs font-mono">
+                ${items.map(it => `<li>${escapeHtml(it.replace(/`/g, ''))}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+      }
+
+      // Extract Follow-up
+      let followupHtml = '';
+      const followupMatch = text.match(/\*\*Follow-up:\*\*([\s\S]*)/i);
+      if (followupMatch) {
+        const fuText = followupMatch[1].trim().replace(/`/g, '');
+        followupHtml = `
+          <div class="mt-3 p-3 rounded-xl bg-[#2A1D0B]/60 border border-[#AA7000]/40 text-xs text-[#E8A338] flex items-start gap-2">
+            <span class="material-symbols-outlined text-sm mt-0.5 shrink-0 text-[#E8A338]">lightbulb</span>
+            <div><strong>Follow-up:</strong> ${escapeHtml(fuText)}</div>
+          </div>
+        `;
+      }
+
+      // Extract Examples
+      let examplesHtml = '';
+      const exMatches = [...text.matchAll(/\*\*Example\s*(\d+):\*\*([\s\S]*?)(?=\*\*Example|\*\*Constraints:|\*\*Follow-up:|\Z)/gi)];
+      if (exMatches.length > 0) {
+        examplesHtml = `
+          <div class="mt-3 space-y-2.5">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-xs text-[#4F6B2D]">check_circle</span> Examples:
+            </div>
+            ${exMatches.map(m => {
+              const num = m[1];
+              const body = m[2].trim();
+              const inp = (body.match(/\*\*Input:\*\*([^\n*]+)/i) || [])[1] || '';
+              const out = (body.match(/\*\*Output:\*\*([^\n*]+)/i) || [])[1] || '';
+              const exp = (body.match(/\*\*Explanation:\*\*([^\n*]+)/i) || [])[1] || '';
+              return `
+                <div class="p-3 rounded-xl bg-[#140D05] border border-[#2E200E] text-xs font-mono space-y-1 shadow-sm">
+                  <div class="text-[11px] font-bold text-[#E8A338] mb-1">Example ${num}:</div>
+                  ${inp ? `<div class="text-slate-300"><span class="text-slate-500 font-semibold">Input:</span> ${escapeHtml(inp.trim())}</div>` : ''}
+                  ${out ? `<div class="text-slate-300"><span class="text-slate-500 font-semibold">Output:</span> <span class="text-[#7BB045] font-bold">${escapeHtml(out.trim())}</span></div>` : ''}
+                  ${exp ? `<div class="text-slate-400 text-[11px]"><span class="text-slate-500 font-semibold">Explanation:</span> ${escapeHtml(exp.trim())}</div>` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      // Extract base description
+      let baseDesc = text;
+      if (exMatches.length > 0) {
+        baseDesc = text.split(/\*\*Example\s*\d+:\*\*/i)[0].trim();
+      } else if (constraintsMatch) {
+        baseDesc = text.split(/\*\*Constraints:\*\*/i)[0].trim();
+      }
+      baseDesc = baseDesc
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/_([^_]+)_/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-[#2A1D0B] text-[#E8A338] font-mono text-[11px]">$1</code>');
+
+      return `
+        <div class="space-y-2">
+          <div class="text-xs text-slate-200 leading-relaxed font-sans">${baseDesc}</div>
+          ${examplesHtml}
+          ${constraintsHtml}
+          ${followupHtml}
+        </div>
+      `;
+    }
+
+    async function executeCurrentCode() {
+      const codeEditor = document.getElementById('code-editor-textarea');
+      const consoleEl = document.getElementById('code-console-output');
+      if (!codeEditor || !consoleEl) return;
+
+      const rawCode = codeEditor.value.trim();
+      if (!rawCode) {
+        consoleEl.innerHTML = `<div class="text-rose-400">[Compiler Error]: Editor is empty. Write your solution before executing.</div>`;
+        return;
+      }
+
+      const q = currentQuestions[currentQIndex] || {};
+      let lang = (selectedCodingLanguage || 'python').toLowerCase();
+      if (lang.includes('c++') || lang.includes('cpp')) lang = 'cpp';
+      else if (lang.includes('javascript') || lang.includes('node') || lang.includes('js')) lang = 'javascript';
+      else lang = 'python';
+
+      // Build test cases from question prompt
+      let testCases = [];
+      if (q.prompt) {
+        const exMatches = [...q.prompt.matchAll(/\*\*Example\s*\d+:\*\*([\s\S]*?)(?=\*\*Example|\*\*Constraints:|\*\*Follow-up:|\Z)/gi)];
+        for (const m of exMatches) {
+          const body = m[2].trim();
+          const inp = (body.match(/\*\*Input:\*\*([^\n*]+)/i) || [])[1] || '';
+          const out = (body.match(/\*\*Output:\*\*([^\n*]+)/i) || [])[1] || '';
+          if (inp || out) {
+            testCases.push({ input: inp.trim(), expected: out.trim() });
+          }
+        }
+      }
+      if (testCases.length === 0) {
+        testCases = [{ input: "Default validation input", expected: "" }];
+      }
+
+      consoleEl.innerHTML = `
+        <div class="text-[#E8A338] font-bold flex items-center gap-2 animate-pulse py-1">
+          <span class="material-symbols-outlined text-sm animate-spin">refresh</span>
+          <span>Compiling and executing in sandbox sandbox...</span>
+        </div>
+      `;
+
+      try {
+        const res = await tryApiFetch('/compiler/execute/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: rawCode,
+            language: lang,
+            test_cases: testCases
+          })
+        });
+
+        if (res) {
+          q.lastExecutionResults = {
+            passed: res.passed_tests || 0,
+            total: res.total_tests || testCases.length,
+            success: res.success,
+            runtime_ms: res.runtime_ms
+          };
+
+          let outHtml = `<div class="font-mono text-xs space-y-1.5 whitespace-pre-wrap">`;
+          if (res.terminal_stream) {
+            outHtml += `<div class="text-slate-300">${escapeHtml(res.terminal_stream)}</div>`;
+          } else {
+            outHtml += `<div class="${res.success ? 'text-emerald-400' : 'text-rose-400'}">${escapeHtml(res.stdout || res.stderr || 'Execution finished.')}</div>`;
+          }
+          outHtml += `</div>`;
+          consoleEl.innerHTML = outHtml;
+          consoleEl.scrollTop = consoleEl.scrollHeight;
+        } else {
+          consoleEl.innerHTML = `<div class="text-rose-400">[Runtime Error]: Sandbox execution failed.</div>`;
+        }
+      } catch (err) {
+        consoleEl.innerHTML = `<div class="text-rose-400">[Sandbox Exception]: ${escapeHtml(err.message || 'Error executing code.')}</div>`;
+      }
+    }
+
     function updateQuestionView(idx) {
       currentQIndex = idx;
       const q = currentQuestions[idx];
@@ -3126,7 +3298,8 @@
       const total = currentQuestions.length;
       renderQuestionNavigationPills();
 
-      const qCategoryText = (q.type ? q.type.toUpperCase() : "TECHNICAL PROBLEM SOLVING");
+      const isCodingQ = (q.type === 'Coding' || selectedRound === 'Coding' || (pendingTrack === 'Tech' && selectedRound !== 'Behavioral'));
+      const qCategoryText = (q.type ? q.type.toUpperCase() : (isCodingQ ? "CODING ROUND" : "TECHNICAL ROUND"));
 
       // 1. Update Video Call Overlay
       const callQBadge = document.getElementById('call-q-badge');
@@ -3160,24 +3333,60 @@
       }
 
       if (codeQNum) codeQNum.textContent = "• " + qCategoryText + " •";
-      if (techInstructionTitle) techInstructionTitle.textContent = q.title || "Write a code solution for the situation described below.";
-      if (techDesc) techDesc.textContent = q.prompt;
-      if (techInput) techInput.textContent = q.input || "Standard I/O stream";
-      if (techOutput) techOutput.textContent = q.output || "Standard I/O format";
-      if (techConstraints) techConstraints.textContent = q.constraints || "Optimal asymptotic complexity constraints";
-      if (techInstructionsText) techInstructionsText.textContent = q.instructions || "Your solution will be compiled and evaluated in sandbox.";
+      if (techInstructionTitle) techInstructionTitle.textContent = q.title || "Write an optimal solution.";
+      if (techDesc) {
+        techDesc.innerHTML = formatProblemDescription(q.prompt, q);
+      }
+      const genericIO = document.getElementById('tech-generic-io-box');
+      if (genericIO) {
+        genericIO.style.display = (q.prompt && q.prompt.includes('**Example')) ? 'none' : 'block';
+      }
+
+      // 3. Language & Editor setup
+      const langName = (selectedCodingLanguage || 'Python').toLowerCase();
+      const editorFile = document.getElementById('editor-filename');
+      const editorLang = document.getElementById('editor-lang-indicator');
+      
+      let defaultBoilerplate = "";
+      if (langName.includes('c++') || langName.includes('cpp')) {
+        if (editorFile) editorFile.textContent = "solution.cpp";
+        if (editorLang) editorLang.textContent = "C++ (GCC 14)";
+        defaultBoilerplate = `#include <iostream>\n#include <vector>\n#include <string>\n#include <unordered_map>\n#include <algorithm>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Problem: ${q.title || 'Technical Solution'}\n    // Write your solution below\n};\n`;
+      } else if (langName.includes('javascript') || langName.includes('node') || langName.includes('js')) {
+        if (editorFile) editorFile.textContent = "solution.js";
+        if (editorLang) editorLang.textContent = "JavaScript (Node.js)";
+        defaultBoilerplate = `// Problem: ${q.title || 'Technical Solution'}\n// Language: JavaScript\n\nfunction solution() {\n    // Write your solution below\n}\n`;
+      } else {
+        if (editorFile) editorFile.textContent = "solution.py";
+        if (editorLang) editorLang.textContent = "Python 3.14";
+        defaultBoilerplate = `# Problem: ${q.title || 'Technical Solution'}\n# Language: Python\n\nclass Solution:\n    # Write your solution below\n    pass\n`;
+      }
 
       const codeEditor = document.getElementById('code-editor-textarea');
       if (codeEditor) {
-        if (q.starterCode) {
+        if (q.starterCode && !q.starterCode.startsWith('// Problem:') && !q.starterCode.startsWith('# Problem:')) {
           codeEditor.value = q.starterCode;
         } else {
-          codeEditor.value = `// Problem: ${q.title || 'Technical Solution'}\n// Language: ${selectedCodingLanguage || 'Python'}\n\n`;
+          codeEditor.value = defaultBoilerplate;
         }
         updateLineNumbers();
       }
 
-      speakQuestion(q.prompt);
+      // Reset console output
+      const consoleEl = document.getElementById('code-console-output');
+      if (consoleEl) {
+        consoleEl.innerHTML = `<div class="text-slate-500">[Sandbox] Compiler ready (${(editorLang ? editorLang.textContent : 'Python')}). Click 'Execute' to compile and test code in sandbox.</div>`;
+      }
+
+      // DIRECTLY OPEN EDITOR FOR CODING ROUND & INTERVIEWER DOES NOT READ THE CODING PROMPT
+      if (isCodingQ) {
+        switchStageView('code');
+        setInterviewerVideoState('listening');
+        toggleCandidateAnswerRecording(true);
+      } else {
+        switchStageView('video');
+        speakQuestion(q.prompt);
+      }
     }
 
     // Switch between Code and Instructions tabs on Left Pane
@@ -3301,6 +3510,7 @@
           prompt: q ? q.prompt : '',
           transcript: spokenText,
           code: cleanCode,
+          execution_results: q.lastExecutionResults || null,
           timestamp_start: qStartSec,
           timestamp_end: qEndSec,
           duration_sec: Math.max(1, Math.round(qEndSec - qStartSec)),
@@ -3441,22 +3651,35 @@
       if (q && q.prompt) speakQuestion(q.prompt);
     }
 
+    let currentSpeechToken = 0;
+
     async function speakQuestion(text) {
+      const token = ++currentSpeechToken;
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const pacingVal = parseFloat(document.getElementById('modal-speech-pacing')?.value || '1.0');
 
       if (currentAudioPlayback) {
-        currentAudioPlayback.pause();
+        try { currentAudioPlayback.pause(); currentAudioPlayback.src = ''; } catch(e) {}
         currentAudioPlayback = null;
       }
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+        try { window.speechSynthesis.cancel(); } catch(e) {}
+      }
+
+      // Never speak the coding prompt (interviewer remains silent while candidate reads & codes)
+      const currentQ = currentQuestions[currentQIndex];
+      const isCodingQ = (currentQ && (currentQ.type === 'Coding' || (pendingTrack === 'Tech' && selectedRound !== 'Behavioral')));
+      if (isCodingQ && !isFollowUpActive) {
+        setInterviewerVideoState('listening');
+        toggleCandidateAnswerRecording(true);
+        return;
       }
 
       // Switch Interviewer Video to Talking Loop
       setInterviewerVideoState('talking');
 
       const onPlaybackEnded = () => {
+        if (token !== currentSpeechToken) return;
         setInterviewerVideoState('listening');
         // Auto-activate voice channel listening once interviewer finishes speaking
         toggleCandidateAnswerRecording(true);
@@ -3473,6 +3696,7 @@
             pacing: pacingVal.toString()
           })
         });
+        if (token !== currentSpeechToken) return;
         if (data && data.audio_url) {
           const audioSrc = data.audio_url.startsWith('http') ? data.audio_url : ('http://localhost:8000' + data.audio_url);
           currentAudioPlayback = new Audio(audioSrc);
@@ -3482,6 +3706,8 @@
           return;
         }
       } catch (err) {}
+
+      if (token !== currentSpeechToken) return;
 
       // 2. High-Fidelity Client Fallback: Distinct Male vs Female Vocal Modulation
       if ('speechSynthesis' in window) {

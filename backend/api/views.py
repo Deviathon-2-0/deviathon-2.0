@@ -1006,6 +1006,19 @@ def submit_interview_session(request, session_id):
         gem_tech = float(scorecard.get("overall_score", 0.0))
         q_score = round(det_tech * 0.6 + gem_tech * 0.4, 1)
 
+        # Factor in compiler sandbox test case pass rate into Technical Depth
+        exec_res = ans.get("execution_results") or {}
+        passed_tests = int(exec_res.get("passed") or exec_res.get("passed_tests") or 0)
+        total_tests = int(exec_res.get("total") or exec_res.get("total_tests") or 0)
+        if total_tests > 0:
+            test_ratio = passed_tests / total_tests
+            if test_ratio >= 1.0:
+                q_score = round(min(100.0, max(q_score, 92.0)), 1)
+            elif test_ratio > 0.0:
+                q_score = round(min(100.0, max(q_score, 65.0 + test_ratio * 25.0)), 1)
+            elif has_real_code:
+                q_score = round(min(q_score, 45.0), 1)
+
         prosody = det_result.get("acoustic_prosodic_analysis", {})
         visual_delivery = det_result.get("visual_delivery_analysis", {})
 
