@@ -24,6 +24,7 @@ from api.models import (
 from api.services.tts_engine import synthesize_interviewer_speech, INTERVIEWER_PROFILES
 from api.services.stt_engine import transcribe_candidate_speech
 from api.services.compiler_service import execute_code_submission
+from api.services.question_bank_service import get_interview_questions
 from api.services.gemini_service import (
     generate_interview_questions,
     evaluate_candidate_performance,
@@ -486,7 +487,8 @@ def generate_questions_api(request):
 
 @api_view(['POST'])
 def start_interview_session(request):
-    """Initialize a mock interview session and populate calibrated questions."""
+    """Initialize a mock interview using database questions with Gemini fallback."""
+
     role = request.data.get('role', 'Software Engineer')
     company = request.data.get('company', 'Google')
     track = request.data.get('track', 'Tech')
@@ -494,6 +496,8 @@ def start_interview_session(request):
     interviewer = request.data.get('interviewer_name', 'Kabir')
     accent = request.data.get('interviewer_accent', 'IN English (North)')
     language = request.data.get('language', 'python')
+
+    technology = request.data.get('technology', language).lower()
 
     session = InterviewSession.objects.create(
         role=role,
@@ -506,12 +510,61 @@ def start_interview_session(request):
         status="active"
     )
 
-    questions = generate_interview_questions(
-        role=role, company=company, track=track, level=level, language=language, count=4
+    # Fetch questions from PostgreSQL first.
+    bank_questions = get_interview_questions(
+        technology=technology,
+        count=4
     )
 
+    questions = []
+
+    for bank_q in bank_questions:
+        answer = bank_q.answer or {}
+        sample_answer = (
+    answer.get('sampleAnswer')
+    or answer.get('back', '')
+)
+
+        # Convert reference answers into evaluation points.
+        import re
+        expected_points = [
+            point.strip()
+            for point in re.split(r'(?<=[.!?])\s+', sample_answer)
+            if point.strip()
+        ]
+
+        questions.append({
+            'index': len(questions),
+            'title': bank_q.technology_name,
+            'text': bank_q.prompt,
+            'expected_concepts': expected_points,
+            'starter_code': '',
+            'source_id': bank_q.source_id,
+            'reference_answer': sample_answer,
+            'explanation': bank_q.explanation,
+            'source_metadata': bank_q.source_metadata
+        })
+
+    # Gemini fallback if the database has no suitable questions.
+    if len(questions) < 4:
+        generated = generate_interview_questions(
+            role=role,
+            company=company,
+            track=track,
+            level=level,
+            language=language,
+            count=4 - len(questions)
+        )
+
+        for q in generated[:4 - len(questions)]:
+            q['index'] = len(questions)
+            questions.append(q)
+
     question_objects = []
+
     for q in questions:
+        is_bank_question = bool(q.get('source_id'))
+
         qr = QuestionRecord.objects.create(
             session=session,
             question_index=q.get('index', 0),
@@ -519,15 +572,22 @@ def start_interview_session(request):
             text=q.get('text', ''),
             expected_concepts=q.get('expected_concepts', []),
             starter_code=q.get('starter_code', ''),
-            candidate_code=q.get('starter_code', '')
+            candidate_code=q.get('starter_code', ''),
+            evaluation_details={
+                'source': 'question_bank' if is_bank_question else 'gemini',
+                'source_id': q.get('source_id'),
+                'reference_answer': q.get('reference_answer'),
+                'explanation': q.get('explanation'),
+                'source_metadata': q.get('source_metadata')
+            } if is_bank_question else {}
         )
+
         question_objects.append({
-            'index': qr.question_index,
-            'title': qr.title,
-            'text': qr.text,
-            'expected_concepts': qr.expected_concepts,
-            'starter_code': qr.starter_code
-        })
+    'index': qr.question_index,
+    'title': qr.title,
+    'text': qr.text,
+    'starter_code': qr.starter_code
+})
 
     return Response({
         'session_id': str(session.id),
@@ -542,7 +602,6 @@ def start_interview_session(request):
         'coding_language': session.coding_language,
         'questions': question_objects
     })
-
 
 @api_view(['POST'])
 def submit_interview_session(request, session_id):
@@ -571,8 +630,6 @@ def submit_interview_session(request, session_id):
     total_tech = 0.0
     total_struct = 0.0
     total_speech = 0.0
-    total_body = 0.0
-
     for ans in answers:
         q_idx = ans.get('question_index', 0)
         transcript = ans.get('transcript', '')
@@ -603,7 +660,6 @@ def submit_interview_session(request, session_id):
         total_tech += scores.get('technical_depth', 80)
         total_struct += scores.get('structural_logic', 80)
         total_speech += scores.get('speech_clarity', 85)
-        total_body += scores.get('body_language', 88)
 
         if qr:
             qr.score = eval_res.get('overall_score', 80)
@@ -620,14 +676,18 @@ def submit_interview_session(request, session_id):
     avg_tech = round(total_tech / count, 1)
     avg_struct = round(total_struct / count, 1)
     avg_speech = round(total_speech / count, 1)
-    avg_body = round(total_body / count, 1)
-    overall = round((avg_tech * 0.45 + avg_struct * 0.25 + avg_speech * 0.20 + avg_body * 0.10), 1)
+    overall = round(
+        avg_tech * 0.50 +
+        avg_struct * 0.30 +
+        avg_speech * 0.20,
+        1
+    )
 
     session.overall_score = overall
     session.score_technical_depth = avg_tech
     session.score_structural_logic = avg_struct
     session.score_speech_clarity = avg_speech
-    session.score_body_language = avg_body
+    session.score_body_language = None
     session.status = "completed"
     session.concept_breakdown = [q['evaluation'].get('concept_breakdown', []) for q in evaluated_questions]
     
@@ -636,17 +696,38 @@ def submit_interview_session(request, session_id):
     if telemetry and isinstance(telemetry, dict):
         session.telemetry_matrix = telemetry
 
+        # Generate final feedback from actual Gemini evaluations.
+    strengths = []
+    improvements = []
+
+    for question in evaluated_questions:
+        evaluation = question.get('evaluation', {})
+
+        for concept in evaluation.get('concept_breakdown', []):
+            status = concept.get('status')
+            name = concept.get('concept', 'Technical concept')
+
+            if status == 'covered':
+                strengths.append(f"Demonstrated understanding of: {name}")
+
+            elif status in ('partial', 'missing', 'incorrect'):
+                improvements.append(f"Improve understanding of: {name}")
+
+        for feedback in evaluation.get('feedback', []):
+            if isinstance(feedback, dict):
+                suggestion = feedback.get('suggestion')
+                if suggestion:
+                    improvements.append(suggestion)
+
+    # Remove duplicates while preserving order.
+    strengths = list(dict.fromkeys(strengths))
+    improvements = list(dict.fromkeys(improvements))
+
     session.feedback_summary = {
-        'strengths': [
-            "Demonstrated strong invariant preservation under high concurrency.",
-            "Accurate time and space asymptotic analysis articulated upfront.",
-            "Logical step-by-step structural decomposition."
-        ],
-        'areas_for_improvement': [
-            "Quantify partition rebalancing latencies in failure modes.",
-            "Consider thread-safety semantics when handling asynchronous callbacks."
-        ]
+        'strengths': strengths[:5],
+        'areas_for_improvement': improvements[:5]
     }
+
     session.save()
 
     return Response({
@@ -657,14 +738,11 @@ def submit_interview_session(request, session_id):
             'technical_depth': session.score_technical_depth,
             'structural_logic': session.score_structural_logic,
             'speech_clarity': session.score_speech_clarity,
-            'body_language': session.score_body_language
         },
         'evaluated_questions': evaluated_questions,
         'feedback_summary': session.feedback_summary,
         'telemetry_matrix': session.telemetry_matrix
     })
-
-
 @api_view(['POST', 'PUT'])
 def record_session_telemetry(request, session_id):
     """
@@ -704,16 +782,25 @@ def get_session_report(request, session_id):
         return Response({'error': f'Session {session_id} not found.'}, status=status.HTTP_404_NOT_FOUND)
 
     questions_data = []
+
     for qr in session.questions.all():
+        evaluation = qr.evaluation_details.copy() if qr.evaluation_details else {}
+
+        # Remove outdated or unverified metrics.
+        evaluation.pop('confidence_metric', None)
+
+        scores = evaluation.get('scores', {}).copy()
+        scores.pop('body_language', None)
+        evaluation['scores'] = scores
+
         questions_data.append({
             'index': qr.question_index,
             'title': qr.title,
             'text': qr.text,
-            'expected_concepts': qr.expected_concepts,
             'score': qr.score,
-            'evaluation': qr.evaluation_details,
             'transcript': qr.candidate_transcript,
-            'code': qr.candidate_code
+            'code': qr.candidate_code,
+            'evaluation': evaluation
         })
 
     return Response({
@@ -728,7 +815,6 @@ def get_session_report(request, session_id):
             'technical_depth': session.score_technical_depth,
             'structural_logic': session.score_structural_logic,
             'speech_clarity': session.score_speech_clarity,
-            'body_language': session.score_body_language
         },
         'feedback_summary': session.feedback_summary,
         'questions': questions_data,

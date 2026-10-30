@@ -36,7 +36,7 @@ class InterviewSession(models.Model):
     score_technical_depth = models.FloatField(default=0.0)
     score_structural_logic = models.FloatField(default=0.0)
     score_speech_clarity = models.FloatField(default=0.0)
-    score_body_language = models.FloatField(default=0.0)
+    score_body_language = models.FloatField(null=True, blank=True, default=None)
 
     # Rich AI Evaluation Breakdown
     feedback_summary = models.JSONField(default=dict, blank=True)

@@ -1,0 +1,302 @@
+{
+    "name": "IMAIRA+ Curated Interview Questions",
+    "source": "https://codeprep.dev",
+    "license": "CC-BY-4.0",
+    "attribution": "CodePrep — https://codeprep.dev",
+    "questionCount": 18,
+    "questions": [
+        {
+            "id": "ts-sa-discriminated-union",
+            "technology": "typescript",
+            "technologyName": "TypeScript",
+            "difficulty": 4,
+            "difficultyLabel": "hard",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "discriminated-unions"
+            ],
+            "prompt": "What is a discriminated union and why is it useful?",
+            "answer": {
+                "sampleAnswer": "A discriminated (tagged) union is a union of object types that share a common literal property — the discriminant. Switching on that property lets TypeScript narrow the value to one exact member, so you can handle each case type-safely and get exhaustiveness checking for free."
+            },
+            "explanation": "The shared literal field (e.g. `type: 'circle' | 'square'`) is what lets the compiler narrow inside a `switch`. Adding a `never` default then enforces that every member is handled."
+        },
+        {
+            "id": "web-sa-view-transition-why-callback",
+            "technology": "web-platform",
+            "technologyName": "Web Platform",
+            "difficulty": 5,
+            "difficultyLabel": "expert",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "view-transitions"
+            ],
+            "prompt": "Why does the same-document View Transitions API require you to make the DOM change *inside* the callback passed to `startViewTransition`, rather than updating the DOM yourself and then calling it?",
+            "answer": {
+                "sampleAnswer": "Because the API needs to capture both the before and after states, and the callback is its hook for the moment in between. When you call `startViewTransition(cb)`, the browser first snapshots the current (old) visual state, then runs your callback to mutate the DOM, then snapshots the new state, and animates from old to new. If you mutated the DOM first and only then called `startViewTransition`, the 'old' snapshot would already be the new layout — there'd be nothing to animate from, so you'd get no transition (or a broken one). Putting the mutation in the callback is what lets the browser bracket it with the two snapshots."
+            },
+            "explanation": "The callback is a synchronization point, not just a convenience. The browser must own the timing so it can sandwich the DOM mutation between an old-state capture and a new-state capture; surrendering that ordering (mutating outside) destroys the 'from' state the animation interpolates out of. This is also why the callback can return a promise — the browser waits for the new state to settle before capturing it."
+        },
+        {
+            "id": "css-sa-oklch-theming-advantage",
+            "technology": "css",
+            "technologyName": "CSS",
+            "difficulty": 3,
+            "difficultyLabel": "medium",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "modern-color"
+            ],
+            "prompt": "Why might you prefer `oklch()` (or `oklab()`) over `hsl()` or hex when building a design system's color palette and generating tints/shades programmatically?",
+            "answer": {
+                "sampleAnswer": "oklch is perceptually uniform: its lightness channel tracks how bright a color actually looks, and equal numeric steps look like equal visual steps, so you can derive consistent tints and shades by nudging one channel and trust them to read evenly. hsl's lightness is not perceptually even — the same lightness value looks much brighter for yellow than for blue — so palettes generated from it come out lopsided. oklch also addresses the wider Display-P3 gamut, letting you specify more vivid colors than sRGB hex can express, and mixing/interpolating in it avoids the muddy midpoints sRGB produces."
+            },
+            "explanation": "oklch/oklab are perceptually uniform spaces where the `L` channel corresponds to perceived brightness and equal numeric changes produce equal perceived changes. That makes algorithmic palette generation reliable: a single lightness scale yields tints and shades that look evenly spaced across every hue, which hsl can't promise because its lightness is wildly non-uniform between hues. They also reach the wider P3 gamut for more saturated colors than sRGB hex, and interpolation/mixing in oklch produces natural-looking gradients without the dark or grayish midpoints sRGB interpolation suffers from."
+        },
+        {
+            "id": "css-sa-stacking-context-formation",
+            "technology": "css",
+            "technologyName": "CSS",
+            "difficulty": 4,
+            "difficultyLabel": "hard",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "stacking-contexts"
+            ],
+            "prompt": "Two elements overlap. Walk through the model the browser uses to decide which one paints in front: what kinds of properties create a stacking context, how a stacking context's contents are painted relative to elements outside it, and which other elements a given `z-index` value is actually compared against.",
+            "answer": {
+                "sampleAnswer": "A stacking context is created by a positioned element with a non-`auto` `z-index`, and unconditionally by properties like `opacity` below 1, `transform`, `filter`, `isolation: isolate`, and `position: fixed`/`sticky` (flex and grid items also get one from a non-`auto` `z-index` alone). Each stacking context is painted atomically: all of its descendants are flattened and sandwiched together as one unit, so an element from outside the context can never be drawn between two elements inside it. Within a context, children are layered by their `z-index` (negative levels behind, then the normal-flow content, then positive levels in front). Crucially, that comparison is local: an element's `z-index` only competes with the other children of its nearest ancestor stacking context, and where that whole group sits on the page is decided by the ancestor's own stacking level among *its* siblings — which is why a huge `z-index` deep in the tree can still lose to a modest one higher up."
+            },
+            "explanation": "Paint order is resolved per stacking context, not globally. A context is formed by a positioned element with non-`auto` `z-index` and unconditionally by `opacity < 1`, `transform`, `filter`, `isolation: isolate`, `position: fixed`/`sticky`, and friends. The browser paints each context as an atomic unit — its descendants are sandwiched together, and nothing from outside can interleave between them. A `z-index` therefore only ranks an element against the other children of its nearest ancestor stacking context; that ancestor's own level decides where the whole unit sits one tier up. This local-competition rule is the root cause of every \"my z-index: 9999 is ignored\" bug."
+        },
+        {
+            "id": "css-sa-cascade-resolution-flow",
+            "technology": "css",
+            "technologyName": "CSS",
+            "difficulty": 5,
+            "difficultyLabel": "expert",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "cascade-specificity"
+            ],
+            "prompt": "A button's `color` is declared in two places: a heavy `#app .btn.primary` rule inside `@layer components`, and a plain `button` rule in the page's stylesheet outside any layer — and the browser's built-in (user-agent) stylesheet sets its own value too. The plain `button` rule wins, and selector weight had nothing to do with it. Walk through, in order, the full sequence of checks the cascade runs to pick a winning declaration, and explain why comparing specificity is one of the LAST things the browser does — what gets consulted before specificity ever comes into play, and where do `!important` and source order fit?",
+            "answer": {
+                "sampleAnswer": "The cascade is a pipeline, and specificity sits in the middle of it, not at the top. Step 1 is origin and importance: declarations are bucketed by where they come from — the browser's user-agent stylesheet, user styles, and author (page) styles. For normal declarations, author beats user beats user-agent; for `!important` declarations that ranking REVERSES, which is why a user-agent `!important` rule can never be overridden by a page. Step 2, within the author origin, is cascade layers: `@layer` blocks are ranked by declaration order, with later layers beating earlier ones for normal declarations (reversed again under `!important`), and crucially, for normal declarations unlayered author styles beat every layered one (under `!important` this also reverses: an important layered declaration beats an important unlayered one). That's exactly why the plain `button` rule wins here — it's unlayered, the `#app .btn.primary` rule lives inside a layer, and the comparison ends before any selector is examined. Step 3, only between declarations that survive with the same origin and layer standing, is specificity (with inline `style=\"\"` ranking above all selectors). Step 4, the final tiebreaker when specificity is equal, is source order — the later declaration wins."
+            },
+            "explanation": "The mental model most people carry — \"highest specificity wins, plus !important as a trump card\" — describes only the middle of the algorithm. The cascade actually filters in this order: (1) origin & importance — user-agent < user < author for normal declarations, with the order reversed for `!important` ones, so UA `!important` outranks everything a page can write; (2) cascade layers within the author origin — later-declared layers beat earlier ones for normal declarations (reversed under `!important`), and unlayered author styles beat all layered styles for normal declarations — under `!important` that flips too, with layered important declarations winning. This is the whole design point of `@layer`: a framework shipped in a layer can never out-muscle the consuming app's plain CSS no matter how specific its selectors are; (3) specificity — only consulted between declarations that tied on origin and layer, with inline `style` attributes ranking above any selector; (4) source order as the last tiebreaker. In the scenario, the layered `#app .btn.primary` rule loses to the unlayered `button` rule at step 2, so its three-part selector weight is never even counted. Interviewers ask this because `@layer` made the pre-specificity stages practically relevant: debugging \"why does my high-specificity rule lose?\" now requires knowing the pipeline, not just the ID/class/type columns."
+        },
+        {
+            "id": "css-sa-specificity-algorithm",
+            "technology": "css",
+            "technologyName": "CSS",
+            "difficulty": 5,
+            "difficultyLabel": "expert",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "cascade-specificity"
+            ],
+            "prompt": "Explain how the browser uses specificity to decide which conflicting rule wins, and where `!important` and source order fit in.",
+            "answer": {
+                "sampleAnswer": "Specificity is scored in three columns — IDs, then classes/attributes/pseudo-classes, then element types/pseudo-elements — and the columns are compared left to right, so a higher column beats any number of lower ones (inline styles rank above all selectors). The most specific rule wins; only when specificity ties does source order decide, with the last declaration winning. `!important` is separate: it lifts a declaration into a higher-priority layer that overrides normal declarations regardless of specificity."
+            },
+            "explanation": "The cascade resolves conflicts by: importance (`!important` vs normal), then specificity, then source order. Specificity is an (inline, id, class, type) tuple compared column by column; a higher column wins outright. Ties fall through to whichever matching rule appears last in the source."
+        },
+        {
+            "id": "http-auth-sa-cookie-session-login-flow",
+            "technology": "http-apis",
+            "technologyName": "HTTP & APIs",
+            "difficulty": 3,
+            "difficultyLabel": "medium",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "cookies-sessions"
+            ],
+            "prompt": "Walk through a classic cookie-based session login end to end, from the user submitting credentials to a later authenticated request and then logout.",
+            "answer": {
+                "sampleAnswer": "The client POSTs the username and password over HTTPS. The server verifies them, typically by comparing against a stored password hash. On success it creates a server-side session record — an opaque session id mapped to the user — in its store (memory, Redis, or a database). It returns that id to the browser in a `Set-Cookie` header marked `HttpOnly; Secure; SameSite`. The browser stores the cookie and automatically attaches it on every subsequent same-site request. On each request the server looks the session id up in its store to identify the user, so no credentials are re-sent — the auth state is stateful and lives on the server. At logout the server deletes the session record from the store and clears the cookie, so the next request is anonymous."
+            },
+            "explanation": "This is the stateful cookie-session lifecycle: credentials are exchanged once for an opaque server-side session id, the browser ambiently re-presents that id on each request, and the server dereferences it against its store to recover the user. It is deliberately the inverse of the stateless JWT model — the source of truth is the server record, which is why logout works by deleting that record, and why these sessions are trivially revocable where a stateless token is not."
+        },
+        {
+            "id": "http-sa-cache-control-revalidation",
+            "technology": "http-apis",
+            "technologyName": "HTTP & APIs",
+            "difficulty": 4,
+            "difficultyLabel": "hard",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "http-caching"
+            ],
+            "prompt": "How do `Cache-Control: max-age` and an `ETag` work together to control HTTP caching?",
+            "answer": {
+                "sampleAnswer": "`Cache-Control: max-age` sets the freshness lifetime: while a cached response is within `max-age` it can be served directly with no network round trip. Once it goes stale, the cache revalidates using the `ETag` validator — it sends `If-None-Match` with the stored ETag, and the server replies `304 Not Modified` (reuse the cached copy) or `200` with fresh content. So `max-age` avoids requests entirely and the ETag makes the eventual revalidation cheap."
+            },
+            "explanation": "Freshness (`max-age`/`Expires`) decides when a cached response can be used without contacting the origin; validators (`ETag`/`Last-Modified`) decide what happens when it expires. Together they minimize both the number of requests and the bytes transferred on the requests that do happen (RFC 9111 §4.2, §4.3)."
+        },
+        {
+            "id": "sql-sa-normalization-purpose",
+            "technology": "databases-sql",
+            "technologyName": "Databases & SQL",
+            "difficulty": 3,
+            "difficultyLabel": "medium",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "normalization"
+            ],
+            "prompt": "What is database normalization, and what problem does it solve?",
+            "answer": {
+                "sampleAnswer": "Normalization is the process of structuring tables to reduce data redundancy and avoid update anomalies, typically by splitting data into related tables linked by keys so each fact is stored in exactly one place. Storing a value once means you update it once, so the data cannot become inconsistent across duplicated copies."
+            },
+            "explanation": "Normalization removes redundancy so each piece of data lives in one place, which eliminates insertion, update, and deletion anomalies. The trade-off is that highly normalized schemas need more joins to reassemble data, which is why read-heavy systems sometimes deliberately denormalize."
+        },
+        {
+            "id": "sql-sa-connection-pooling",
+            "technology": "databases-sql",
+            "technologyName": "Databases & SQL",
+            "difficulty": 4,
+            "difficultyLabel": "hard",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "connection-pooling"
+            ],
+            "prompt": "A web app opens a fresh database connection for every incoming request and closes it after the response. Under load it slows down and the database hits its connection limit. What technique fixes this, and how does it work?",
+            "answer": {
+                "sampleAnswer": "A connection pool fixes it: the app keeps a fixed set of already-open connections and hands one to each request, returning it to the pool when the request finishes instead of closing it. That removes the per-request cost of opening a connection (TCP handshake, TLS negotiation, authentication) and caps the number of concurrent connections to the database, so it is never overwhelmed even when requests spike."
+            },
+            "explanation": "Opening a connection is expensive (handshake, TLS, auth) and the database tolerates only a bounded number of them. A connection pool keeps a set of live connections, lends them to requests, and reclaims them on completion — eliminating per-request setup cost and bounding total concurrency. The pool size becomes the real concurrency limit, which is why it's tuned to what the database can handle rather than the number of app instances."
+        },
+        {
+            "id": "sql-sa-query-execution-flow",
+            "technology": "databases-sql",
+            "technologyName": "Databases & SQL",
+            "difficulty": 5,
+            "difficultyLabel": "expert",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "query-planning"
+            ],
+            "prompt": "Trace what a relational database does between receiving a `SELECT` as raw text and returning rows. Name the main stages in order.",
+            "answer": {
+                "sampleAnswer": "First it parses the SQL text into a syntax tree and validates the names and types against the catalog. Then the optimizer (planner) enumerates candidate execution plans — which indexes to use, join order and join methods — and picks the one with the lowest estimated cost. Finally the executor runs that chosen plan, reading from tables and indexes and streaming the result rows back to the client."
+            },
+            "explanation": "The pipeline is parse → plan/optimize → execute. Parsing turns text into a validated tree; the optimizer chooses among possible plans by estimated cost (index vs sequential scan, join order/method); the executor then runs the winning plan and returns rows. `EXPLAIN` shows the plan the optimizer picked at the middle stage, which is why reading it is the first move when a query is slow."
+        },
+        {
+            "id": "sd-sa-horizontal-vertical-scaling",
+            "technology": "system-design",
+            "technologyName": "System Design",
+            "difficulty": 2,
+            "difficultyLabel": "easy",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "horizontal-vertical"
+            ],
+            "prompt": "Contrast **horizontal** and **vertical** scaling, and describe when each hits a wall.",
+            "answer": {
+                "sampleAnswer": "Vertical scaling (scaling up) means giving one machine more CPU, memory, or disk; it is simple and needs no application changes, but it hits a wall at the largest available machine size and leaves you with a single point of failure. Horizontal scaling (scaling out) means adding more machines behind a load balancer; it scales far beyond one box and improves availability, but it hits a wall when shared state gets in the way — you need stateless services, a way to coordinate or shard data, and you take on distributed-systems complexity. Most large systems scale out the stateless tier and reserve scale-up for the database until sharding becomes necessary."
+            },
+            "explanation": "**Vertical** scaling (up) adds resources to one node — easy and transparent to the app, but bounded by the biggest machine and exposed to a single point of failure. **Horizontal** scaling (out) adds nodes behind a load balancer — effectively unbounded and more available, but it forces statelessness, data partitioning/replication, and distributed coordination. The pragmatic pattern is a stateless app tier that scales out freely, with the harder-to-distribute data layer scaled up first and sharded only when forced."
+        },
+        {
+            "id": "sd-sa-circuit-breaker",
+            "technology": "system-design",
+            "technologyName": "System Design",
+            "difficulty": 3,
+            "difficultyLabel": "medium",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "circuit-breaker"
+            ],
+            "prompt": "What is a **circuit breaker**, and what problem does it prevent?",
+            "answer": {
+                "sampleAnswer": "A circuit breaker wraps calls to a downstream dependency and trips open after a threshold of failures, so subsequent calls fail fast instead of waiting on a doomed request. This prevents a cascading failure: without it, a slow or down dependency would tie up threads and connections in the caller, exhaust its resources, and propagate the outage upstream. After a cooldown the breaker moves to half-open and lets a probe request through; if it succeeds the breaker closes and normal traffic resumes, otherwise it re-opens."
+            },
+            "explanation": "A **circuit breaker** monitors failures to a dependency and, past a threshold, opens to make calls **fail fast** rather than block. This stops a single unhealthy downstream from exhausting the caller's threads/connections and cascading the failure system-wide. Its three states — closed (normal), open (short-circuiting), half-open (trial requests) — let it recover automatically, and it is typically paired with timeouts, retries with backoff, and a fallback response."
+        },
+        {
+            "id": "ai-sa-streaming-why",
+            "technology": "ai-engineering",
+            "technologyName": "AI Engineering",
+            "difficulty": 2,
+            "difficultyLabel": "easy",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "streaming",
+                "latency-cost"
+            ],
+            "prompt": "Why do production chat UIs stream tokens, and what does streaming improve versus what it does not?",
+            "answer": {
+                "sampleAnswer": "Streaming sends tokens to the client as they're generated rather than waiting for the full completion, which dramatically lowers perceived latency — the user sees the first token (time-to-first-token) in a fraction of a second instead of staring at a spinner for the whole response. What it does not change is the total time to finish or the total cost: the same number of tokens are generated and billed, so streaming improves perceived responsiveness, not throughput or price."
+            },
+            "explanation": "Streaming is purely a latency-perception win: tokens are flushed incrementally so the user gets immediate feedback (low time-to-first-token), which matters a lot for long generations. It does not reduce total generation time, total tokens, or cost — those are fixed by the output length. It does add engineering cost: you must handle partial output, parse incrementally, and deal with mid-stream errors and cancellation."
+        },
+        {
+            "id": "ai-sa-prompt-caching",
+            "technology": "ai-engineering",
+            "technologyName": "AI Engineering",
+            "difficulty": 3,
+            "difficultyLabel": "medium",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "llm-caching",
+                "latency-cost"
+            ],
+            "prompt": "What is prompt caching, and how should you structure a prompt to benefit from it?",
+            "answer": {
+                "sampleAnswer": "Prompt caching lets the provider reuse the computed attention state for a large, stable prefix of your prompt (system instructions, few-shot examples, a long document) across requests, so repeated calls are cheaper and lower latency because the cached prefix is billed at a reduced rate and skips recomputation. To benefit, put the stable, reused content at the front of the prompt and the variable, per-request content (the user's question) at the end — caching keys off the longest matching prefix."
+            },
+            "explanation": "Caching works on a prefix match: the provider stores the key/value attention state for an unchanged leading span and reuses it on subsequent calls, cutting both cost and time-to-first-token. The practical rule is order-dependent — keep the big invariant blob (system prompt, tool definitions, long context document, few-shot exemplars) at the start and anything that changes per request at the tail, otherwise the cache misses on every call."
+        },
+        {
+            "id": "ai-sa-agentic-rag-tradeoffs",
+            "technology": "ai-engineering",
+            "technologyName": "AI Engineering",
+            "difficulty": 5,
+            "difficultyLabel": "expert",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "agentic-rag",
+                "agent-loops"
+            ],
+            "prompt": "What does 'agentic RAG' add over a classic retrieve-then-generate pipeline, and what does that flexibility cost?",
+            "answer": {
+                "sampleAnswer": "Agentic RAG makes retrieval a tool that an LLM agent controls rather than a fixed first step. The agent can decide whether to retrieve at all, reformulate or decompose the query, retrieve iteratively for multi-hop questions, choose among multiple sources or indexes, and judge whether the retrieved context is sufficient before answering — re-querying when it is not. That handles ambiguous and multi-hop queries a single static top-k retrieval gets wrong. The cost is more LLM calls per question, so higher latency and token cost, more non-determinism, and harder evaluation and tracing; it can also loop or over-retrieve. So you reach for it when query complexity justifies the overhead, and keep static RAG for simple single-fact lookups."
+            },
+            "explanation": "The win is model-controlled, iterative, multi-source retrieval that adapts to the query — deciding whether to retrieve, reformulating, decomposing, and re-querying until the context is sufficient. The price is extra LLM round-trips: latency, token cost, non-determinism, and harder eval/tracing, with a risk of looping. Match the architecture to query complexity; static retrieve-then-generate stays the right default for simple lookups."
+        },
+        {
+            "id": "ai-sa-decompose-rag-eval",
+            "technology": "ai-engineering",
+            "technologyName": "AI Engineering",
+            "difficulty": 5,
+            "difficultyLabel": "expert",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "rag-eval-metrics",
+                "retrieval-quality"
+            ],
+            "prompt": "Why do RAG evaluation frameworks (e.g. RAGAS) score the retrieval stage and the generation stage with separate metrics instead of one end-to-end answer-quality score?",
+            "answer": {
+                "sampleAnswer": "Because a single end-to-end score tells you the answer was bad but not why, and the two stages fail for different reasons with different fixes. Retrieval metrics like context recall and context precision check whether the right, relevant passages were fetched at all; generation metrics like faithfulness and answer relevance check whether the model grounded its answer in that context and actually addressed the question. Decomposing localizes the fault: if context recall is low, the needed passage was never retrieved, so you fix chunking, the embedding model, or reranking; if recall is fine but faithfulness is low, the evidence was present but the model ignored or contradicted it, so you fix the prompt or the model. Separate metrics turn 'the answer is wrong' into an actionable diagnosis."
+            },
+            "explanation": "A blended score can't separate 'we never fetched the right evidence' (retrieval — low context recall) from 'we had the evidence and still got it wrong' (generation — low faithfulness). Those have different fixes — chunking/embeddings/reranking versus prompt/model — so component metrics convert a failing answer into a specific stage you can act on."
+        },
+        {
+            "id": "py-short-gil",
+            "technology": "python",
+            "technologyName": "Python",
+            "difficulty": 4,
+            "difficultyLabel": "hard",
+            "type": "SHORT_ANSWER",
+            "tags": [
+                "gil",
+                "threading-multiprocessing"
+            ],
+            "prompt": "What is the GIL, and what does it mean for CPU-bound versus I/O-bound work using threads?",
+            "answer": {
+                "sampleAnswer": "The Global Interpreter Lock is a mutex in CPython that lets only one thread execute Python bytecode at a time. For CPU-bound work, threads can't run in parallel on multiple cores, so you reach for multiprocessing (separate interpreters) instead. For I/O-bound work the lock is released while a thread waits on the network or disk, so threads still overlap usefully and give real concurrency."
+            },
+            "explanation": "The GIL serialises Python bytecode execution per process, so CPU-bound threads don't scale across cores — use multiprocessing for those. I/O-bound threads still help because the GIL is released during blocking I/O, letting other threads run."
+        }
+    ]
+}

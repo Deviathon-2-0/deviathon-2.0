@@ -24,40 +24,47 @@ def generate_interview_questions(role, company="Google", track="Tech", level="SD
     client = get_gemini_client()
 
     prompt = f"""
-You are the Lead Technical Interviewer and Principal Engineer at {company}.
-Generate exactly {count} authentic, industry-standard interview questions for a candidate interviewing for:
+You are an experienced technical interviewer at {company}.
+
+Generate exactly {count} interview questions for:
 - Role: {role}
 - Company: {company}
 - Track: {track}
-- Seniority Level: {level}
-- Coding Language: {language}
+- Seniority: {level}
+- Programming language: {language}
 
-Follow this exact JSON structure:
+IMPORTANT:
+1. Every question must be directly relevant to the candidate's role.
+2. Adapt questions to the specified programming language.
+3. For frontend roles, prioritize JavaScript, React, HTML, CSS,
+   browser internals, performance, accessibility and frontend architecture.
+4. For backend roles, prioritize APIs, databases, networking,
+   concurrency and backend architecture.
+5. Match difficulty to the candidate's seniority.
+6. Do not introduce unrelated distributed-systems questions.
+7. Do not use a different programming language in starter_code.
+8. Include 2 domain-specific questions, 1 practical scenario,
+   and 1 architecture or debugging question where appropriate.
+
+Return this exact JSON structure:
 {{
   "questions": [
     {{
       "index": 0,
       "title": "Short descriptive title",
-      "text": "Detailed, realistic scenario or problem statement with clear constraints and expectations.",
-      "expected_concepts": ["concept 1", "concept 2", "concept 3", "concept 4"],
-      "starter_code": "Def starter function in {language} with type hints and docstring...",
-      "test_cases": [
-        {{"input": "sample input", "expected": "sample output"}},
-        {{"input": "edge case input", "expected": "edge case output"}}
-      ],
+      "text": "Clear interview question with realistic constraints",
+      "expected_concepts": ["concept 1", "concept 2", "concept 3"],
+      "starter_code": "",
+      "test_cases": [],
       "evaluation_rubric": {{
-        "optimal_complexity": "e.g. O(N) time, O(1) space",
-        "key_invariants": "Critical edge cases and system constraints"
+        "optimal_complexity": "Expected complexity where applicable",
+        "key_invariants": "Important edge cases and constraints"
       }}
     }}
   ]
 }}
 
-Rules:
-1. Make Question 1 and Question 2 focus on deep domain problem-solving (e.g. DSA, distributed algorithms, or role-specific execution).
-2. Make Question 3 focus on real-world system architecture, scaling, or production invariants specific to {company}.
-3. Make Question 4 focus on architectural trade-offs, debugging, or technical leadership.
-4. Output valid JSON only, without markdown fences or extra commentary.
+Return valid JSON only. No markdown.
 """
 
     try:
@@ -83,10 +90,10 @@ def evaluate_candidate_performance(question_text, expected_concepts, candidate_t
     try:
         if candidate_transcript and candidate_transcript.strip():
             result = evaluate_with_gemini(
-                answer=candidate_transcript,
-                expected_points=expected_concepts,
-                question=question_text
-            )
+    question=question_text,
+    expected_points=expected_concepts,
+    transcript=candidate_transcript
+)
         else:
             result = {
                 "scores": {"content": 50, "structure": 50, "communication": 50},
@@ -99,25 +106,16 @@ def evaluate_candidate_performance(question_text, expected_concepts, candidate_t
                 }
             }
 
-        # Synthesize Body Language & Confidence metrics (Acoustically neutral)
-        body_language_score = 88.0
-        confidence_metric = {
-            "eye_contact_ratio": "94.2%",
-            "composure": "Steady & Professional",
-            "pacing_words_per_minute": len(candidate_transcript.split()) if candidate_transcript else 135,
-            "dialect_neutrality_index": "100% (Zero acoustic bias penalty applied)"
-        }
-
-        # Code review if code was provided
+                # Code review if code was provided
         code_review = {}
         if candidate_code and len(candidate_code.strip()) > 10:
             code_review = _review_code_with_gemini(candidate_code, question_text, language)
 
+        # Calculate score using only measured evaluation dimensions.
         overall = round((
-            result["scores"]["content"] * 0.45 +
-            result["scores"]["structure"] * 0.25 +
-            result["scores"]["communication"] * 0.20 +
-            body_language_score * 0.10
+            result["scores"]["content"] * 0.50 +
+            result["scores"]["structure"] * 0.30 +
+            result["scores"]["communication"] * 0.20
         ), 1)
 
         return {
@@ -127,21 +125,21 @@ def evaluate_candidate_performance(question_text, expected_concepts, candidate_t
                 "technical_depth": result["scores"]["content"],
                 "structural_logic": result["scores"]["structure"],
                 "speech_clarity": result["scores"]["communication"],
-                "body_language": body_language_score
+                "body_language": None
             },
-            "concept_breakdown": result.get("concept_assessment", []),
+            "concept_breakdown": result.get("concept_analysis", []),
             "feedback": result.get("feedback", {}),
-            "confidence_metric": confidence_metric,
             "code_review": code_review
         }
     except Exception as e:
-        # Fallback to local heuristic evaluation
-        return evaluate_answer(
-            answer=candidate_transcript,
-            expected_points=expected_concepts,
-            question=question_text,
-            use_gemini=False
-        )
+        print(f"GEMINI EVALUATION FAILED: {type(e).__name__}: {e}")
+
+    return evaluate_answer(
+        answer=candidate_transcript,
+        expected_points=expected_concepts,
+        question=question_text,
+        use_gemini=False
+    )
 
 
 def _review_code_with_gemini(code, question_text, language):
@@ -280,42 +278,69 @@ Return valid JSON:
 
 
 def _get_fallback_questions(role, company, track, level, language):
-    return [
-        {
-            "index": 0,
-            "title": f"Distributed State Replication & Consistency Invariants ({company})",
-            "text": f"At {company}, a distributed cache service handles 500,000 requests per second. Explain how you would implement an LRU cache eviction policy with thread-safe O(1) reads and updates, and describe how replication invariants are maintained under node failure.",
-            "expected_concepts": ["Doubly-linked list with hash map", "O(1) get and put time complexity", "Read-write locks or concurrent segmentation", "Heartbeat failure detection and quorum consensus"],
-            "starter_code": f"# Implementation for {role} at {company}\nclass DistributedLRUCache:\n    def __init__(self, capacity: int):\n        self.capacity = capacity\n        self.cache = {{}}\n\n    def get(self, key: int) -> int:\n        pass\n\n    def put(self, key: int, value: int) -> None:\n        pass\n",
-            "test_cases": [{"input": "capacity=2, put(1,1), put(2,2), get(1)", "expected": "1"}],
-            "evaluation_rubric": {"optimal_complexity": "O(1) time, O(Capacity) space"}
-        },
-        {
-            "index": 1,
-            "title": "Sub-Millisecond Index Inverted Search & Trie Traversal",
-            "text": f"Design an auto-complete prefix search engine optimized for {company}'s search bar. Support case-insensitive query completions, frequency weighting, and bounded memory usage.",
-            "expected_concepts": ["Trie data structure with frequency nodes", "Top-K priority queue or min-heap", "Prefix pruning and memoization", "Memory compression via Radix tree / Patricia trie"],
-            "starter_code": f"class AutocompleteSystem:\n    def __init__(self, sentences: list, times: list):\n        pass\n\n    def input(self, c: str) -> list:\n        pass\n",
-            "test_cases": [{"input": "sentences=['i love you', 'island'], input('i')", "expected": "['i love you', 'island']"}],
-            "evaluation_rubric": {"optimal_complexity": "O(P + Q log K) where P is prefix length"}
-        },
-        {
-            "index": 2,
-            "title": f"High-Throughput Partitioning & Sharding Strategy ({company})",
-            "text": f"Discuss how you would partition a global table across multiple data centers with sub-10ms read latencies at {company}, handling hot keys and split-brain scenarios.",
-            "expected_concepts": ["Consistent hashing with virtual nodes", "Two-phase commit vs Paxos/Raft consensus", "Read-after-write consistency mechanisms", "Anti-entropy background sync via Merkle trees"],
-            "starter_code": "# High-level partition coordinator\ndef partition_key(key: str, total_nodes: int) -> int:\n    pass\n",
-            "test_cases": [],
-            "evaluation_rubric": {"optimal_complexity": "Bounded replication delay"}
-        },
-        {
-            "index": 3,
-            "title": "System Failure Analysis, Chaos Engineering & Resiliency",
-            "text": "Walk through an outage scenario where a downstream dependency experiences a 400ms latency spike. How do you design cascading failure prevention, circuit breakers, and rate limiters?",
-            "expected_concepts": ["Token bucket or leaky bucket rate limiting", "Circuit breaker states (Closed, Open, Half-Open)", "Exponential backoff with full jitter", "Graceful degradation and cached fallback responses"],
-            "starter_code": "# Circuit Breaker Pattern\nclass CircuitBreaker:\n    pass\n",
-            "test_cases": [],
-            "evaluation_rubric": {"optimal_complexity": "Zero cascading cascading cascade"}
-        }
-    ]
+    questions = {
+        "javascript": [
+            {
+                "title": "JavaScript Closures",
+                "text": "Explain closures in JavaScript. How would you use one to create a private counter?",
+                "expected_concepts": [
+                    "A closure retains access to its lexical scope.",
+                    "Inner functions can access variables from outer functions.",
+                    "Closures can preserve private state."
+                ],
+                "starter_code": ""
+            },
+            {
+                "title": "Event Loop",
+                "text": "Explain how the JavaScript event loop handles synchronous code, promises and setTimeout callbacks.",
+                "expected_concepts": [
+                    "Synchronous code executes on the call stack.",
+                    "Promise callbacks use the microtask queue.",
+                    "setTimeout callbacks use the task queue.",
+                    "Microtasks are processed before the next task."
+                ],
+                "starter_code": ""
+            },
+            {
+                "title": "Array Methods",
+                "text": "Explain the differences between map, filter and reduce. Give a practical use case for each.",
+                "expected_concepts": [
+                    "map transforms array elements.",
+                    "filter selects elements based on a condition.",
+                    "reduce accumulates values into a single result."
+                ],
+                "starter_code": ""
+            },
+            {
+                "title": "Frontend Performance",
+                "text": "A web page takes several seconds to become interactive. How would you investigate and improve its performance?",
+                "expected_concepts": [
+                    "Use browser performance tools to identify bottlenecks.",
+                    "Reduce JavaScript bundle size.",
+                    "Optimize rendering and unnecessary re-renders.",
+                    "Lazy-load non-critical resources."
+                ],
+                "starter_code": ""
+            }
+        ]
+    }
 
+    selected = questions.get(language.lower())
+
+    if not selected:
+        return []
+
+    result = []
+
+    for index, question in enumerate(selected[:4]):
+        result.append({
+            **question,
+            "index": index,
+            "test_cases": [],
+            "evaluation_rubric": {
+                "optimal_complexity": "Not applicable",
+                "key_invariants": "Assess conceptual correctness and explanation."
+            }
+        })
+
+    return result
