@@ -74,6 +74,8 @@ class CandidateMatrixEngine {
 
     // --- AGGREGATOR & MATRIX METRICS ---
     this.sessionStartTime = Date.now();
+    this.telemetryTimeline = [];
+    this.lastTimelineSample = 0;
     this.currentMetrics = {
       eyeContact: "Calibrating",
       readingStatus: "Spontaneous",
@@ -439,6 +441,27 @@ class CandidateMatrixEngine {
     this.currentMetrics.vocalScore = vocalScore || 82;
     this.currentMetrics.spontaneityScore = spontaneity;
 
+    // Record temporal telemetry slice once per second
+    const now = Date.now();
+    if (!this.lastTimelineSample || now - this.lastTimelineSample >= 1000) {
+      this.lastTimelineSample = now;
+      const elapsedSec = (now - this.sessionStartTime) / 1000.0;
+      this.telemetryTimeline.push({
+        timestamp: parseFloat(elapsedSec.toFixed(1)),
+        eye_contact: this.currentMetrics.eyeContact === "Forward (Centered)" || this.currentMetrics.eyeContact === "Calibrating",
+        gaze_direction: this.currentMetrics.eyeContact,
+        pitch_hz: this.currentMetrics.pitchHz || 120.0,
+        pitch_variance_hz: this.currentMetrics.pitchVarianceHz || 12.0,
+        neck_ratio: this.currentMetrics.posture === "Slouching / Turtle-Neck" ? 0.8 : 1.0,
+        posture: this.currentMetrics.posture,
+        delivery_score: this.currentMetrics.deliveryScore,
+        vocal_score: this.currentMetrics.vocalScore,
+        spontaneity_score: this.currentMetrics.spontaneityScore
+      });
+      if (this.telemetryTimeline.length > 1800) {
+        this.telemetryTimeline.shift();
+      }
+    }
     this.emit("telemetry", this.currentMetrics);
   }
 
@@ -527,6 +550,28 @@ class CandidateMatrixEngine {
       if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
     }
     return sampleRate / maxpos;
+  }
+
+  getTelemetryTimeline(startTimeSec = 0, endTimeSec = Infinity) {
+    if (!this.telemetryTimeline || this.telemetryTimeline.length === 0) {
+      const sim = [];
+      for (let i = 0; i < 5; i++) {
+        sim.push({
+          timestamp: i * 1.5,
+          eye_contact: true,
+          gaze_direction: "Forward (Centered)",
+          pitch_hz: 125.0,
+          pitch_variance_hz: 14.5,
+          neck_ratio: 1.0,
+          posture: "Poised & Upright",
+          delivery_score: 88,
+          vocal_score: 85,
+          spontaneity_score: 95
+        });
+      }
+      return sim;
+    }
+    return this.telemetryTimeline.filter(t => t.timestamp >= startTimeSec && t.timestamp <= endTimeSec);
   }
 
   destroy() {

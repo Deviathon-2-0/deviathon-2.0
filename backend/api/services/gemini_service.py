@@ -69,7 +69,7 @@ Return valid JSON only. No markdown.
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.5-flash',
             contents=prompt,
             config={'response_mime_type': 'application/json'}
         )
@@ -162,7 +162,7 @@ Return valid JSON:
 """
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.5-flash',
             contents=prompt,
             config={'response_mime_type': 'application/json'}
         )
@@ -208,7 +208,7 @@ Return valid JSON with:
 """
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.5-flash',
             contents=prompt,
             config={'response_mime_type': 'application/json'}
         )
@@ -251,7 +251,7 @@ Return valid JSON:
 """
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.5-flash',
             contents=prompt,
             config={'response_mime_type': 'application/json'}
         )

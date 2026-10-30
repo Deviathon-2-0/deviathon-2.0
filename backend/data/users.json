@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "usr_g_g_99214",
+    "name": "Alex Morgan (Google)",
+    "email": "alex.google@imaira.ai",
+    "passwordHash": null,
+    "salt": null,
+    "role": "Candidate",
+    "createdAt": "2026-10-30T04:56:51.876Z",
+    "isGoogle": true
+  }
+]

@@ -81,12 +81,12 @@
     <div class="p-4 border-t border-[#E8DFD0] space-y-3">
       <div class="flex items-center justify-between px-1">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
+          <div id="sidebar-user-avatar" class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
             AM
           </div>
           <div>
-            <div class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
-            <div class="text-[11px] text-[#7F766C]">Staff Candidate</div>
+            <div id="sidebar-user-name" class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
+            <div id="sidebar-user-role" class="text-[11px] text-[#7F766C]">Staff Candidate</div>
           </div>
         </div>
         <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
@@ -145,29 +145,43 @@
 
     <main class="p-6 sm:p-8 space-y-8 max-w-6xl mx-auto w-full" data-tabs-container>
       
+      <!-- DEMO / SAMPLE DATA NOTICE BANNER (Shown only when no real evaluation exists) -->
+      <div id="report-demo-banner" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-amber-600 text-base">info</span>
+          <div>
+            <strong>Sample Demonstration Mode:</strong>
+            <span class="text-amber-800">Showing pre-loaded sample evaluation data for Alex Morgan. Complete a live mock interview to generate your personalized diagnostic report.</span>
+          </div>
+        </div>
+        <a href="mock-interview.html" class="px-3.5 py-1.5 rounded-full bg-[#AA7000] text-white text-[11px] font-bold hover:bg-[#8f5e00] transition-all whitespace-nowrap ml-4">
+          Start Live Interview
+        </a>
+      </div>
+
       <!-- REPORT HEADER & OVERALL GRADE -->
       <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div class="flex items-center gap-2 mb-2">
-            <span class="px-3 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] text-[11px] font-bold border border-[#E8C97A]">
+            <span id="report-track-badge" class="px-3 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] text-[11px] font-bold border border-[#E8C97A]">
               System Design &amp; Distributed Consensus
             </span>
-            <span class="text-xs text-[#7F766C]">• Session ID: #SES-9821</span>
+            <span id="report-session-id" class="text-xs text-[#7F766C]">• Session ID: #SES-9821</span>
           </div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2C1F0E]">
+          <h1 id="report-role-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2C1F0E]">
             Staff Backend Architect Evaluation
           </h1>
-          <p class="text-xs text-[#8C7B6B] mt-1">
-            Conducted on October 28, 2026 • 28 minutes duration • 5 core questions evaluated
+          <p id="report-meta-subtitle" class="text-xs text-[#8C7B6B] mt-1">
+            Conducted on October 28, 2026 • 28 minutes duration • 4 core questions evaluated
           </p>
         </div>
 
         <div class="flex items-center gap-4 bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0] shrink-0">
           <div>
             <div class="text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">Composite Grade</div>
-            <div class="text-3xl font-black text-[#2C1F0E]">91.6 <span class="text-sm font-semibold text-[#7F766C]">/ 100</span></div>
+            <div class="text-3xl font-black text-[#2C1F0E]"><span id="composite-score-val">91.6</span> <span class="text-sm font-semibold text-[#7F766C]">/ 100</span></div>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-[#EFF4E8] text-[#4F6B2D] font-black text-xl flex items-center justify-center border border-[#4F6B2D]/30">
+          <div id="composite-grade-badge" class="w-12 h-12 rounded-2xl bg-[#EFF4E8] text-[#4F6B2D] font-black text-xl flex items-center justify-center border border-[#4F6B2D]/30">
             A
           </div>
         </div>
@@ -184,25 +198,25 @@
               <span class="material-symbols-outlined text-[#AA7000]">visibility</span>
             </div>
             <div class="flex items-baseline gap-2 mb-3">
-              <span class="text-4xl font-black text-[#2C1F0E]">78</span>
+              <span id="metric-body-score" class="text-4xl font-black text-[#2C1F0E]">78</span>
               <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
-              <span class="ml-auto text-[11px] font-bold text-[#AA7000] bg-[#FBF3E0] px-2.5 py-0.5 rounded-full">Good Presence</span>
+              <span id="metric-body-pill" class="ml-auto text-[11px] font-bold text-[#AA7000] bg-[#FBF3E0] px-2.5 py-0.5 rounded-full">Good Presence</span>
             </div>
             <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
-              <div class="bg-[#AA7000] h-full rounded-full" style="width: 78%"></div>
+              <div id="metric-body-bar" class="bg-[#AA7000] h-full rounded-full" style="width: 78%"></div>
             </div>
-            <p class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
+            <p id="metric-body-notes" class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
               Eye contact maintained for <strong>78%</strong> of the evaluation. Occasional downward gaze detected during complex architectural formulation in Questions 2 and 4.
             </p>
           </div>
           <div class="pt-3 border-t border-[#E8DFD0] space-y-2 text-[11px] text-[#7F766C]">
             <div class="flex items-start gap-1.5">
               <span class="material-symbols-outlined text-xs text-[#AA7000] mt-0.5">check_circle</span>
-              <span><strong>Posture:</strong> Upright and steady with minimal fidgeting (stability 92%).</span>
+              <span id="metric-body-detail"><strong>Posture:</strong> Upright and steady with minimal fidgeting (stability 92%).</span>
             </div>
             <div class="flex items-start gap-1.5">
               <span class="material-symbols-outlined text-xs text-[#AA7000] mt-0.5">lightbulb</span>
-              <span><strong>Tip:</strong> Look directly at camera lens during trade-off explanations.</span>
+              <span id="metric-body-tip"><strong>Tip:</strong> Look directly at camera lens during trade-off explanations.</span>
             </div>
           </div>
         </div>
@@ -215,25 +229,25 @@
               <span class="material-symbols-outlined text-[#2C1F0E]">memory</span>
             </div>
             <div class="flex items-baseline gap-2 mb-3">
-              <span class="text-4xl font-black text-[#2C1F0E]">92</span>
+              <span id="metric-tech-score" class="text-4xl font-black text-[#2C1F0E]">92</span>
               <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
-              <span class="ml-auto text-[11px] font-bold text-[#4F6B2D] bg-[#EFF4E8] px-2.5 py-0.5 rounded-full">Staff Level</span>
+              <span id="metric-tech-pill" class="ml-auto text-[11px] font-bold text-[#4F6B2D] bg-[#EFF4E8] px-2.5 py-0.5 rounded-full">Staff Level</span>
             </div>
             <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
-              <div class="bg-[#2C1F0E] h-full rounded-full" style="width: 92%"></div>
+              <div id="metric-tech-bar" class="bg-[#2C1F0E] h-full rounded-full" style="width: 92%"></div>
             </div>
-            <p class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
+            <p id="metric-tech-notes" class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
               Covered <strong>4 of 6</strong> core architectural layers. Excellent mastery of Write-Ahead Logs (WAL) and consensus state machines under asymmetric partitions.
             </p>
           </div>
           <div class="pt-3 border-t border-[#E8DFD0] space-y-2 text-[11px] text-[#7F766C]">
             <div class="flex items-start gap-1.5">
               <span class="material-symbols-outlined text-xs text-rose-500 mt-0.5">error</span>
-              <span><strong>Gap:</strong> Omitted Raft pre-vote check during reconnect recovery.</span>
+              <span id="metric-tech-detail"><strong>Gap:</strong> Omitted Raft pre-vote check during reconnect recovery.</span>
             </div>
             <div class="flex items-start gap-1.5">
               <span class="material-symbols-outlined text-xs text-[#AA7000] mt-0.5">lightbulb</span>
-              <span><strong>Tip:</strong> Quantify storage growth and QPS before hardware topology.</span>
+              <span id="metric-tech-tip"><strong>Tip:</strong> Quantify storage growth and QPS before hardware topology.</span>
             </div>
           </div>
         </div>
@@ -246,25 +260,25 @@
               <span class="material-symbols-outlined text-[#4F6B2D]">record_voice_over</span>
             </div>
             <div class="flex items-baseline gap-2 mb-3">
-              <span class="text-4xl font-black text-[#2C1F0E]">95</span>
+              <span id="metric-speech-score" class="text-4xl font-black text-[#2C1F0E]">95</span>
               <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
-              <span class="ml-auto text-[11px] font-bold text-[#4F6B2D] bg-[#EFF4E8] px-2.5 py-0.5 rounded-full">Exemplary</span>
+              <span id="metric-speech-pill" class="ml-auto text-[11px] font-bold text-[#4F6B2D] bg-[#EFF4E8] px-2.5 py-0.5 rounded-full">Exemplary</span>
             </div>
             <div class="w-full bg-[#FAF6EE] h-2 rounded-full overflow-hidden mb-4 border border-[#E8DFD0]">
-              <div class="bg-[#4F6B2D] h-full rounded-full" style="width: 95%"></div>
+              <div id="metric-speech-bar" class="bg-[#4F6B2D] h-full rounded-full" style="width: 95%"></div>
             </div>
-            <p class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
+            <p id="metric-speech-notes" class="text-xs text-[#2C1F0E] leading-relaxed mb-3">
               Pacing was steady at <strong>142 words/minute</strong> (ideal 120–160 wpm). Filler word rate low at <strong>2.1%</strong> with 96% sentence completion rate.
             </p>
           </div>
           <div class="pt-3 border-t border-[#E8DFD0] space-y-2 text-[11px] text-[#7F766C]">
             <div class="flex items-start gap-1.5">
               <span class="material-symbols-outlined text-xs text-[#4F6B2D] mt-0.5">verified</span>
-              <span><strong>Acoustics:</strong> Dialect-neutral engine scored zero phoneme deduction.</span>
+              <span id="metric-speech-detail"><strong>Acoustics:</strong> Dialect-neutral engine scored zero phoneme deduction.</span>
             </div>
             <div class="flex items-start gap-1.5">
               <span class="material-symbols-outlined text-xs text-[#4F6B2D] mt-0.5">lightbulb</span>
-              <span><strong>Tip:</strong> Use deliberate 1-second pauses instead of fillers like "um".</span>
+              <span id="metric-speech-tip"><strong>Tip:</strong> Use deliberate 1-second pauses instead of fillers like "um".</span>
             </div>
           </div>
         </div>
@@ -422,7 +436,7 @@
             </div>
           </div>
 
-          <div class="space-y-3 mt-4">
+          <div class="space-y-3 mt-4" id="overview-critical-gaps">
             <div class="p-4 rounded-2xl bg-rose-50/60 border border-rose-100 flex items-start gap-3">
               <span class="w-2 h-2 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
               <div class="text-xs text-[#2C1F0E] leading-relaxed">
@@ -453,7 +467,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="overview-recommendations">
             <div class="p-5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0]">
               <div class="w-6 h-6 rounded-full bg-[#AA7000] text-white text-xs font-bold flex items-center justify-center mb-3">1</div>
               <h4 class="text-xs font-bold text-[#2C1F0E] mb-1.5">Explicitly State CAP Boundary Trade-offs</h4>
@@ -529,7 +543,7 @@
       <div id="tab-transcript" class="hidden bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card">
         <div class="flex items-center justify-between pb-4 border-b border-[#E8DFD0] mb-6">
           <h3 class="text-sm font-bold text-[#2C1F0E]">Complete Accent-Agnostic Audio Transcript</h3>
-          <span class="text-xs text-[#7F766C]">Total duration: 28:14</span>
+          <span id="transcript-meta-duration" class="text-xs text-[#7F766C]">Total duration: 28:14</span>
         </div>
         <div class="space-y-4 text-xs text-[#2C1F0E] leading-relaxed font-normal">
           <div class="p-3.5 bg-[#FAF6EE] rounded-2xl border border-[#E8DFD0]">
@@ -568,6 +582,36 @@
   </div>
 
   <script>
+    // Tab switching logic for Overview | Breakdown | Transcript | Key Moments
+    function switchTab(tabId) {
+      const tabs = ['overview', 'breakdown', 'transcript', 'moments'];
+      if (!tabs.includes(tabId)) return;
+
+      tabs.forEach(id => {
+        const btn = document.getElementById('tab-btn-' + id);
+        const panel = document.getElementById('tab-' + id);
+
+        if (id === tabId) {
+          if (btn) {
+            btn.className = "pb-3 text-sm font-bold border-b-2 border-[#AA7000] text-[#2C1F0E] transition-all";
+          }
+          if (panel) {
+            panel.classList.remove('hidden');
+          }
+        } else {
+          if (btn) {
+            btn.className = "pb-3 text-sm font-semibold border-b-2 border-transparent text-[#7F766C] hover:text-[#2C1F0E] transition-all";
+          }
+          if (panel) {
+            panel.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    // Expose switchTab globally on window so inline onclick handlers can always reach it
+    window.switchTab = switchTab;
+
     const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
     const closeSidebarBtn = document.getElementById('close-sidebar-btn');
     const appSidebar = document.getElementById('app-sidebar');
@@ -622,24 +666,405 @@
       console.log("Matrix telemetry populate notice:", e);
     }
 
-    function switchTab(tabId) {
-      const tabs = ['overview', 'breakdown', 'transcript', 'moments'];
-      tabs.forEach(t => {
-        const content = document.getElementById(`tab-${t}`);
-        const btn = document.getElementById(`tab-btn-${t}`);
-        if (content && btn) {
-          if (t === tabId) {
-            content.classList.remove('hidden');
-            btn.classList.add('border-[#AA7000]', 'text-[#2C1F0E]', 'font-bold');
-            btn.classList.remove('border-transparent', 'text-[#7F766C]', 'font-semibold');
-          } else {
-            content.classList.add('hidden');
-            btn.classList.remove('border-[#AA7000]', 'text-[#2C1F0E]', 'font-bold');
-            btn.classList.add('border-transparent', 'text-[#7F766C]', 'font-semibold');
+
+    // Safely escape user text to prevent XSS
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Populate Report with real evaluation data (from server query or localStorage)
+    async function loadSessionReport() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlSessionId = urlParams.get('sessionId') || urlParams.get('id');
+
+      let reportEnvelope = null;
+
+      // 1. If sessionId in URL, query the backend (via Vite proxy or direct port 8000/5000)
+      if (urlSessionId) {
+        const endpoints = [
+          `/api/sessions/${encodeURIComponent(urlSessionId)}/report/`,
+          `http://localhost:8000/api/sessions/${encodeURIComponent(urlSessionId)}/report/`,
+          `http://localhost:5000/api/sessions/${encodeURIComponent(urlSessionId)}/report`
+        ];
+        for (const ep of endpoints) {
+          try {
+            const res = await fetch(ep);
+            if (res.ok) {
+              const fetched = await res.json();
+              if (fetched && (fetched.scores || (fetched.report && fetched.report.scores))) {
+                reportEnvelope = fetched;
+                break;
+              }
+            }
+          } catch (err) {
+            // Try next endpoint
           }
         }
-      });
+      }
+
+      // 2. Fall back to localStorage ONLY if its sessionId matches the requested session ID
+      if (!reportEnvelope) {
+        try {
+          const raw = localStorage.getItem('imaira_session_report');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            const localSessionId = parsed.sessionId || parsed.report?.sessionId;
+            if (urlSessionId) {
+              // When a session ID is present in URL, strictly match it to avoid showing unrelated previous reports
+              if ((!localSessionId || localSessionId === urlSessionId || !reportEnvelope) && (parsed.scores || (parsed.report && parsed.report.scores))) {
+                reportEnvelope = parsed;
+              }
+            } else if (parsed && (parsed.scores || (parsed.report && parsed.report.scores))) {
+              reportEnvelope = parsed;
+            }
+          }
+        } catch (e) {
+          console.warn("[Report] Could not parse localStorage report:", e);
+        }
+      }
+
+      const demoBanner = document.getElementById('report-demo-banner');
+
+      // 3. Handle missing report
+      if (!reportEnvelope) {
+        if (urlSessionId) {
+          // Explicit session ID requested, but not found/available. Do not display unrelated demo data!
+          if (demoBanner) {
+            demoBanner.classList.remove('hidden');
+            demoBanner.className = "p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-[#885900] text-xs flex items-center justify-between shadow-sm";
+            demoBanner.innerHTML = `
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-xl text-amber-600">error</span>
+                <div>
+                  <div class="font-bold text-sm text-[#2C1F0E]">Session Report Unavailable</div>
+                  <div class="text-[#7F766C] mt-0.5">Evaluation report for session <strong>#${escapeHtml(urlSessionId)}</strong> was not found or has expired.</div>
+                </div>
+              </div>
+              <a href="mock-interview.html" class="px-4 py-2 bg-[#AA7000] text-white rounded-full text-xs font-bold hover:bg-[#885900] transition-all whitespace-nowrap ml-4">
+                Start New Interview
+              </a>
+            `;
+          }
+          const roleTitle = document.getElementById('report-role-title');
+          if (roleTitle) roleTitle.textContent = "Report Unavailable";
+          const metaSub = document.getElementById('report-meta-subtitle');
+          if (metaSub) metaSub.textContent = `The requested interview session (#${escapeHtml(urlSessionId)}) could not be retrieved from the server or local storage.`;
+          const trackBadge = document.getElementById('report-track-badge');
+          if (trackBadge) trackBadge.textContent = "SESSION NOT FOUND";
+          const sidEl = document.getElementById('report-session-id');
+          if (sidEl) sidEl.textContent = `• Session ID: #${escapeHtml(urlSessionId)}`;
+          return;
+        }
+
+        // No sessionId given in URL: display demo preview notice
+        if (demoBanner) demoBanner.classList.remove('hidden');
+        const trackBadge = document.getElementById('report-track-badge');
+        if (trackBadge && !trackBadge.textContent.includes('SAMPLE DEMO')) {
+          trackBadge.textContent += ' • SAMPLE DEMO DATA';
+        }
+        return;
+      }
+
+      // Real report available: hide demo banner
+      if (demoBanner) demoBanner.classList.add('hidden');
+
+      const report = reportEnvelope.report || reportEnvelope;
+      if (!report || !report.scores) return;
+      const breakdown = (Array.isArray(report.perQuestionBreakdown) && report.perQuestionBreakdown.length > 0)
+        ? report.perQuestionBreakdown
+        : (Array.isArray(report.questions) && report.questions.length > 0 ? report.questions : (report.evaluated_questions || []));
+
+      // 4. Update Candidate Information in Sidebar
+      let candidateName = 'Candidate';
+      let candidateRole = report.role || 'Software Engineer';
+      try {
+        const rawUser = localStorage.getItem('imaira_user');
+        if (rawUser) {
+          const u = JSON.parse(rawUser);
+          if (u.name) candidateName = u.name;
+          if (u.role) candidateRole = u.role;
+        }
+      } catch (e) {}
+
+      const sbName = document.getElementById('sidebar-user-name');
+      if (sbName) sbName.textContent = candidateName;
+      const sbRole = document.getElementById('sidebar-user-role');
+      if (sbRole) sbRole.textContent = candidateRole;
+      const sbAvatar = document.getElementById('sidebar-user-avatar');
+      if (sbAvatar) {
+        sbAvatar.textContent = candidateName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'CA';
+      }
+
+      // 5. Header Metadata
+      if (report.role) {
+        const roleEl = document.getElementById('report-role-title');
+        if (roleEl) roleEl.textContent = `${report.role} Evaluation`;
+      }
+      if (report.company) {
+        const trackEl = document.getElementById('report-track-badge');
+        if (trackEl) trackEl.textContent = `${report.company} Technical Round`;
+      }
+      if (report.sessionId) {
+        const sidEl = document.getElementById('report-session-id');
+        if (sidEl) sidEl.textContent = `• Session ID: #${escapeHtml(report.sessionId)}`;
+      }
+      if (report.evaluatedAt) {
+        const metaEl = document.getElementById('report-meta-subtitle');
+        const dateStr = new Date(report.evaluatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const qCount = breakdown.length || (report.perQuestionBreakdown?.length || 0);
+        if (metaEl) metaEl.textContent = `Conducted on ${dateStr} • ${qCount} questions evaluated with zero dialect bias`;
+      }
+
+      // Composite Score & Grade
+      const compScoreEl = document.getElementById('composite-score-val');
+      if (compScoreEl && report.compositeScore !== undefined) {
+        compScoreEl.textContent = report.compositeScore;
+      }
+      const gradeBadge = document.getElementById('composite-grade-badge');
+      if (gradeBadge && report.grade) {
+        gradeBadge.textContent = report.grade;
+      }
+
+      // 6. Metric 1: Body Language
+      const bodyScore = report.scores.bodyLanguage;
+      const bodyMetrics = report.metrics?.bodyLanguage;
+      if (bodyScore !== null && bodyScore !== undefined) {
+        const bScoreEl = document.getElementById('metric-body-score');
+        if (bScoreEl) bScoreEl.textContent = bodyScore;
+        const bBar = document.getElementById('metric-body-bar');
+        if (bBar) bBar.style.width = `${Math.min(100, bodyScore)}%`;
+        const bPill = document.getElementById('metric-body-pill');
+        if (bPill && bodyMetrics) bPill.textContent = bodyMetrics.rating || "Measured";
+        const bNotes = document.getElementById('metric-body-notes');
+        if (bNotes && bodyMetrics) bNotes.textContent = bodyMetrics.notes || "";
+        const bTip = document.getElementById('metric-body-tip');
+        if (bTip && bodyMetrics) bTip.innerHTML = `<strong>Tip:</strong> ${escapeHtml(bodyMetrics.recommendation || "")}`;
+      } else {
+        const bNotes = document.getElementById('metric-body-notes');
+        if (bNotes) bNotes.textContent = "Camera/microphone telemetry was not captured for this session (video was inactive or muted).";
+        const bPill = document.getElementById('metric-body-pill');
+        if (bPill) bPill.textContent = "Telemetry Unavailable";
+        const bScoreEl = document.getElementById('metric-body-score');
+        if (bScoreEl) bScoreEl.textContent = "--";
+        const bBar = document.getElementById('metric-body-bar');
+        if (bBar) bBar.style.width = "0%";
+      }
+
+      // 7. Metric 2: Technical Depth
+      const techScore = report.scores.technicalDepth;
+      const techMetrics = report.metrics?.technicalDepth;
+      if (techScore !== undefined) {
+        const tScoreEl = document.getElementById('metric-tech-score');
+        if (tScoreEl) tScoreEl.textContent = Math.round(techScore);
+        const tBar = document.getElementById('metric-tech-bar');
+        if (tBar) tBar.style.width = `${Math.min(100, techScore)}%`;
+        const tPill = document.getElementById('metric-tech-pill');
+        if (tPill && techMetrics) tPill.textContent = techMetrics.rating || "Evaluated";
+        const tNotes = document.getElementById('metric-tech-notes');
+        if (tNotes && techMetrics) tNotes.textContent = techMetrics.notes || "";
+        const tTip = document.getElementById('metric-tech-tip');
+        if (tTip && techMetrics) tTip.innerHTML = `<strong>Tip:</strong> ${escapeHtml(techMetrics.recommendation || "")}`;
+      }
+
+      // 8. Metric 3: Speech Clarity
+      const speechScore = report.scores.speechClarity;
+      const speechMetrics = report.metrics?.speechClarity;
+      if (speechScore !== undefined) {
+        const sScoreEl = document.getElementById('metric-speech-score');
+        if (sScoreEl) sScoreEl.textContent = Math.round(speechScore);
+        const sBar = document.getElementById('metric-speech-bar');
+        if (sBar) sBar.style.width = `${Math.min(100, speechScore)}%`;
+        const sPill = document.getElementById('metric-speech-pill');
+        if (sPill && speechMetrics) sPill.textContent = speechMetrics.rating || "Clear";
+        const sNotes = document.getElementById('metric-speech-notes');
+        if (sNotes && speechMetrics) sNotes.textContent = speechMetrics.notes || "";
+      }
+
+      // 9. Replace Tab 1 (Overview) Critical Gaps & Missed Concepts
+      if (report.feedbackSummary && Array.isArray(report.feedbackSummary.criticalGaps) && report.feedbackSummary.criticalGaps.length > 0) {
+        const gapsContainer = document.getElementById('overview-critical-gaps');
+        if (gapsContainer) {
+          gapsContainer.innerHTML = report.feedbackSummary.criticalGaps.map(gap => `
+            <div class="p-4 rounded-2xl bg-rose-50/60 border border-rose-100 flex items-start gap-3">
+              <span class="w-2 h-2 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
+              <div class="text-xs text-[#2C1F0E] leading-relaxed">
+                ${escapeHtml(gap)}
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // 10. Replace Tab 1 (Overview) Recommended Growth Steps
+      if (report.feedbackSummary && Array.isArray(report.feedbackSummary.recommendations) && report.feedbackSummary.recommendations.length > 0) {
+        const recsContainer = document.getElementById('overview-recommendations');
+        if (recsContainer) {
+          recsContainer.innerHTML = report.feedbackSummary.recommendations.map((rec, rIdx) => {
+            const title = typeof rec === 'object' ? rec.title : `Priority ${rIdx + 1} Growth Step`;
+            const desc = typeof rec === 'object' ? rec.description : rec;
+            return `
+              <div class="p-5 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0]">
+                <div class="w-6 h-6 rounded-full bg-[#AA7000] text-white text-xs font-bold flex items-center justify-center mb-3">${rIdx + 1}</div>
+                <h4 class="text-xs font-bold text-[#2C1F0E] mb-1.5">${escapeHtml(title)}</h4>
+                <p class="text-xs text-[#8C7B6B] leading-relaxed">${escapeHtml(desc)}</p>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // 11. Populate Per-Answer Breakdown Tab
+      if (Array.isArray(breakdown) && breakdown.length > 0) {
+        const breakdownContainer = document.getElementById('tab-breakdown');
+        if (breakdownContainer) {
+          breakdownContainer.innerHTML = '';
+          breakdown.forEach((q, qIdx) => {
+            const card = document.createElement('div');
+            card.className = "bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card";
+            
+            const coveredTags = (q.covered_concepts || []).map(c => 
+              `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold" title="${escapeHtml(c.evidence || '')}">✓ ${escapeHtml(c.concept)}</span>`
+            ).join(' ');
+
+            const missingTags = (q.missing_concepts || []).map(c => 
+              `<span class="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold">✗ Omitted: ${escapeHtml(c.concept)}</span>`
+            ).join(' ');
+
+            const hasTranscript = q.transcript && q.transcript.trim();
+            const hasCode = q.code && q.code.trim();
+
+            let answerHtml = '';
+            if (hasTranscript) {
+              answerHtml += `
+                <div class="${hasCode ? 'mb-3' : ''}">
+                  <span class="text-[#7F766C] font-semibold block mb-1">Spoken Response:</span>
+                  <div class="text-xs text-[#2C1F0E] leading-relaxed italic">"${escapeHtml(q.transcript)}"</div>
+                </div>
+              `;
+            }
+            if (hasCode) {
+              answerHtml += `
+                <div>
+                  <span class="text-[#7F766C] font-semibold block mb-1">Submitted Implementation:</span>
+                  <pre class="font-mono text-xs bg-slate-900 text-slate-100 p-3.5 rounded-xl overflow-x-auto border border-slate-800 leading-relaxed shadow-sm"><code>${escapeHtml(q.code)}</code></pre>
+                </div>
+              `;
+            }
+            if (!hasTranscript && !hasCode) {
+              answerHtml = `<span class="text-xs text-[#7F766C] italic">No answer or code submitted for this question.</span>`;
+            }
+
+            card.innerHTML = `
+              <div class="flex items-center justify-between pb-4 border-b border-[#E8DFD0] mb-4">
+                <span class="text-xs font-bold text-[#AA7000] uppercase tracking-wider">Question 0${qIdx + 1}</span>
+                <span class="px-3 py-1 rounded-full ${q.score >= 80 ? 'bg-[#EFF4E8] text-[#4F6B2D]' : 'bg-[#F2EBD8] text-[#2C1F0E]'} text-xs font-bold">${q.score}/100</span>
+              </div>
+              <h3 class="text-sm font-bold text-[#2C1F0E] mb-3">"${escapeHtml(q.question_title)}"</h3>
+              <div class="bg-[#FAF6EE] p-4 rounded-2xl border border-[#E8DFD0] mb-4 text-xs text-[#2C1F0E] leading-relaxed">
+                ${answerHtml}
+              </div>
+              <div class="flex flex-wrap gap-1.5 mb-3">
+                ${coveredTags}
+                ${missingTags}
+              </div>
+              <div class="p-3 bg-[#EFF4E8]/70 border border-[#4F6B2D]/30 rounded-2xl text-xs text-[#065F46] flex items-start gap-2">
+                <span class="material-symbols-outlined text-sm text-[#4F6B2D] mt-0.5">verified</span>
+                <span><strong>Evaluator Feedback:</strong> ${escapeHtml(q.feedback)}</span>
+              </div>
+            `;
+            breakdownContainer.appendChild(card);
+          });
+        }
+
+        // 12. Populate Full Transcript Tab
+        const transcriptContainer = document.getElementById('tab-transcript');
+        if (transcriptContainer) {
+          const durationEl = document.getElementById('transcript-meta-duration');
+          if (durationEl) {
+            durationEl.textContent = `${breakdown.length} questions evaluated`;
+          }
+          const transcriptBody = transcriptContainer.querySelector('.space-y-4');
+          if (transcriptBody) {
+            transcriptBody.innerHTML = '';
+            breakdown.forEach((q, qIdx) => {
+              const qBlock = document.createElement('div');
+              qBlock.className = "p-3.5 bg-[#FAF6EE] rounded-2xl border border-[#E8DFD0]";
+              qBlock.innerHTML = `
+                <span class="font-bold text-[#AA7000] block mb-1">Interviewer (Question ${qIdx + 1}):</span>
+                "${escapeHtml(q.question_title)}"
+              `;
+
+              const hasTranscript = q.transcript && q.transcript.trim();
+              const hasCode = q.code && q.code.trim();
+
+              const aBlock = document.createElement('div');
+              aBlock.className = "p-3.5 bg-white border border-[#E8DFD0] rounded-2xl";
+
+              let transcriptAnsHtml = '';
+              if (hasTranscript) {
+                transcriptAnsHtml += `
+                  <div class="${hasCode ? 'mb-3' : ''}">
+                    <span class="font-bold text-[#2C1F0E] block mb-1">Candidate Answer (Spoken):</span>
+                    <p class="text-xs text-[#2C1F0E] italic leading-relaxed">"${escapeHtml(q.transcript)}"</p>
+                  </div>
+                `;
+              }
+              if (hasCode) {
+                transcriptAnsHtml += `
+                  <div>
+                    <span class="font-bold text-[#2C1F0E] block mb-1">Submitted Implementation:</span>
+                    <pre class="font-mono text-xs bg-slate-900 text-slate-100 p-3 rounded-xl overflow-x-auto border border-slate-800 leading-relaxed"><code>${escapeHtml(q.code)}</code></pre>
+                  </div>
+                `;
+              }
+              if (!hasTranscript && !hasCode) {
+                transcriptAnsHtml = `
+                  <span class="font-bold text-[#2C1F0E] block mb-1">Candidate Answer:</span>
+                  <p class="text-xs text-[#7F766C] italic">No verbal answer or code recorded.</p>
+                `;
+              }
+
+              aBlock.innerHTML = transcriptAnsHtml;
+              transcriptBody.appendChild(qBlock);
+              transcriptBody.appendChild(aBlock);
+            });
+          }
+        }
+
+        // 13. Populate Key Moments Tab
+        if (Array.isArray(report.diagnosticEvents) && report.diagnosticEvents.length > 0) {
+          const momentsContainer = document.getElementById('tab-moments');
+          if (momentsContainer) {
+            const grid = momentsContainer.querySelector('.grid');
+            if (grid) {
+              grid.innerHTML = '';
+              report.diagnosticEvents.slice(0, 4).forEach(evt => {
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-2xl bg-[#FAF6EE] border border-[#E8DFD0] flex items-center justify-between";
+                card.innerHTML = `
+                  <div>
+                    <div class="text-xs font-bold text-[#2C1F0E]">${escapeHtml(evt.concept)}</div>
+                    <div class="text-[11px] text-[#7F766C] mt-0.5">${escapeHtml(evt.observation)}</div>
+                    ${evt.evidence ? `<div class="text-[10px] text-[#AA7000] italic mt-1">"${escapeHtml(evt.evidence)}"</div>` : ''}
+                  </div>
+                  <span class="material-symbols-outlined text-[#AA7000]">${evt.type === 'KEY_MOMENT' ? 'check_circle' : 'warning'}</span>
+                `;
+                grid.appendChild(card);
+              });
+            }
+          }
+        }
+      }
     }
+
+    // Initialize report loader
+    loadSessionReport();
   </script>
 </body>
 </html>
