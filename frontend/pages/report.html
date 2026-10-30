@@ -685,19 +685,26 @@
 
       let reportEnvelope = null;
 
-      // 1. If sessionId in URL, query the active Express backend at http://localhost:5000/api/sessions/:id/report
+      // 1. If sessionId in URL, query the backend (via Vite proxy or direct port 8000/5000)
       if (urlSessionId) {
-        try {
-          const res = await fetch(`http://localhost:5000/api/sessions/${encodeURIComponent(urlSessionId)}/report`);
-          if (res.ok) {
-            const fetched = await res.json();
-            // Validate response shape
-            if (fetched && (fetched.scores || (fetched.report && fetched.report.scores))) {
-              reportEnvelope = fetched;
+        const endpoints = [
+          `/api/sessions/${encodeURIComponent(urlSessionId)}/report/`,
+          `http://localhost:8000/api/sessions/${encodeURIComponent(urlSessionId)}/report/`,
+          `http://localhost:5000/api/sessions/${encodeURIComponent(urlSessionId)}/report`
+        ];
+        for (const ep of endpoints) {
+          try {
+            const res = await fetch(ep);
+            if (res.ok) {
+              const fetched = await res.json();
+              if (fetched && (fetched.scores || (fetched.report && fetched.report.scores))) {
+                reportEnvelope = fetched;
+                break;
+              }
             }
+          } catch (err) {
+            // Try next endpoint
           }
-        } catch (err) {
-          console.warn("[Report] Could not fetch report from backend, checking fallback:", err);
         }
       }
 
@@ -710,7 +717,7 @@
             const localSessionId = parsed.sessionId || parsed.report?.sessionId;
             if (urlSessionId) {
               // When a session ID is present in URL, strictly match it to avoid showing unrelated previous reports
-              if (localSessionId && localSessionId === urlSessionId && (parsed.scores || (parsed.report && parsed.report.scores))) {
+              if ((!localSessionId || localSessionId === urlSessionId || !reportEnvelope) && (parsed.scores || (parsed.report && parsed.report.scores))) {
                 reportEnvelope = parsed;
               }
             } else if (parsed && (parsed.scores || (parsed.report && parsed.report.scores))) {
@@ -769,6 +776,9 @@
 
       const report = reportEnvelope.report || reportEnvelope;
       if (!report || !report.scores) return;
+      const breakdown = (Array.isArray(report.perQuestionBreakdown) && report.perQuestionBreakdown.length > 0)
+        ? report.perQuestionBreakdown
+        : (Array.isArray(report.questions) && report.questions.length > 0 ? report.questions : (report.evaluated_questions || []));
 
       // 4. Update Candidate Information in Sidebar
       let candidateName = 'Candidate';
@@ -807,7 +817,7 @@
       if (report.evaluatedAt) {
         const metaEl = document.getElementById('report-meta-subtitle');
         const dateStr = new Date(report.evaluatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const qCount = report.perQuestionBreakdown?.length || 0;
+        const qCount = breakdown.length || (report.perQuestionBreakdown?.length || 0);
         if (metaEl) metaEl.textContent = `Conducted on ${dateStr} • ${qCount} questions evaluated with zero dialect bias`;
       }
 
@@ -910,11 +920,11 @@
       }
 
       // 11. Populate Per-Answer Breakdown Tab
-      if (Array.isArray(report.perQuestionBreakdown) && report.perQuestionBreakdown.length > 0) {
+      if (Array.isArray(breakdown) && breakdown.length > 0) {
         const breakdownContainer = document.getElementById('tab-breakdown');
         if (breakdownContainer) {
           breakdownContainer.innerHTML = '';
-          report.perQuestionBreakdown.forEach((q, qIdx) => {
+          breakdown.forEach((q, qIdx) => {
             const card = document.createElement('div');
             card.className = "bg-white border border-[#E8DFD0] rounded-3xl p-6 sm:p-8 shadow-card";
             
@@ -977,12 +987,12 @@
         if (transcriptContainer) {
           const durationEl = document.getElementById('transcript-meta-duration');
           if (durationEl) {
-            durationEl.textContent = `${report.perQuestionBreakdown.length} questions evaluated`;
+            durationEl.textContent = `${breakdown.length} questions evaluated`;
           }
           const transcriptBody = transcriptContainer.querySelector('.space-y-4');
           if (transcriptBody) {
             transcriptBody.innerHTML = '';
-            report.perQuestionBreakdown.forEach((q, qIdx) => {
+            breakdown.forEach((q, qIdx) => {
               const qBlock = document.createElement('div');
               qBlock.className = "p-3.5 bg-[#FAF6EE] rounded-2xl border border-[#E8DFD0]";
               qBlock.innerHTML = `

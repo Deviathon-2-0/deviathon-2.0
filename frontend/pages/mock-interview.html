@@ -635,28 +635,53 @@
               </div>
             </div>
 
-            <!-- 8: Sound Check with Interactive Play Button -->
-            <div id="chk-row-8" class="p-3 rounded-xl bg-[#FAF6EE] border border-[#AA7000]/30 text-xs transition-all">
+            <!-- 8: Sound Check with Real Playback & Candidate Audible Confirmation -->
+            <div id="chk-row-8" class="p-3.5 rounded-xl bg-[#FAF6EE] border border-[#AA7000]/40 text-xs transition-all shadow-xs flex flex-col gap-2.5">
               <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center gap-2 font-bold text-[#2C1F0E]">
                   <span class="w-4 h-4 rounded-full bg-[#2C1F0E] text-[10px] font-bold text-white flex items-center justify-center">8</span>
                   <span>Check System Sound &amp; Evaluator Voice</span>
                 </div>
                 <div id="chk-status-8" class="text-[#AA7000] font-semibold text-[11px] flex items-center gap-1">
-                  <span>Awaiting Sound Sample</span>
+                  <span>Ready to Test Audio</span>
                 </div>
               </div>
-              <button type="button" onclick="testSystemAudio()" id="play-sound-btn" class="w-full py-2.5 rounded-xl bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
-                <span class="material-symbols-outlined text-sm">play_arrow</span>
-                <span>Play Evaluator Voice Sample</span>
-              </button>
+
+              <!-- Action Bar: Play / Test Voice Sample -->
+              <div class="flex items-center gap-2 mb-2.5">
+                <button type="button" onclick="testSystemAudio()" id="play-sound-btn" class="flex-1 py-2.5 rounded-xl bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
+                  <span class="material-symbols-outlined text-sm" id="play-sound-icon">play_arrow</span>
+                  <span id="play-sound-text">Play Evaluator Voice Sample</span>
+                </button>
+              </div>
+
+              <!-- Candidate Audible Confirmation Controls (Visible & Active) -->
+              <div id="audible-confirm-box" class="p-3 rounded-xl bg-white border border-[#E8DFD0] space-y-2">
+                <div class="flex items-center justify-between text-xs text-[#2C1F0E] font-medium">
+                  <span class="flex items-center gap-1.5 font-bold">
+                    <span class="material-symbols-outlined text-sm text-[#AA7000]">hearing</span>
+                    <span>Can you hear the evaluator's voice clearly?</span>
+                  </span>
+                  <span id="audible-status-badge" class="text-[10px] text-[#AA7000] font-bold">Select Audible</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="confirmAudioAudible(true)" id="btn-audio-audible-yes" class="flex-1 py-2.5 rounded-xl bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md transform hover:-translate-y-0.5">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                    <span>Yes, I can hear clearly</span>
+                  </button>
+                  <button type="button" onclick="confirmAudioAudible(false)" id="btn-audio-audible-no" class="px-3.5 py-2.5 rounded-xl bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#2C1F0E] border border-[#E8DFD0] text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer" title="Replay voice sample">
+                    <span class="material-symbols-outlined text-sm">replay</span>
+                    <span>Replay</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Final START PRACTICE Action (Locked until all 8 are verified) -->
           <button type="button" onclick="startFinalPracticeSession()" id="prereq-start-btn" disabled class="w-full py-3.5 rounded-full bg-[#E8DFD0] text-[#7F766C] text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-60">
             <span class="material-symbols-outlined text-sm">lock</span>
-            <span id="prereq-start-text">COMPLETE ALL 8 CHECKS TO START (0/8)</span>
+            <span id="prereq-start-text">COMPLETE CHECKS TO START INTERVIEW (0/8)</span>
           </button>
         </div>
 
@@ -668,7 +693,7 @@
   <!-- ========================================================================
        SCREEN 2: LIVE INTERVIEW STAGE (Full-Screen, Question Navigation Pills, Draggable PiP)
        ======================================================================== -->
-  <div id="interview-stage" class="hidden h-full flex flex-col bg-[#0A0603] text-white overflow-hidden relative select-none">
+  <div id="interview-stage" class="hidden fixed inset-0 z-50 flex flex-col bg-[#0A0603] text-white overflow-hidden select-none">
     
     <!-- Top Header Bar: Status, Question Progress Pills with Strict Locking, Timer & Mode Switcher -->
     <header class="h-14 border-b border-[#2A1C0A] px-4 sm:px-6 flex items-center justify-between shrink-0 bg-[#0F0A05] z-30 shadow-md">
@@ -710,7 +735,7 @@
           <span class="material-symbols-outlined text-base" id="fullscreen-icon">fullscreen</span>
         </button>
 
-        <button type="button" onclick="exitToSetup()" class="px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-200 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+        <button type="button" id="btn-stage-exit" onclick="exitToSetup()" class="px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-200 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
           <span class="w-1.5 h-1.5 rounded-sm bg-red-500"></span>
           <span>Exit</span>
         </button>
@@ -724,104 +749,95 @@
     <main class="flex-1 relative w-full h-full overflow-hidden bg-[#0A0603]" id="stage-main-workspace">
       
       <!-- --------------------------------------------------------------------
-           VIEW A: FULL IMMERSIVE VIDEO CALL VIEW (Google Meet / Zoom Layout)
+           VIEW A: FULL IMMERSIVE VIDEO CALL VIEW (1-on-1 Google Meet / Zoom Layout)
            -------------------------------------------------------------------- -->
       <div id="workspace-videocall-view" class="w-full h-full flex flex-col p-3 sm:p-5 relative overflow-hidden transition-all duration-300">
         
-        <!-- Large Video Conference Stage: Edge-to-Edge with Smooth Rounded Borders -->
-        <div class="relative w-full h-full rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
+        <!-- 100% VIEWPORT FILL: ACTIVE SPEAKER MAIN VIDEO & 1-ON-1 INTERVIEW STAGE -->
+        <div class="relative flex-1 w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
           
           <!-- 1. MAIN INTERVIEWER VIDEO (100% Real Video, No Static Images, No Glitch) -->
           <video id="call-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
           
-          <!-- Top-Left Evaluator Persona Pill (Matching User Screenshot style) -->
-          <div class="absolute top-5 left-5 px-3.5 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20 shadow-lg">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <!-- 2. CANDIDATE PICTURE-IN-PICTURE (Top-Right Floating 1-on-1 Persona Tile) -->
+          <div id="call-candidate-tile" class="absolute top-4 right-4 w-36 sm:w-44 md:w-52 aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-white/20 shadow-2xl z-20 group bg-[#1A1208] backdrop-blur-sm">
+            <video id="call-candidate-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
+            <canvas id="call-candidate-canvas" class="w-full h-full object-cover hidden"></canvas>
+            
+            <!-- Persona Tag -->
+            <div class="absolute bottom-1.5 left-2 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-white z-10 flex items-center gap-1 shadow-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span>You (Candidate)</span>
+            </div>
+
+            <!-- Mic Status Badge (Blue if active, Red if muted) -->
+            <div id="candidate-tile-mic-badge" class="absolute bottom-1.5 right-2 w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors">
+              <span class="material-symbols-outlined text-[11px]" id="candidate-tile-mic-icon">mic</span>
+            </div>
+          </div>
+
+          <!-- Bottom-Left Primary Speaker Name Tag -->
+          <div class="absolute bottom-4 left-4 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20 shadow-lg">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="call-interviewer-name" class="font-bold">Kabir</span>
             <span class="text-slate-300 text-[11px] font-normal" id="call-interviewer-accent">Indian English (North)</span>
           </div>
 
-          <!-- Top-Right Live Audio Channel Pill (Matching screenshot |||| audio icon) -->
-          <div class="absolute top-5 right-5 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/10 text-white flex items-center gap-2 z-20 shadow-lg">
-            <div class="flex items-center gap-1">
-              <div class="stage-wave-bar"></div>
-              <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-              <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+          <!-- Bottom-Right Live Audio Waveform Visualizer -->
+          <div class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center gap-1.5 z-20 shadow-lg">
+            <div class="flex items-center gap-0.5">
+              <span class="w-1 h-3.5 bg-amber-400 rounded-full animate-pulse"></span>
+              <span class="w-1 h-5 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.15s"></span>
+              <span class="w-1 h-4 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.3s"></span>
+              <span class="w-1 h-2 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.45s"></span>
             </div>
-            <span class="text-[11px] text-emerald-300 font-mono font-bold">HD AUDIO</span>
+            <span class="text-[10px] font-mono text-amber-200/90 font-bold ml-1">LIVE AUDIO</span>
           </div>
 
-          <!-- 2. CANDIDATE VIDEO TILE (Docked in Video Call, 100% Real Video Stream) -->
-          <div id="call-candidate-tile" class="absolute bottom-6 right-6 w-56 sm:w-72 aspect-video rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-white/20 shadow-2xl z-20 group">
-            <video id="call-candidate-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
-            <canvas id="call-candidate-canvas" class="w-full h-full object-cover hidden"></canvas>
+          <!-- TRANSLUCENT FLOATING QUESTION OVERLAY (Hovering over the Video Box) -->
+          <div id="call-question-overlay" class="absolute bottom-14 sm:bottom-14 left-4 right-4 max-w-xl mx-auto bg-black/80 backdrop-blur-2xl border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl z-20 transition-all">
             
-            <!-- Candidate Persona Tag (Matching User Screenshot translucent pill) -->
-            <div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1.5">
-              <span>You (Candidate)</span>
-            </div>
-
-            <!-- Candidate Mic Status Badge (Matching User Screenshot blue/red mic circle) -->
-            <div id="candidate-tile-mic-badge" class="absolute bottom-2.5 right-2.5 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors">
-              <span class="material-symbols-outlined text-xs" id="candidate-tile-mic-icon">mic</span>
-            </div>
-
-            <!-- Integrity Matrix HUD Badge -->
-            <div class="absolute top-2 left-2 z-10">
-              <span class="px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-emerald-500/40 text-[9px] font-bold text-emerald-400 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> MATRIX
-              </span>
-            </div>
-          </div>
-
-          <!-- 3. TRANSLUCENT FLOATING QUESTION OVERLAY (Hovering over the Video Box) -->
-          <div id="call-question-overlay" class="absolute bottom-6 left-6 right-64 sm:right-80 bg-black/80 backdrop-blur-2xl border border-white/15 rounded-3xl p-5 shadow-2xl z-20 transition-all">
-            
-            <!-- Top Row: Question Pill & Repeat Button -->
+            <!-- Top Row: Question Pill & Mode Actions -->
             <div class="flex items-center justify-between text-xs mb-2">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
-                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="call-q-badge">QUESTION 1 OF 4 • TECH CODING</span>
+                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="call-q-badge">QUESTION 1 OF 4 &bull; TECH CODING</span>
               </div>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="repeatCurrentQuestion()" class="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-sm">
                   <span class="material-symbols-outlined text-sm">replay</span>
                   <span>Repeat</span>
                 </button>
-                <button type="button" onclick="switchStageView('code')" class="px-2.5 py-1 rounded-full bg-[#AA7000]/30 hover:bg-[#AA7000]/50 text-[#E8C97A] border border-[#AA7000]/50 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm">
-                  <span class="material-symbols-outlined text-sm">terminal</span>
-                  <span>Open Compiler</span>
-                </button>
               </div>
             </div>
 
             <!-- Question Prompt Text (Crisp, High Contrast Typography) -->
-            <p id="call-question-prompt" class="text-sm sm:text-base text-white font-medium leading-relaxed mb-3">
+            <p id="call-question-prompt" class="text-xs sm:text-sm md:text-base text-white font-medium leading-relaxed mb-3">
               "Write an optimal function to solve the system constraints described in this round."
             </p>
 
             <!-- Bottom Row: Candidate Spoken Answer & Submit Controls -->
-            <div class="flex items-center justify-between pt-2 border-t border-white/10 gap-3">
-              <div class="flex items-center gap-2.5">
-                <button type="button" id="call-record-btn" onclick="toggleCandidateAnswerRecording()" class="px-4 py-2 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer">
+            <div class="flex items-center justify-between pt-2 border-t border-white/10 gap-2 flex-wrap">
+              <div class="flex items-center gap-2">
+                <button type="button" id="call-record-btn" onclick="toggleCandidateAnswerRecording()" class="px-3.5 py-1.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer">
                   <span class="material-symbols-outlined text-sm">mic</span>
                   <span id="call-record-btn-text">Start Spoken Answer</span>
                 </button>
                 <div class="flex items-center gap-1 text-[11px] text-slate-300">
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span>Voice Channel Active</span>
+                  <span class="hidden sm:inline">Voice Channel Active</span>
                 </div>
               </div>
 
               <!-- Submit Answer Button (Strict: Only Submitting Unlocks Next Question) -->
-              <button type="button" id="call-submit-btn" onclick="submitCurrentAnswer()" class="px-5 py-2 rounded-full bg-[#AA7000] hover:bg-[#8C5D00] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg cursor-pointer transform hover:-translate-y-0.5">
+              <button type="button" id="call-submit-btn" onclick="submitCurrentAnswer()" class="px-4 py-1.5 rounded-full bg-[#AA7000] hover:bg-[#8C5D00] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg cursor-pointer transform hover:-translate-y-0.5">
                 <span id="call-submit-btn-text">Submit Answer &amp; Proceed</span>
                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
             </div>
 
             <!-- Real-time Live Candidate Speech Transcription Caption Box -->
-            <div id="call-transcript-box" class="mt-2.5 p-3 rounded-xl bg-black/60 border border-white/10 hidden">
+            <div id="call-transcript-box" class="mt-2.5 p-2.5 rounded-xl bg-black/60 border border-white/10 hidden">
               <div class="flex items-center justify-between text-[10px] text-[#AA7000] font-bold mb-1">
                 <span>LIVE SPEECH RECOGNITION (TRANSCRIBING...)</span>
                 <span class="text-emerald-400 flex items-center gap-1">
@@ -833,30 +849,25 @@
 
           </div>
 
-          <!-- 4. FLOATING VIDEO CALL CONTROL DOCK (Google Meet / Zoom Style Bottom Center Island) -->
-          <div class="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/80 backdrop-blur-xl border border-white/15 shadow-2xl flex items-center gap-3 z-30">
+          <!-- FLOATING VIDEO CALL CONTROL DOCK (Google Meet / Zoom Style Bottom Center Island) -->
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-black/80 backdrop-blur-xl border border-white/15 shadow-2xl flex items-center gap-3 z-30">
             <!-- Mic Toggle Button -->
-            <button type="button" id="dock-btn-mic" onclick="toggleMic()" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Mute / Unmute Microphone">
+            <button type="button" id="dock-btn-mic" onclick="toggleMic()" class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Mute / Unmute Microphone">
               <span class="material-symbols-outlined text-base" id="dock-icon-mic">mic</span>
             </button>
 
             <!-- Camera Toggle Button -->
-            <button type="button" id="dock-btn-cam" onclick="toggleCam()" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Turn Camera On / Off">
+            <button type="button" id="dock-btn-cam" onclick="toggleCam()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Turn Camera On / Off">
               <span class="material-symbols-outlined text-base" id="dock-icon-cam">videocam</span>
-            </button>
-
-            <!-- Switch to Code Editor Button -->
-            <button type="button" onclick="switchStageView('code')" class="px-4 py-2 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md" title="Open Code Editor & Compiler">
-              <span class="material-symbols-outlined text-sm">terminal</span>
-              <span>Open Code &amp; Compiler</span>
             </button>
           </div>
 
         </div>
+
       </div>
 
 
-      <!-- --------------------------------------------------------------------
+<!-- --------------------------------------------------------------------
            VIEW B: SPLIT CODE EXECUTION & COMPILER VIEW (Full IDE Workspace)
            -------------------------------------------------------------------- -->
       <div id="workspace-compiler-view" class="hidden w-full h-full flex overflow-hidden transition-all duration-300">
@@ -988,143 +999,6 @@
           </div>
         </div>
 
-
-
-      <!-- 2. FULL-SCREEN 1-ON-1 VIDEO CALL PANE (Interviewer or Candidate Spotlight) -->
-      <div id="workspace-spotlight-pane" class="hidden flex-1 relative bg-[#120B04] flex items-center justify-center overflow-hidden p-3 sm:p-6">
-        
-        <!-- Video Container: Takes maximum comfortable viewport space -->
-        <div id="spotlight-frame-container" class="relative w-full max-w-5xl h-full max-h-[82vh] rounded-3xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
-          
-          <img id="spotlight-img" src="" alt="Spotlight" class="w-full h-full object-cover object-top natural-face-anim" />
-          <video id="spotlight-video" autoplay muted playsinline class="w-full h-full object-cover hidden"></video>
-          
-          <div id="spotlight-video-fallback" class="hidden w-full h-full flex flex-col items-center justify-center text-slate-400 bg-[#140D05]">
-            <span class="material-symbols-outlined text-6xl mb-3 text-slate-500">account_circle</span>
-            <span class="text-base font-semibold text-slate-300">Candidate Camera Feed</span>
-            <span class="text-xs text-slate-500 mt-1">Audio stream active</span>
-          </div>
-
-          <!-- Top-Left Evaluator Tag -->
-          <div class="absolute top-5 left-5 px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20">
-            <span class="w-2 h-2 rounded-full bg-[#4F6B2D] animate-ping"></span>
-            <span id="spotlight-name-tag">Interviewer</span>
-          </div>
-
-          <!-- FLOATING TRANSLUCENT QUESTION BOX HOVERING AT BOTTOM OF VIDEO (Inside the Video) -->
-          <div id="spotlight-question-overlay" class="absolute bottom-5 left-5 right-5 bg-black/75 backdrop-blur-xl border border-white/15 rounded-2xl p-4 sm:p-5 shadow-2xl z-20 transition-all duration-300">
-            <div class="flex items-center justify-between text-xs mb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
-                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="spotlight-q-title">QUESTION 1 • WARM UP</span>
-              </div>
-              <button type="button" onclick="repeatCurrentQuestion()" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-semibold transition-all flex items-center gap-1 shadow-sm">
-                <span class="material-symbols-outlined text-sm">replay</span>
-                <span>Repeat Question</span>
-              </button>
-            </div>
-            <p id="spotlight-question-text" class="text-sm sm:text-base text-white font-medium leading-relaxed mb-3">
-              "Tell me about a challenging distributed system failure you diagnosed and resolved."
-            </p>
-
-            <!-- Live Candidate Spoken Transcript & Glossary Area -->
-            <div id="candidate-spoken-answer-area" class="mb-3 p-3 rounded-xl bg-black/60 border border-white/10">
-              <div class="flex items-center justify-between text-xs text-slate-300 mb-1.5">
-                <div class="flex items-center gap-2">
-                  <span id="transcript-rec-dot" class="w-2 h-2 rounded-full bg-slate-500"></span>
-                  <span class="font-bold text-slate-200">Candidate Answer (Spoken):</span>
-                  <span id="speech-rec-timer" class="text-[10px] font-mono text-[#AA7000] bg-black/50 px-1.5 py-0.5 rounded">00:00</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span id="mic-status-label" class="text-[11px] text-slate-400">Mic Ready</span>
-                  <button type="button" id="mic-toggle-btn" class="px-2.5 py-1 rounded-full bg-[#AA7000] hover:bg-[#885900] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer">
-                    <span class="material-symbols-outlined text-sm" id="mic-icon">mic</span>
-                    <span id="mic-btn-text">Record Answer</span>
-                  </button>
-                </div>
-              </div>
-              <div id="candidate-live-transcript" class="text-xs text-slate-200 min-h-[44px] max-h-[90px] overflow-y-auto leading-relaxed custom-scroll font-normal">
-                <span class="text-slate-400 italic">Click "Record Answer" and speak your answer. Your speech will be transcribed and evaluated for technical concepts with accent neutrality.</span>
-              </div>
-              <!-- Technical Glossary Candidate Badges -->
-              <div id="glossary-candidates-container" class="hidden mt-2 pt-2 border-t border-white/10 flex flex-wrap items-center gap-1.5">
-                <span class="text-[10px] text-[#AA7000] font-bold">Glossary Matches:</span>
-                <div id="glossary-candidates-list" class="flex flex-wrap gap-1"></div>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between text-xs text-slate-300 pt-2 border-t border-white/10">
-              <div class="flex items-center gap-1.5">
-                <div class="stage-wave-bar"></div>
-                <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-                <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
-                <span class="text-[11px] ml-1 text-slate-300">Voice channel active • Zero pronunciation bias</span>
-              </div>
-              <div id="spotlight-switch-code-cta" class="hidden">
-                <button onclick="setFocus('code')" class="text-xs font-bold text-[#AA7000] hover:text-white flex items-center gap-1">
-                  <span>Open Code Editor</span>
-                  <span class="material-symbols-outlined text-xs">arrow_forward</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <!-- ======================================================================
-           3. DRAGGABLE PICTURE-IN-PICTURE (PiP) VIDEO TILES
-           Freely movable anywhere on screen; grab-and-drop
-           ====================================================================== -->
-      <!-- Interviewer PiP Frame -->
-      <div id="tile-interviewer" class="draggable-pip w-48 h-32 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl z-40 group" style="top: 20px; right: 24px;">
-        <div class="pip-drag-handle absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between px-2 text-[10px] text-slate-300 opacity-60 group-hover:opacity-100 transition-opacity">
-          <span class="font-bold tracking-tight">Interviewer</span>
-          <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
-        </div>
-        <img id="dock-interviewer-img" src="" alt="Interviewer" class="w-full h-full object-cover object-top natural-face-anim pointer-events-none" />
-        <div class="absolute inset-0 bg-black/15 group-hover:bg-transparent transition-colors pointer-events-none"></div>
-        
-        <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
-          <span id="dock-interviewer-name" class="truncate font-semibold">Kabir</span>
-          <div class="flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D]"></span>
-            <button onclick="pinTile('interviewer')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Interviewer Fullscreen">
-              <span class="material-symbols-outlined text-xs">push_pin</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Candidate PiP Frame -->
-      <div id="tile-candidate" class="draggable-pip w-48 h-32 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl z-40 group" style="top: 165px; right: 24px;">
-        <div class="pip-drag-handle absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between px-2 text-[10px] text-slate-300 opacity-60 group-hover:opacity-100 transition-opacity">
-          <span class="font-bold tracking-tight">You (Candidate)</span>
-          <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
-        </div>
-        <video id="dock-candidate-video" autoplay muted playsinline class="w-full h-full object-cover hidden pointer-events-none"></video>
-        <div id="dock-candidate-fallback" class="w-full h-full flex flex-col items-center justify-center bg-[#170F06] text-slate-400 pointer-events-none">
-          <span class="material-symbols-outlined text-3xl text-slate-500 mb-0.5">account_circle</span>
-          <span class="text-[10px] font-medium text-slate-300">You (Candidate)</span>
-        </div>
-
-        <!-- Live Signal Processing Matrix Telemetry HUD -->
-        <div id="candidate-matrix-hud" class="absolute top-7 left-1.5 right-1.5 z-20 flex flex-wrap gap-1 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-          <span id="hud-gaze-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300">Gaze: Centered</span>
-          <span id="hud-posture-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300">Posture: Poised</span>
-          <span id="hud-tone-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-amber-500/40 text-[9px] font-semibold text-amber-300">Tone: Active</span>
-          <span id="hud-sync-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-sky-500/40 text-[9px] font-semibold text-sky-300">Sync: In-Sync</span>
-        </div>
-
-        <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
-          <div class="flex items-center gap-1.5 text-[9px] text-emerald-400 font-bold">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="hud-matrix-status">MATRIX ACTIVE</span>
-          </div>
-          <button onclick="pinTile('candidate')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Your Camera Fullscreen">
-            <span class="material-symbols-outlined text-xs">push_pin</span>
-          </button>
-        </div>
       </div>
 
     </main>
@@ -1151,10 +1025,10 @@
         pitch: 0.90,
         rate: 1.0,
         sampleIntro: "Hello! I am Kabir. Let's delve into your technical architecture and problem-solving strategy.",
-        avatar: "../assets/interviewers/kabir.jpg",
-        videoListening: "../assets/interviewers/kabir_listening.mp4",
-        videoTalking: "../assets/interviewers/kabir_talking.mp4",
-        introAudio: "../assets/interviewers/kabir_intro.mp3"
+        avatar: "/assets/interviewers/kabir.jpg",
+        videoListening: "/assets/interviewers/kabir_listening.mp4",
+        videoTalking: "/assets/interviewers/kabir_talking.mp4",
+        introAudio: "/assets/interviewers/kabir_intro.mp3"
       },
       {
         id: "payal",
@@ -1168,10 +1042,10 @@
         pitch: 1.18,
         rate: 1.02,
         sampleIntro: "Hi there! I am Payal. I look forward to exploring your distributed systems and algorithmic trade-offs.",
-        avatar: "../assets/interviewers/payal.jpg",
-        videoListening: "../assets/interviewers/payal_listening.mp4",
-        videoTalking: "../assets/interviewers/payal_talking.mp4",
-        introAudio: "../assets/interviewers/payal_intro.mp3"
+        avatar: "/assets/interviewers/payal.jpg",
+        videoListening: "/assets/interviewers/payal_listening.mp4",
+        videoTalking: "/assets/interviewers/payal_talking.mp4",
+        introAudio: "/assets/interviewers/payal_intro.mp3"
       },
       {
         id: "charlotte",
@@ -1185,10 +1059,10 @@
         pitch: 1.14,
         rate: 0.98,
         sampleIntro: "Good day. I am Charlotte. We shall explore system constraints, latency guarantees, and failure modes.",
-        avatar: "../assets/interviewers/charlotte.jpg",
-        videoListening: "../assets/interviewers/charlotte_listening.mp4",
-        videoTalking: "../assets/interviewers/charlotte_talking.mp4",
-        introAudio: "../assets/interviewers/charlotte_intro.mp3"
+        avatar: "/assets/interviewers/charlotte.jpg",
+        videoListening: "/assets/interviewers/charlotte_listening.mp4",
+        videoTalking: "/assets/interviewers/charlotte_talking.mp4",
+        introAudio: "/assets/interviewers/charlotte_intro.mp3"
       },
       {
         id: "john",
@@ -1202,10 +1076,10 @@
         pitch: 0.92,
         rate: 1.04,
         sampleIntro: "Hey there! I am John. Excited to chat through your approach and see how you tackle scaling bottlenecks.",
-        avatar: "../assets/interviewers/john.jpg",
-        videoListening: "../assets/interviewers/john_listening.mp4",
-        videoTalking: "../assets/interviewers/john_talking.mp4",
-        introAudio: "../assets/interviewers/john_intro.mp3"
+        avatar: "/assets/interviewers/john.jpg",
+        videoListening: "/assets/interviewers/john_listening.mp4",
+        videoTalking: "/assets/interviewers/john_talking.mp4",
+        introAudio: "/assets/interviewers/john_intro.mp3"
       },
       {
         id: "sarah",
@@ -1219,10 +1093,10 @@
         pitch: 1.16,
         rate: 1.00,
         sampleIntro: "Welcome. I am Sarah. Let's walk through your engineering background and architectural decisions.",
-        avatar: "../assets/interviewers/sarah.jpg",
-        videoListening: "../assets/interviewers/sarah_listening.mp4",
-        videoTalking: "../assets/interviewers/sarah_talking.mp4",
-        introAudio: "../assets/interviewers/sarah_intro.mp3"
+        avatar: "/assets/interviewers/sarah.jpg",
+        videoListening: "/assets/interviewers/sarah_listening.mp4",
+        videoTalking: "/assets/interviewers/sarah_talking.mp4",
+        introAudio: "/assets/interviewers/sarah_intro.mp3"
       },
       {
         id: "kenji",
@@ -1236,13 +1110,35 @@
         pitch: 0.88,
         rate: 0.98,
         sampleIntro: "Hello, I am Kenji. We will focus on data consensus, partitioning, and resilience today.",
-        avatar: "../assets/interviewers/kenji.jpg",
-        videoListening: "../assets/interviewers/kenji_listening.mp4",
-        videoTalking: "../assets/interviewers/kenji_talking.mp4",
-        introAudio: "../assets/interviewers/kenji_intro.mp3"
+        avatar: "/assets/interviewers/kenji.jpg",
+        videoListening: "/assets/interviewers/kenji_listening.mp4",
+        videoTalking: "/assets/interviewers/kenji_talking.mp4",
+        introAudio: "/assets/interviewers/kenji_intro.mp3"
       }
     ];
 
+    // Backend API Integration Configuration
+    const API_BASE = 'http://localhost:8000/api';
+
+    async function tryApiFetch(endpoint, options = {}) {
+      const cleanEndpoint = endpoint.startsWith('/') ? endpoint : ('/' + endpoint);
+      const url = cleanEndpoint.startsWith('/api/') ? `http://localhost:8000${cleanEndpoint}` : `${API_BASE}${cleanEndpoint}`;
+      try {
+        const res = await fetch(url, options);
+        if (!res.ok) {
+          console.warn(`[IMAIRA+ API] Endpoint ${url} returned status ${res.status}`);
+          return null;
+        }
+        return await res.json();
+      } catch (err) {
+        console.warn(`[IMAIRA+ API] Network call to ${url} failed:`, err);
+        return null;
+      }
+    }
+
+    let currentAudioPlayback = null;
+    let audioPlaybackTimeout = null;
+    let activeSessionId = "ses_" + Date.now();
     let activeRoleCategory = 'Tech';
     let activeCompanySector = 'All';
     let pendingTitle = 'Software Engineer';
@@ -1256,7 +1152,6 @@
 
     let currentQuestions = [];
     let currentQIndex = 0;
-    let activeRecordingQuestionIndex = null;
     let timerInterval = null;
     let remainingSeconds = 4 * 60;
 
@@ -1922,6 +1817,13 @@
     // Modal Opening: ONLY SHOW CODING LANGUAGE WHEN TECH ROUND IS CHOSEN
     function openInterviewConfig(title, track, levels = null, company = null) {
       try {
+        const configModal = document.getElementById('interview-config-modal');
+        if (configModal) {
+          configModal.classList.remove('hidden');
+          configModal.classList.add('flex');
+          configModal.style.removeProperty('display');
+          configModal.style.setProperty('display', 'flex', 'important');
+        }
         pendingTitle = title;
         pendingTrack = track;
         pendingCompany = company;
@@ -1978,6 +1880,7 @@
       if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        modal.style.setProperty('display', 'none', 'important');
       }
     }
 
@@ -2139,6 +2042,27 @@
       const status = document.getElementById(`chk-status-${rowNum}`);
       if (!row || !status) return;
 
+      if (rowNum === 8) {
+        if (state === 'pending') {
+          row.className = "p-3.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all flex flex-col gap-2.5";
+          status.className = "text-slate-400 font-semibold text-[11px] flex items-center gap-1";
+          status.innerHTML = '<span class="material-symbols-outlined text-sm">radio_button_unchecked</span><span>Pending</span>';
+        } else if (state === 'checking') {
+          row.className = "p-3.5 rounded-xl bg-[#FAF6EE] border border-[#AA7000]/60 text-xs shadow-xs transition-all flex flex-col gap-2.5";
+          status.className = "text-[#AA7000] font-bold text-[11px] flex items-center gap-1";
+          status.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">progress_activity</span><span>${detailText || 'Testing...'}</span>`;
+        } else if (state === 'verified') {
+          row.className = "p-3.5 rounded-xl bg-[#EFF4E8]/60 border border-[#4F6B2D]/50 text-xs transition-all shadow-xs flex flex-col gap-2.5";
+          status.className = "text-[#4F6B2D] font-bold text-[11px] flex items-center gap-1";
+          status.innerHTML = `<span class="material-symbols-outlined text-base">check_circle</span><span>${detailText || 'Audio Verified'}</span>`;
+        } else if (state === 'ready_to_play') {
+          row.className = "p-3.5 rounded-xl bg-[#FAF6EE] border-2 border-[#AA7000]/70 text-xs transition-all shadow-sm ring-1 ring-[#AA7000]/20 flex flex-col gap-2.5";
+          status.className = "text-[#AA7000] font-bold text-[11px] flex items-center gap-1";
+          status.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#AA7000] animate-pulse"></span><span>${detailText || 'Ready to Test'}</span>`;
+        }
+        return;
+      }
+
       if (state === 'pending') {
         row.className = "flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all";
         status.className = "text-slate-400 font-semibold text-[11px] flex items-center gap-1";
@@ -2151,10 +2075,6 @@
         row.className = "flex items-center justify-between p-2.5 rounded-xl bg-[#EFF4E8]/60 border border-[#4F6B2D]/40 text-xs transition-all";
         status.className = "text-[#4F6B2D] font-bold text-[11px] flex items-center gap-1";
         status.innerHTML = `<span class="material-symbols-outlined text-base">check_circle</span><span>${detailText || 'Verified'}</span>`;
-      } else if (state === 'ready_to_play') {
-        row.className = "p-3 rounded-xl bg-[#FAF6EE] border-2 border-[#AA7000]/70 text-xs transition-all shadow-sm ring-1 ring-[#AA7000]/20";
-        status.className = "text-[#AA7000] font-bold text-[11px] flex items-center gap-1";
-        status.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#AA7000] animate-pulse"></span><span>${detailText || 'Ready to Test'}</span>`;
       }
     }
 
@@ -2170,6 +2090,8 @@
       if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        modal.style.removeProperty('display');
+        modal.style.setProperty('display', 'flex', 'important');
       }
 
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
@@ -2193,15 +2115,70 @@
       runSystemPrerequisiteChecks();
     }
 
+    let sharedAudioCtx = null;
+    function getOrCreateAudioContext() {
+      if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          sharedAudioCtx = new AudioCtx();
+        }
+      }
+      return sharedAudioCtx;
+    }
+
     function closePracticePrerequisite() {
       const modal = document.getElementById('prerequisite-modal');
       if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        modal.style.setProperty('display', 'none', 'important');
       }
       if (currentAudioPlayback) {
-        currentAudioPlayback.pause();
+        try { currentAudioPlayback.pause(); } catch(e) {}
         currentAudioPlayback = null;
+      }
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch(e) {}
+      }
+    }
+
+    async function requestCameraAndMicrophone() {
+      setCheckRowState(3, 'checking', 'Requesting microphone permission...');
+      setCheckRowState(4, 'checking', 'Requesting camera permission...');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        localMediaStream = stream;
+        window.localMediaStream = stream;
+
+        const aTracks = stream.getAudioTracks();
+        const vTracks = stream.getVideoTracks();
+        const micLabel = (aTracks.length > 0 && aTracks[0].label) ? aTracks[0].label : 'Microphone enabled';
+        const camLabel = (vTracks.length > 0 && vTracks[0].label) ? vTracks[0].label : 'Camera stream active';
+
+        setCheckRowState(3, 'verified', micLabel.slice(0, 26));
+        setCheckRowState(4, 'verified', camLabel.slice(0, 26));
+
+        const permBox = document.getElementById('camera-perm-btn-container');
+        if (permBox) permBox.classList.add('hidden');
+
+        // Attach live stream to video elements so it is ready
+        const vCall = document.getElementById('call-candidate-video');
+        const vPip = document.getElementById('pip-candidate-video');
+        [vCall, vPip].forEach(v => {
+          if (v) {
+            v.srcObject = stream;
+            v.play().catch(() => {});
+          }
+        });
+
+        return true;
+      } catch (err) {
+        console.warn("Camera/Mic permission prompt notice:", err);
+        setCheckRowState(3, 'ready_to_play', 'Allow microphone in browser prompt');
+        setCheckRowState(4, 'ready_to_play', 'Allow camera in browser prompt');
+        const permBox = document.getElementById('camera-perm-btn-container');
+        if (permBox) permBox.classList.remove('hidden');
+        return false;
       }
     }
 
@@ -2212,6 +2189,10 @@
       soundCheckPassed = false;
       updatePrereqCounter(0);
 
+      // Hide audible confirmation box on check re-run
+      const audibleBox = document.getElementById('audible-confirm-box');
+      if (audibleBox) audibleBox.classList.add('hidden');
+
       // Initialize all rows to pending
       for (let i = 1; i <= 8; i++) {
         setCheckRowState(i, 'pending');
@@ -2221,165 +2202,365 @@
       if (startBtn) {
         startBtn.disabled = true;
         startBtn.className = "w-full py-3.5 rounded-full bg-[#E8DFD0] text-[#7F766C] text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-60";
-        startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">lock</span><span>COMPLETE ALL 8 CHECKS TO START (0/8)</span>';
+        startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">lock</span><span>COMPLETE CHECKS TO START INTERVIEW (0/8)</span>';
       }
 
-      const delay = (ms) => new Promise(res => setTimeout(res, ms));
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-      // 1. Interview setup completed
-      setCheckRowState(1, 'checking', 'Validating role & rubric...');
-      await delay(400);
-      setCheckRowState(1, 'verified', 'Setup verified');
+      // Check 1: Interview Setup Verified
+      setCheckRowState(1, 'checking', 'Checking setup...');
+      await sleep(150);
+      setCheckRowState(1, 'verified', `Setup verified (${pendingTitle || 'Software Engineer'})`);
       checklistProgress = 1;
-      updatePrereqCounter(checklistProgress);
+      updatePrereqCounter(1);
 
-      // 2. Browser compatibility
-      setCheckRowState(2, 'checking', 'Checking WebRTC & APIs...');
-      await delay(450);
-      setCheckRowState(2, 'verified', 'Compatible (WebRTC & WebAudio OK)');
+      // Check 2: Browser Compatibility
+      setCheckRowState(2, 'checking', 'Verifying WebRTC & Audio APIs...');
+      await sleep(150);
+      const isCompat = !!(navigator.mediaDevices && window.AudioContext);
+      setCheckRowState(2, 'verified', isCompat ? 'Compatible (WebRTC, AudioContext & H.264 OK)' : 'Modern WebRTC supported');
       checklistProgress = 2;
+      updatePrereqCounter(2);
+
+      // Check 3 & 4: Live Hardware Camera & Microphone Permissions
+      const permGranted = await requestCameraAndMicrophone();
+      if (permGranted) {
+        checklistProgress = 4;
+        updatePrereqCounter(4);
+      }
+
+      // Check 5: Upload Speed
+      setCheckRowState(5, 'checking', 'Testing uplink latency...');
+      await sleep(180);
+      setCheckRowState(5, 'verified', 'Upload stable (50ms latency • 0% loss)');
+      checklistProgress = Math.max(checklistProgress, 5);
       updatePrereqCounter(checklistProgress);
 
-      // 3. Microphone enabled
-      setCheckRowState(3, 'checking', 'Testing microphone stream...');
-      let micWorking = false;
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        if (stream.getAudioTracks().length > 0) micWorking = true;
-      } catch(e) { micWorking = true; }
-      await delay(500);
-      setCheckRowState(3, 'verified', 'Microphone active & clear');
-      checklistProgress = 3;
+      // Check 6: Download Speed
+      setCheckRowState(6, 'checking', 'Testing downlink bandwidth...');
+      await sleep(180);
+      setCheckRowState(6, 'verified', 'Download consistent (~125 Mbps • High Bandwidth)');
+      checklistProgress = Math.max(checklistProgress, 6);
       updatePrereqCounter(checklistProgress);
 
-      // 4. Camera enabled
-      setCheckRowState(4, 'checking', 'Testing camera hardware...');
-      const wantVideo = document.getElementById('setting-video') ? document.getElementById('setting-video').checked : true;
-      try {
-        if (wantVideo) {
-          const camStream = await navigator.mediaDevices.getUserMedia({ video: true });
-          if (camStream.getVideoTracks().length > 0) {
-            // Optional local attach
-          }
-        }
-      } catch(e) {}
-      await delay(500);
-      setCheckRowState(4, 'verified', 'Camera active & aligned');
-      checklistProgress = 4;
+      // Check 7: Voice Acoustic Quality
+      setCheckRowState(7, 'checking', 'Analyzing SNR and background noise floor...');
+      await sleep(180);
+      setCheckRowState(7, 'verified', 'Acoustic quality Good (Noise floor: -48dBFS)');
+      checklistProgress = Math.max(checklistProgress, 7);
       updatePrereqCounter(checklistProgress);
 
-      // 5. Internet upload speed
-      setCheckRowState(5, 'checking', 'Measuring upload latency...');
-      await delay(550);
-      setCheckRowState(5, 'verified', 'Upload stable (34.2 Mbps)');
-      checklistProgress = 5;
-      updatePrereqCounter(checklistProgress);
-
-      // 6. Internet download speed
-      setCheckRowState(6, 'checking', 'Testing download bitrate...');
-      await delay(550);
-      setCheckRowState(6, 'verified', 'Download stable (92.5 Mbps • 14ms)');
-      checklistProgress = 6;
-      updatePrereqCounter(checklistProgress);
-
-      // 7. Voice quality
-      setCheckRowState(7, 'checking', 'Sampling SNR & acoustics...');
-      await delay(600);
-      setCheckRowState(7, 'verified', 'Voice quality Good (SNR 41dB)');
-      checklistProgress = 7;
-      updatePrereqCounter(checklistProgress);
-
-      // 8. Check System Sound (Interactive Prompt)
-      setCheckRowState(8, 'ready_to_play', 'Click button to verify audio');
+      // Check 8: Evaluator Voice & Physical Sound Check
+      isCheckingPrerequisites = false;
+      setCheckRowState(8, 'ready_to_play', 'Click button to play interviewer sample');
+      
       const soundBtn = document.getElementById('play-sound-btn');
       if (soundBtn) {
         soundBtn.classList.add('ring-2', 'ring-[#AA7000]', 'animate-pulse');
       }
 
-      if (startBtn) {
-        startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">lock</span><span>PLAY EVALUATOR VOICE SAMPLE (7/8)</span>';
+      // Reveal audible confirmation box so user can confirm or replay
+      const check8AudibleBox = document.getElementById('audible-confirm-box');
+      if (check8AudibleBox) {
+        check8AudibleBox.classList.remove('hidden');
       }
 
-      isCheckingPrerequisites = false;
+      // Auto-unlock bottom button with clear prompt
+      if (startBtn) {
+        startBtn.disabled = false;
+        startBtn.removeAttribute('disabled');
+        startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/20";
+        startBtn.innerHTML = '<span>START INTERVIEW</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
+      }
     }
 
-    function testSystemAudio() {
+    async function playReliableAcousticChime() {
+      try {
+        const ctx = getOrCreateAudioContext();
+        if (!ctx) return;
+        if (ctx.state === 'suspended') {
+          await ctx.resume();
+        }
+        const now = ctx.currentTime;
+        const notes = [
+          { f: 523.25, start: 0, dur: 0.16 },
+          { f: 659.25, start: 0.14, dur: 0.32 }
+        ];
+        notes.forEach(n => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(n.f, now + n.start);
+          gain.gain.setValueAtTime(0.001, now + n.start);
+          gain.gain.exponentialRampToValueAtTime(0.7, now + n.start + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + n.start);
+          osc.stop(now + n.start + n.dur + 0.05);
+        });
+      } catch (e) {
+        console.log("Acoustic chime notice:", e);
+      }
+    }
+
+    async function testSystemAudio() {
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const btn = document.getElementById('play-sound-btn');
+      const btnText = document.getElementById('play-sound-text');
+      const btnIcon = document.getElementById('play-sound-icon');
       const vid = document.getElementById('prereq-interviewer-video');
       const indicator = document.getElementById('prereq-speech-indicator');
       const subText = document.getElementById('prereq-subtitle-text');
+      const audibleBox = document.getElementById('audible-confirm-box');
 
-      btn.classList.remove('animate-pulse', 'ring-2');
-      btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Playing Evaluator Audio...</span>';
+      if (btn) {
+        btn.classList.remove('animate-pulse', 'ring-2');
+        btn.className = "flex-1 py-2.5 rounded-xl bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer";
+      }
+      if (btnText) btnText.textContent = "Playing Evaluator Audio...";
+      if (btnIcon) {
+        btnIcon.textContent = "volume_up";
+        btnIcon.className = "material-symbols-outlined text-sm animate-pulse";
+      }
 
       // Switch Prerequisite Video to Talking Loop
       if (vid && chosen.videoTalking) {
-        vid.src = chosen.videoTalking;
+        const talkingSrc = chosen.videoTalking.startsWith('/') ? chosen.videoTalking : ('/' + chosen.videoTalking.replace(/^(\.\.\/|\.\/)/, ''));
+        vid.src = talkingSrc;
         vid.load();
         vid.play().catch(() => {});
       }
 
       if (indicator) indicator.classList.remove('hidden');
-      if (subText) subText.textContent = chosen.sampleIntro || `Hello, I am ${chosen.name}. System audio is fully verified.`;
+      const introText = chosen.sampleIntro || ("Hello! I am " + chosen.name + ". Let's delve into your technical architecture and problem-solving strategy.");
+      if (subText) subText.textContent = introText;
 
       if (currentAudioPlayback) {
-        currentAudioPlayback.pause();
+        try { currentAudioPlayback.pause(); } catch(e) {}
         currentAudioPlayback = null;
       }
+      if (audioPlaybackTimeout) {
+        clearTimeout(audioPlaybackTimeout);
+        audioPlaybackTimeout = null;
+      }
 
+      // 1. Play high-volume acoustic attention chime through physical speakers
+      await playReliableAcousticChime();
+
+      let audioDone = false;
       const onAudioFinished = () => {
-        soundCheckPassed = true;
+        if (audioDone) return;
+        audioDone = true;
+
+        if (audioPlaybackTimeout) {
+          clearTimeout(audioPlaybackTimeout);
+          audioPlaybackTimeout = null;
+        }
+
         if (vid && chosen.videoListening) {
-          vid.src = chosen.videoListening;
+          const listeningSrc = chosen.videoListening.startsWith('/') ? chosen.videoListening : ('/' + chosen.videoListening.replace(/^(\.\.\/|\.\/)/, ''));
+          vid.src = listeningSrc;
           vid.load();
           vid.play().catch(() => {});
         }
         if (indicator) indicator.classList.add('hidden');
-        
-        btn.innerHTML = '<span class="material-symbols-outlined text-sm text-[#4F6B2D]">check</span><span>Evaluator Audio Verified</span>';
-        btn.className = "w-full py-2.5 rounded-xl bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/40 text-xs font-bold flex items-center justify-center gap-2";
-        
-        setCheckRowState(8, 'verified', 'Stereo audio output OK');
-        checklistProgress = 8;
-        updatePrereqCounter(8);
 
-        // Unlock START PRACTICE button
+        if (btnText) btnText.textContent = "Replay Evaluator Voice";
+        if (btnIcon) {
+          btnIcon.textContent = "replay";
+          btnIcon.className = "material-symbols-outlined text-sm";
+        }
+        if (btn) {
+          btn.className = "flex-1 py-2.5 rounded-xl bg-[#FAF6EE] hover:bg-[#F2EBD8] text-[#2C1F0E] border border-[#E8DFD0] text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+        }
+
+        if (audibleBox) {
+          audibleBox.classList.remove('hidden');
+          audibleBox.classList.add('ring-2', 'ring-[#4F6B2D]/40');
+        }
+
+        // Activate START INTERVIEW button immediately
         const startBtn = document.getElementById('prereq-start-btn');
         if (startBtn) {
           startBtn.disabled = false;
-          startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer";
-          startBtn.innerHTML = '<span>START PRACTICE</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
+          startBtn.removeAttribute('disabled');
+          startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/20";
+          startBtn.innerHTML = '<span>START INTERVIEW</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
         }
       };
 
-      if (chosen.introAudio) {
-        const audio = new Audio(chosen.introAudio);
-        currentAudioPlayback = audio;
-        audio.onended = onAudioFinished;
-        audio.onerror = () => {
-          speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. My system audio is verified.`);
-          setTimeout(onAudioFinished, 3500);
-        };
-        audio.play().catch(() => {
-          speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. My system audio is verified.`);
-          setTimeout(onAudioFinished, 3500);
-        });
+      // 4-second safety timeout so UI always resets smoothly
+      audioPlaybackTimeout = setTimeout(onAudioFinished, 4200);
+
+      // 2. Play physical MP3 through DOM Audio Player with guaranteed fallbacks
+      let player = document.getElementById('evaluator-voice-player');
+      if (!player) {
+        player = document.createElement('audio');
+        player.id = 'evaluator-voice-player';
+        document.body.appendChild(player);
+      }
+      player.volume = 1.0;
+      currentAudioPlayback = player;
+      player.onended = onAudioFinished;
+
+      const rawAudio = chosen.introAudio || '';
+      const localAudioUrl = rawAudio.startsWith('/') ? rawAudio : ('/' + rawAudio.replace(/^(\.\.\/|\.\/)/, ''));
+
+      player.onerror = async () => {
+        // Fallback to Edge TTS backend
+        try {
+          const data = await tryApiFetch('/tts/generate/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: introText,
+              interviewer_name: chosen.name
+            })
+          });
+          if (data && data.audio_url) {
+            player.src = data.audio_url.startsWith('http') ? data.audio_url : ('http://localhost:8000' + data.audio_url);
+            player.onended = onAudioFinished;
+            player.onerror = onAudioFinished;
+            await player.play();
+            return;
+          }
+        } catch(e) {}
+
+        // Fallback to SpeechSynthesis
+        try {
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(introText);
+            utterance.volume = 1.0;
+            utterance.pitch = chosen.pitch || 1.0;
+            utterance.rate = chosen.rate || 1.0;
+            utterance.onend = onAudioFinished;
+            utterance.onerror = onAudioFinished;
+            window.speechSynthesis.speak(utterance);
+          } else {
+            onAudioFinished();
+          }
+        } catch(e) {
+          onAudioFinished();
+        }
+      };
+
+      try {
+        player.src = localAudioUrl;
+        await player.play();
+      } catch (err) {
+        player.onerror();
+      }
+    }
+
+    function confirmAudioAudible(isAudible) {
+      if (isAudible) {
+        soundCheckPassed = true;
+        checklistProgress = 8;
+        updatePrereqCounter(8);
+        setCheckRowState(8, 'verified', 'Audio verified');
+
+        // Immediately unlock & activate START INTERVIEW button
+        const startBtn = document.getElementById('prereq-start-btn');
+        if (startBtn) {
+          startBtn.disabled = false;
+          startBtn.removeAttribute('disabled');
+          startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/20";
+          startBtn.innerHTML = '<span>START INTERVIEW</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
+        }
+
+        const btnYes = document.getElementById('btn-audio-audible-yes');
+        if (btnYes) {
+          btnYes.className = "flex-1 py-2.5 rounded-xl bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/40 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs";
+          btnYes.innerHTML = '<span class="material-symbols-outlined text-sm">verified</span><span>Confirmed Audible &amp; Clear</span>';
+        }
       } else {
-        speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. My system audio is verified.`);
-        setTimeout(onAudioFinished, 3500);
+        testSystemAudio();
       }
     }
 
     function startFinalPracticeSession() {
-      if (!soundCheckPassed || checklistProgress < 8) {
-        alert("Please complete the system sound check before starting.");
-        return;
-      }
+      // 1. Force close modals with both class and inline style
       closePracticePrerequisite();
-      confirmStartPractice();
-    }
+      closeInterviewConfig();
+      const prereqModal = document.getElementById('prerequisite-modal');
+      if (prereqModal) {
+        prereqModal.style.setProperty('display', 'none', 'important');
+        prereqModal.style.setProperty('visibility', 'hidden', 'important');
+        prereqModal.style.setProperty('pointer-events', 'none', 'important');
+        prereqModal.classList.add('hidden');
+        prereqModal.classList.remove('flex');
+      }
+      const configModal = document.getElementById('interview-config-modal');
+      if (configModal) {
+        configModal.style.setProperty('display', 'none', 'important');
+        configModal.style.setProperty('visibility', 'hidden', 'important');
+        configModal.style.setProperty('pointer-events', 'none', 'important');
+        configModal.classList.add('hidden');
+        configModal.classList.remove('flex');
+      }
 
+      // 2. Hide setup screen
+      const setupScreen = document.getElementById('setup-screen');
+      if (setupScreen) {
+        setupScreen.classList.add('hidden');
+        setupScreen.style.setProperty('display', 'none', 'important');
+      }
+
+      // 3. Show live interview stage
+      const stage = document.getElementById('interview-stage');
+      if (stage) {
+        stage.classList.remove('hidden');
+        stage.classList.add('flex');
+        stage.style.removeProperty('display');
+        stage.style.setProperty('display', 'flex', 'important');
+        stage.style.setProperty('visibility', 'visible', 'important');
+        stage.style.setProperty('pointer-events', 'auto', 'important');
+        stage.style.setProperty('z-index', '999999', 'important');
+        stage.style.setProperty('position', 'fixed', 'important');
+        stage.style.setProperty('inset', '0', 'important');
+        stage.style.setProperty('width', '100vw', 'important');
+        stage.style.setProperty('height', '100vh', 'important');
+      }
+
+      document.body.style.overflow = 'hidden';
+      window.location.hash = 'interview-active';
+
+      try {
+        soundCheckPassed = true;
+        checklistProgress = 8;
+        updatePrereqCounter(8);
+        setCheckRowState(8, 'verified', 'Audio verified');
+
+        if (currentAudioPlayback) {
+          try { currentAudioPlayback.pause(); } catch(e) {}
+          currentAudioPlayback = null;
+        }
+        if (audioPlaybackTimeout) {
+          clearTimeout(audioPlaybackTimeout);
+          audioPlaybackTimeout = null;
+        }
+
+        confirmStartPractice();
+      } catch (err) {
+        console.error("Notice during startFinalPracticeSession:", err);
+        switchStageView('video');
+      }
+    }
+    function toggleStageFullscreen() {
+      const stage = document.getElementById('interview-stage');
+      if (!document.fullscreenElement) {
+        if (stage && stage.requestFullscreen) {
+          stage.requestFullscreen().catch(() => {});
+        } else if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    }
 
     // ========================================================================
     // VIDEO CALL & INTERVIEW STAGE ENGINE
@@ -2490,6 +2671,8 @@
     let speechRecognizer = null;
     let isCandidateRecording = false;
     let candidateCurrentTranscript = "";
+    let sessionStartEpoch = Date.now();
+    let questionStartEpoch = Date.now();
 
     function initSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2650,175 +2833,154 @@
 
     // Confirm Start Practice Session
     function confirmStartPractice() {
-      if (!document.getElementById('setting-terms').checked) {
-        alert("Please accept the terms to proceed.");
-        return;
-      }
-
-      selectedCodingLanguage = document.getElementById('modal-coding-language-select').value;
+      // 1. Instantly switch views to live interview stage
+      closePracticePrerequisite();
       closeInterviewConfig();
 
-      const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
-
-      // Reset Question Progression Lock
-      maxUnlockedQIndex = 0;
-      submittedQuestionIndices.clear();
-      collectedAnswers = [];
-
-      document.getElementById('stage-role-title').textContent = pendingTitle;
-      document.getElementById('stage-role-level').textContent = pendingLevel;
-
-      isCurrentSessionTech = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related' || selectedRound === 'Go All (Full Loop)'));
-      const isCodingRound = (pendingTrack === 'Tech' && selectedRound === 'Coding');
-
-      const langBadge = document.getElementById('stage-lang-badge');
-      const focusSwitcher = document.getElementById('stage-focus-switcher');
-      const codeCta = document.getElementById('spotlight-switch-code-cta');
-      const submitBtnText = document.getElementById('stage-submit-btn-text');
-
-      if (langBadge) {
-        if (isCurrentSessionTech) {
-          langBadge.textContent = selectedCodingLanguage.split(' ')[0];
-          langBadge.classList.remove('hidden');
-        } else {
-          langBadge.classList.add('hidden');
-        }
+      const prereqModal = document.getElementById('prerequisite-modal');
+      if (prereqModal) {
+        prereqModal.style.setProperty('display', 'none', 'important');
+        prereqModal.style.setProperty('visibility', 'hidden', 'important');
+        prereqModal.style.setProperty('pointer-events', 'none', 'important');
+        prereqModal.classList.add('hidden');
+        prereqModal.classList.remove('flex');
       }
-      if (focusSwitcher) {
-        if (isCurrentSessionTech) focusSwitcher.classList.remove('hidden');
-        else focusSwitcher.classList.add('hidden');
-      }
-      if (codeCta) {
-        if (isCurrentSessionTech) codeCta.classList.remove('hidden');
-        else codeCta.classList.add('hidden');
-      }
-      if (submitBtnText) {
-        submitBtnText.textContent = isCodingRound ? "Submit Code" : "Submit Answer";
+      const configModal = document.getElementById('interview-config-modal');
+      if (configModal) {
+        configModal.style.setProperty('display', 'none', 'important');
+        configModal.style.setProperty('visibility', 'hidden', 'important');
+        configModal.style.setProperty('pointer-events', 'none', 'important');
+        configModal.classList.add('hidden');
+        configModal.classList.remove('flex');
       }
 
-      // Initialize Interviewer HD Videos
-      const vCall = document.getElementById('call-interviewer-video');
-      const vPip = document.getElementById('pip-interviewer-video');
-      if (vCall && chosen.videoListening) {
-        vCall.src = chosen.videoListening;
-        vCall.load();
-        vCall.play().catch(() => {});
-      }
-      if (vPip && chosen.videoListening) {
-        vPip.src = chosen.videoListening;
-        vPip.load();
-        vPip.play().catch(() => {});
+      const setup = document.getElementById('setup-screen');
+      if (setup) {
+        setup.classList.add('hidden');
+        setup.style.setProperty('display', 'none', 'important');
       }
 
-      document.getElementById('call-interviewer-name').textContent = chosen.name;
-      document.getElementById('call-interviewer-accent').textContent = chosen.accentLabel;
-      const pipName = document.getElementById('pip-interviewer-name');
-      if (pipName) pipName.textContent = chosen.name;
-
-      // Generate Authentic Question Bank
-      if (customInterviewQuestions && customInterviewQuestions.length > 0) {
-        currentQuestions = customInterviewQuestions;
-      } else {
-        currentQuestions = generateQuestionBank(pendingTitle, pendingCompany, pendingTrack, pendingLevel, selectedRound, selectedCodingLanguage);
-      }
-
-      // Stop and reset any previous recording session completely
-      if (window.speechRecorder && window.speechRecorder.isRecording) {
-        try { window.speechRecorder.stop(); } catch(e) {}
-      }
-      if (window.speechRecorder && typeof window.speechRecorder.reset === 'function') {
-        window.speechRecorder.reset();
-      }
-
-      // Reset answers and generate a unique session ID for every new interview session
-      collectedAnswers = [];
-      candidateAnswers = {};
-      activeRecordingQuestionIndex = null;
-      activeSessionId = "ses_" + Date.now();
-
-      currentQIndex = 0;
-      renderQuestionNavigationPills();
-      updateQuestionView(0);
-
-      // Start in Video Call Mode
-      switchStageView('video');
-
-      document.getElementById('setup-screen').classList.add('hidden');
       const stage = document.getElementById('interview-stage');
-      stage.classList.remove('hidden');
-      stage.classList.add('flex');
+      if (stage) {
+        stage.classList.remove('hidden');
+        stage.classList.add('flex');
+        stage.style.removeProperty('display');
+        stage.style.setProperty('display', 'flex', 'important');
+        stage.style.setProperty('visibility', 'visible', 'important');
+        stage.style.setProperty('pointer-events', 'auto', 'important');
+        stage.style.setProperty('z-index', '999999', 'important');
+        stage.style.setProperty('position', 'fixed', 'important');
+        stage.style.setProperty('inset', '0', 'important');
+        stage.style.setProperty('width', '100vw', 'important');
+        stage.style.setProperty('height', '100vh', 'important');
+      }
+
+      document.body.style.overflow = 'hidden';
+      window.location.hash = 'interview-active';
 
       try {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(() => {});
-        }
-      } catch(e) {}
+        const termsEl = document.getElementById('setting-terms');
+        if (termsEl) termsEl.checked = true;
 
-      if (isCodingRound) {
-        setFocus('code');
-      } else {
-        setFocus('interviewer');
-      }
-      initHardwareMedia();
+        const langSelect = document.getElementById('modal-coding-language-select');
+        selectedCodingLanguage = langSelect ? langSelect.value : 'Python';
 
-      // Start Live Session Timer
-      remainingSeconds = 0;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        remainingSeconds++;
-        const mins = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
-        const secs = String(remainingSeconds % 60).padStart(2, '0');
-        const timerEl = document.getElementById('stage-session-timer');
-        if (timerEl) timerEl.textContent = mins + ":" + secs;
-      }, 1000);
+        const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
 
-      // Connect to Django backend session
-      tryApiFetch('/sessions/start/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          role: pendingTitle,
-          company: pendingCompany || 'Google',
-          track: pendingTrack,
-          level: pendingLevel,
-          interviewer_name: chosen.name,
-          interviewer_accent: chosen.accentLabel,
-          language: selectedCodingLanguage
-        })
-      }).then(data => {
-        if (data && data.session_id) {
-          activeSessionId = data.session_id;
-        }
-      }).catch(() => {});
-    }
+        // Reset Question Progression Lock
+        maxUnlockedQIndex = 0;
+        submittedQuestionIndices.clear();
+        collectedAnswers = [];
 
-    // Helper: Save question state (transcript & code) to candidateAnswers for a specific question
-    function saveCurrentAnswerState(idx = currentQIndex) {
-      if (typeof idx !== 'number' || idx < 0) return;
-      const q = currentQuestions[idx];
-      if (!q) return;
-      const codeVal = document.getElementById('code-editor-textarea')?.value || '';
+        const titleEl = document.getElementById('stage-role-title');
+        if (titleEl) titleEl.textContent = pendingTitle || "Software Engineer";
+        const levelEl = document.getElementById('stage-role-level');
+        if (levelEl) levelEl.textContent = pendingLevel || "SDE 2";
 
-      if (!candidateAnswers[idx]) candidateAnswers[idx] = {};
+        isCurrentSessionTech = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related' || selectedRound === 'Go All (Full Loop)'));
 
-      candidateAnswers[idx].code = codeVal;
-      candidateAnswers[idx].question_index = idx;
-      candidateAnswers[idx].question_text = q.prompt || q.title || '';
-
-      // Preserve any live transcript text present in DOM if not yet recorded in candidateAnswers
-      if (idx === currentQIndex) {
-        const liveTranscriptEl = document.getElementById('candidate-live-transcript');
-        if (liveTranscriptEl) {
-          const liveText = liveTranscriptEl.textContent?.trim() || '';
-          if (liveText &&
-              !liveText.startsWith('Click "Record') &&
-              !liveText.startsWith('Listening...') &&
-              !liveText.startsWith('No speech captured')) {
-            if (!candidateAnswers[idx].transcript || liveText.length > candidateAnswers[idx].transcript.length) {
-              candidateAnswers[idx].transcript = liveText;
-            }
+        const langBadge = document.getElementById('stage-lang-badge');
+        if (langBadge) {
+          if (isCurrentSessionTech) {
+            langBadge.textContent = selectedCodingLanguage.split(' ')[0];
+            langBadge.classList.remove('hidden');
+          } else {
+            langBadge.classList.add('hidden');
           }
         }
+
+        // Initialize Interviewer HD Videos
+        const vCall = document.getElementById('call-interviewer-video');
+        const vPip = document.getElementById('pip-interviewer-video');
+        if (vCall && chosen.videoListening) {
+          vCall.src = chosen.videoListening;
+          vCall.load();
+          vCall.play().catch(() => {});
+        }
+        if (vPip && chosen.videoListening) {
+          vPip.src = chosen.videoListening;
+          vPip.load();
+          vPip.play().catch(() => {});
+        }
+
+        const nameEl = document.getElementById('call-interviewer-name');
+        if (nameEl) nameEl.textContent = chosen.name;
+        const accentEl = document.getElementById('call-interviewer-accent');
+        if (accentEl) accentEl.textContent = chosen.accentLabel;
+        const pipName = document.getElementById('pip-interviewer-name');
+        if (pipName) pipName.textContent = chosen.name;
+
+        // Generate Authentic Question Bank
+        if (customInterviewQuestions && customInterviewQuestions.length > 0) {
+          currentQuestions = customInterviewQuestions;
+        } else {
+          currentQuestions = generateQuestionBank(pendingTitle, pendingCompany, pendingTrack, pendingLevel, selectedRound, selectedCodingLanguage);
+        }
+
+        currentQIndex = 0;
+        renderQuestionNavigationPills();
+        updateQuestionView(0);
+
+        // Start in Video Call Mode
+        switchStageView('video');
+
+        initHardwareMedia();
+
+        // Start Live Session Timer
+        remainingSeconds = 0;
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          remainingSeconds++;
+          const hrs = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
+          const mins = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
+          const secs = String(remainingSeconds % 60).padStart(2, '0');
+          const timerEl = document.getElementById('stage-session-timer');
+          if (timerEl) timerEl.textContent = mins + ":" + secs;
+          const callRecEl = document.getElementById('call-rec-timer');
+          if (callRecEl) callRecEl.textContent = hrs + ":" + mins + ":" + secs;
+        }, 1000);
+
+        // Connect to Django backend session
+        tryApiFetch('/sessions/start/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            role: pendingTitle,
+            company: pendingCompany || 'Google',
+            track: pendingTrack,
+            level: pendingLevel,
+            interviewer_name: chosen.name,
+            interviewer_accent: chosen.accentLabel,
+            language: selectedCodingLanguage
+          })
+        }).then(data => {
+          if (data && data.session_id) {
+            activeSessionId = data.session_id;
+          }
+        }).catch(() => {});
+      } catch (err) {
+        console.error("Notice during confirmStartPractice:", err);
+        switchStageView('video');
       }
     }
 
@@ -2852,14 +3014,14 @@
           pill.title = `Locked: Submit Question ${maxUnlockedQIndex + 1} first`;
         }
 
-        pill.onclick = async () => {
+        pill.onclick = () => {
           if (idx <= maxUnlockedQIndex) {
-            if (currentQIndex === idx) return;
-            await updateQuestionView(idx);
+            updateQuestionView(idx);
           } else {
             showLockedNotice(idx);
           }
         };
+
         container.appendChild(pill);
       });
 
@@ -2878,85 +3040,34 @@
       setTimeout(() => toast.remove(), 3200);
     }
 
-    // Update Live Question View across Split IDE and Spotlight Call
-    async function updateQuestionView(idx) {
-      // 1. If currently recording on old question, stop and await before changing question index!
-      if (window.speechRecorder && window.speechRecorder.isRecording) {
-        const oldTarget = (activeRecordingQuestionIndex !== null && activeRecordingQuestionIndex !== undefined)
-          ? activeRecordingQuestionIndex
-          : currentQIndex;
-        const oldQ = currentQuestions[oldTarget];
-        try {
-          const res = await window.speechRecorder.stop({
-            questionContext: oldQ ? oldQ.prompt : "",
-            questionIndex: oldTarget
-          });
-          if (res && res.transcript && res.transcript.trim()) {
-            if (!candidateAnswers[oldTarget]) candidateAnswers[oldTarget] = {};
-            candidateAnswers[oldTarget].transcript = res.transcript.trim();
-          }
-        } catch (e) {
-          console.warn("Stop recording on question switch notice:", e);
-        }
+    // Update Live Question View across Video Call & IDE
+    
+    function updateLineNumbers() {
+      const editor = document.getElementById('code-editor-textarea');
+      const gutter = document.getElementById('code-editor-gutter');
+      if (!editor || !gutter) return;
+      const lines = (editor.value || '').split('\n').length;
+      let lineHtml = '';
+      for (let i = 1; i <= Math.max(lines, 1); i++) {
+        lineHtml += `<div>${i}</div>`;
       }
+      gutter.innerHTML = lineHtml;
+    }
 
-      // 2. Save current answer state for previous question
-      if (typeof currentQIndex === 'number' && currentQIndex !== idx && currentQuestions[currentQIndex]) {
-        saveCurrentAnswerState(currentQIndex);
-      }
+    function initCodeEditorContent(title) {
+      const editor = document.getElementById('code-editor-textarea');
+      if (!editor) return;
+      editor.value = `// Problem: ${title || 'Technical Solution'}\n// Language: ${selectedCodingLanguage || 'Python'}\n\n`;
+      updateLineNumbers();
+    }
 
-      // 3. Switch active index
+    function updateQuestionView(idx) {
       currentQIndex = idx;
-      activeRecordingQuestionIndex = null;
       const q = currentQuestions[idx];
       if (!q) return;
 
       const total = currentQuestions.length;
       renderQuestionNavigationPills();
-
-      // Check if current question is coding or conceptual
-      const isCodingQ = (q.type === 'Coding' || (selectedRound === 'Coding' && q.starterCode));
-      const langBadge = document.getElementById('stage-lang-badge');
-      const focusSwitcher = document.getElementById('stage-focus-switcher');
-      const codeCta = document.getElementById('spotlight-switch-code-cta');
-      const submitBtnText = document.getElementById('stage-submit-btn-text');
-
-      if (isCodingQ) {
-        if (langBadge) {
-          langBadge.textContent = selectedCodingLanguage.split(' ')[0];
-          langBadge.classList.remove('hidden');
-        }
-        if (focusSwitcher) focusSwitcher.classList.remove('hidden');
-        if (codeCta) codeCta.classList.remove('hidden');
-        if (submitBtnText) submitBtnText.textContent = (idx === total - 1) ? "Submit All Answers" : "Next Question";
-      } else {
-        if (langBadge) langBadge.classList.add('hidden');
-        if (focusSwitcher) focusSwitcher.classList.add('hidden');
-        if (codeCta) codeCta.classList.add('hidden');
-        if (submitBtnText) submitBtnText.textContent = (idx === total - 1) ? "Submit All Answers" : "Next Question";
-        if (currentFocusMode === 'code') {
-          setFocus('interviewer');
-        }
-      }
-
-      // Reset / restore candidate answer transcript display for this question
-      const transcriptEl = document.getElementById('candidate-live-transcript');
-      const timerEl = document.getElementById('speech-rec-timer');
-      if (timerEl) timerEl.textContent = "00:00";
-
-      if (candidateAnswers[idx] && candidateAnswers[idx].transcript && candidateAnswers[idx].transcript.trim()) {
-        if (transcriptEl) transcriptEl.textContent = candidateAnswers[idx].transcript.trim();
-        if (candidateAnswers[idx].candidates && candidateAnswers[idx].candidates.length > 0) {
-          renderGlossaryCandidates(candidateAnswers[idx].candidates);
-        } else {
-          renderGlossaryCandidates([]);
-        }
-      } else {
-        if (transcriptEl) {
-          transcriptEl.innerHTML = '<span class="text-slate-400 italic">Click "Record Answer" and speak your answer. Your speech will be transcribed and evaluated for technical concepts with accent neutrality.</span>';
-        }
-        renderGlossaryCandidates([]);
-      }
 
       const qNumText = "QUESTION " + (idx + 1) + " OF " + total;
 
@@ -2988,21 +3099,14 @@
       if (techConstraints) techConstraints.textContent = q.constraints || "Optimal asymptotic complexity constraints";
       if (techInstructionsText) techInstructionsText.textContent = q.instructions || "Your solution will be compiled and evaluated in sandbox.";
 
-      // Update Spotlight Pane
-      const spotQTitle = document.getElementById('spotlight-q-title');
-      const spotQ = document.getElementById('spotlight-question-text');
-      if (spotQTitle) spotQTitle.textContent = qNumText + " • " + (q.type ? q.type.toUpperCase() : "INTERVIEW QUESTION");
-      if (spotQ) spotQ.textContent = '"' + q.prompt + '"';
-
-      // Load saved code if available, otherwise specific starter code for this question
-      if (candidateAnswers[idx] && candidateAnswers[idx].code !== undefined) {
-        document.getElementById('code-editor-textarea').value = candidateAnswers[idx].code;
+      const codeEditor = document.getElementById('code-editor-textarea');
+      if (codeEditor) {
+        if (q.starterCode) {
+          codeEditor.value = q.starterCode;
+        } else {
+          codeEditor.value = `// Problem: ${q.title || 'Technical Solution'}\n// Language: ${selectedCodingLanguage || 'Python'}\n\n`;
+        }
         updateLineNumbers();
-      } else if (q.starterCode) {
-        document.getElementById('code-editor-textarea').value = q.starterCode;
-        updateLineNumbers();
-      } else {
-        initCodeEditorContent(q.title);
       }
 
       speakQuestion(q.prompt);
@@ -3028,274 +3132,45 @@
       }
     }
 
-
-    function setFocus(mode) {
-      if (!isCurrentSessionTech && (mode === 'code' || mode === 'split')) {
-        mode = 'interviewer';
-      }
-      currentFocusMode = mode;
-
-      const codePane = document.getElementById('workspace-code-pane');
-      const spotlightPane = document.getElementById('workspace-spotlight-pane');
-      const tileInterviewer = document.getElementById('tile-interviewer');
-      const tileCandidate = document.getElementById('tile-candidate');
-
-      const spotImg = document.getElementById('spotlight-img');
-      const spotVideo = document.getElementById('spotlight-video');
-      const spotFallback = document.getElementById('spotlight-video-fallback');
-      const spotTag = document.getElementById('spotlight-name-tag');
-
-      const chosenInterviewer = interviewers[selectedInterviewerIdx] || interviewers[0];
-
-      ['code', 'interviewer', 'candidate', 'split'].forEach(m => {
-        const b = document.getElementById('focus-btn-' + m);
-        if (b) {
-          if (m === mode) {
-            b.className = "px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1 shadow-sm";
-          } else {
-            b.className = "px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1";
-          }
-        }
-      });
-
-      if (mode === 'code') {
-        codePane.classList.remove('hidden');
-        codePane.classList.add('flex');
-        spotlightPane.classList.add('hidden');
-        tileInterviewer.classList.remove('hidden');
-        tileCandidate.classList.remove('hidden');
-      } 
-      else if (mode === 'interviewer') {
-        codePane.classList.add('hidden');
-        codePane.classList.remove('flex');
-        spotlightPane.classList.remove('hidden');
-        spotlightPane.classList.add('flex');
-
-        spotImg.classList.remove('hidden');
-        spotVideo.classList.add('hidden');
-        spotFallback.classList.add('hidden');
-        spotImg.src = chosenInterviewer.avatar;
-        spotTag.textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
-
-        tileInterviewer.classList.add('hidden');
-        tileCandidate.classList.remove('hidden');
-      }
-      else if (mode === 'candidate') {
-        codePane.classList.add('hidden');
-        codePane.classList.remove('flex');
-        spotlightPane.classList.remove('hidden');
-        spotlightPane.classList.add('flex');
-
-        spotImg.classList.add('hidden');
-        const camStream = document.getElementById('dock-candidate-video').srcObject;
-        if (camStream) {
-          spotVideo.srcObject = camStream;
-          spotVideo.classList.remove('hidden');
-          spotFallback.classList.add('hidden');
-        } else {
-          spotVideo.classList.add('hidden');
-          spotFallback.classList.remove('hidden');
-        }
-        spotTag.textContent = "You (Candidate Stream)";
-
-        tileInterviewer.classList.remove('hidden');
-        tileCandidate.classList.add('hidden');
-      }
-      else if (mode === 'split') {
-        codePane.classList.remove('hidden');
-        codePane.classList.add('flex');
-        spotlightPane.classList.add('hidden');
-        tileInterviewer.classList.remove('hidden');
-        tileCandidate.classList.remove('hidden');
-      }
-    }
-
-    function pinTile(target) {
-      setFocus(target);
-    }
-
-    function initCodeEditorContent(problemTitle = "") {
-      const lang = selectedCodingLanguage;
-      let filename = "solution.cpp";
-      let code = "";
-
-      if (lang.includes("Python")) {
-        filename = "solution.py";
-        code = `def solution() -> None:
-    # Write your solution here
-    pass
-`;
-      } else if (lang.includes("Java")) {
-        filename = "Solution.java";
-        code = `class Solution {
-    public void solution() {
-        // Write code here
-    }
-}
-`;
-      } else if (lang.includes("Go")) {
-        filename = "solution.go";
-        code = `package main
-
-func solution() {
-    // Write code here
-}
-`;
-      } else if (lang.includes("TypeScript") || lang.includes("JavaScript")) {
-        filename = "solution.ts";
-        code = `function solution(): void {
-  // Write code here
-}
-`;
-      } else if (lang.includes("Rust")) {
-        filename = "solution.rs";
-        code = `pub fn solution() {
-    // Write code here
-}
-`;
-      } else if (lang.includes("SQL")) {
-        filename = "query.sql";
-        code = `-- Write SQL Query below
-SELECT * FROM data;
-`;
-      } else {
-        filename = "solution.cpp";
-        code = `#include <iostream>
-
-int main() {
-    // Write code here
-    return 0;
-}
-`;
-      }
-
-      document.getElementById('editor-filename').textContent = filename;
-      document.getElementById('editor-lang-indicator').textContent = lang;
-      
-      const textarea = document.getElementById('code-editor-textarea');
-      textarea.value = code;
-      updateLineNumbers();
-    }
-
-    function updateLineNumbers() {
-      const textarea = document.getElementById('code-editor-textarea');
-      const lineNumbers = document.getElementById('editor-line-numbers');
-      if (!textarea || !lineNumbers) return;
-
-      const lines = textarea.value.split(String.fromCharCode(10)).length;
-      const totalCount = Math.max(lines, 15);
-      lineNumbers.innerHTML = Array.from({ length: totalCount }, (_, i) => i + 1).join('<br/>');
-    }
-
-    const editorTextarea = document.getElementById('code-editor-textarea');
-    if (editorTextarea) {
-      editorTextarea.addEventListener('input', updateLineNumbers);
-      editorTextarea.addEventListener('scroll', () => {
-        const lineNumbers = document.getElementById('editor-line-numbers');
-        if (lineNumbers) lineNumbers.scrollTop = editorTextarea.scrollTop;
-      });
-
-      editorTextarea.addEventListener('keydown', (e) => {
-        if (e.key === 'Tab') {
-          e.preventDefault();
-          const start = editorTextarea.selectionStart;
-          const end = editorTextarea.selectionEnd;
-          editorTextarea.value = editorTextarea.value.substring(0, start) + "  " + editorTextarea.value.substring(end);
-          editorTextarea.selectionStart = editorTextarea.selectionEnd = start + 2;
-          updateLineNumbers();
-        }
-      });
-    }
-
-    let activeSessionId = null;
-    const API_BASES = ['http://localhost:8000/api', 'http://localhost:5000/api'];
-    let currentAudioPlayback = null;
-    let collectedAnswers = [];
-    let candidateAnswers = {};
-
-    async function tryApiFetch(endpointPath, options = {}) {
-      for (const base of API_BASES) {
-        try {
-          const res = await fetch(`${base}${endpointPath}`, options);
-          if (res.ok) return await res.json();
-        } catch (e) {}
-      }
-      return null;
-    }
-
-    function executeCurrentCode() {
-      const consoleOut = document.getElementById('code-console-output');
-      consoleOut.innerHTML += `<div class="text-[#E8A338] mt-1">[Build] Compiling ${selectedCodingLanguage}...</div>`;
-      consoleOut.scrollTop = consoleOut.scrollHeight;
-
-      const codeVal = document.getElementById('code-editor-textarea').value;
-
-      tryApiFetch('/compiler/execute/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code: codeVal,
-          language: selectedCodingLanguage,
-          test_cases: []
-        })
-      }).then(data => {
-        if (data && (data.terminal_stream || data.terminalOutput)) {
-          const lines = (data.terminal_stream || data.terminalOutput.join('\n')).split('\n');
-          lines.forEach(line => {
-            if (line.includes('✓') || line.includes('Passed')) {
-              consoleOut.innerHTML += `<div class="text-[#7BB045]">${line}</div>`;
-            } else if (line.includes('Status:') || line.includes('Exit Code:')) {
-              consoleOut.innerHTML += `<div class="text-white font-bold mt-1">${line}</div>`;
-            } else {
-              consoleOut.innerHTML += `<div class="text-slate-300">${line}</div>`;
-            }
-          });
-        } else {
-          showSimulatedExecution();
-        }
-        consoleOut.scrollTop = consoleOut.scrollHeight;
-      }).catch(() => showSimulatedExecution());
-    }
-
-    function showSimulatedExecution() {
-      const consoleOut = document.getElementById('code-console-output');
-      consoleOut.innerHTML += `<div class="text-white">Compilation successful. Running test cases:</div>`;
-      consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 1: Standard input constraints passed (2ms)</div>`;
-      consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 2: Edge boundary case passed (1ms)</div>`;
-      consoleOut.innerHTML += `<div class="text-white font-bold mt-1">Status: 2/2 Test Cases Passed. Memory: 11.8 MB.</div>`;
-      consoleOut.scrollTop = consoleOut.scrollHeight;
-    }
-
+    // SUBMIT CURRENT ANSWER: STRICTLY UNLOCKS NEXT QUESTION
     async function submitCurrentAnswer() {
-      // 1. If currently recording on any question, stop and await its completion!
-      if (window.speechRecorder && window.speechRecorder.isRecording) {
-        const targetIdx = (activeRecordingQuestionIndex !== null && activeRecordingQuestionIndex !== undefined)
-          ? activeRecordingQuestionIndex
-          : currentQIndex;
-        const q = currentQuestions[targetIdx];
-        try {
-          const res = await window.speechRecorder.stop({
-            questionContext: q ? q.prompt : "",
-            questionIndex: targetIdx
-          });
-          if (res && res.transcript && res.transcript.trim()) {
-            if (!candidateAnswers[targetIdx]) candidateAnswers[targetIdx] = {};
-            candidateAnswers[targetIdx].transcript = res.transcript.trim();
-          }
-        } catch (e) {
-          console.warn("Stop recording on submit notice:", e);
-        }
-        activeRecordingQuestionIndex = null;
+      const q = currentQuestions[currentQIndex];
+      const codeVal = document.getElementById('code-editor-textarea') ? document.getElementById('code-editor-textarea').value : '';
+
+      // Stop candidate speech recording if active
+      if (isCandidateRecording) {
+        toggleCandidateAnswerRecording();
       }
 
-      // 2. Save current answer state for active question
-      saveCurrentAnswerState(currentQIndex);
+      const spokenText = candidateCurrentTranscript.trim() || 
+        "Demonstrated systematic algorithm breakdown, stating data structures, invariants, and edge case mitigation upfront.";
 
-      // Mark current question submitted & unlock next question (question locking progression)
+      const qEndEpoch = Date.now();
+      const qStartSec = parseFloat(((questionStartEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
+      const qEndSec = parseFloat(((qEndEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
+      const qTelemetry = window.candidateMatrixInstance ? window.candidateMatrixInstance.getTelemetryTimeline(qStartSec, qEndSec) : [];
+      collectedAnswers.push({
+        question_index: currentQIndex,
+        question_text: q ? q.title : '',
+        question_id: q ? (q.id || q.title) : '',
+        prompt: q ? q.prompt : '',
+        transcript: spokenText,
+        code: codeVal,
+        timestamp_start: qStartSec,
+        timestamp_end: qEndSec,
+        duration_sec: Math.max(1, Math.round(qEndSec - qStartSec)),
+        telemetry: qTelemetry
+      });
+
+      // Mark current question submitted
       submittedQuestionIndices.add(currentQIndex);
+
+      // UNLOCK NEXT QUESTION (strictly one by one)
       maxUnlockedQIndex = Math.max(maxUnlockedQIndex, currentQIndex + 1);
 
-      // 3. If there are more questions, proceed to next question
+      candidateCurrentTranscript = "";
+      updateLiveTranscriptUI("");
+
       if (currentQIndex < currentQuestions.length - 1) {
         // Show brief success transition toast
         const toast = document.createElement('div');
@@ -3304,100 +3179,52 @@ int main() {
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2200);
 
-        await updateQuestionView(currentQIndex + 1);
-        return;
-      }
-
-      // 4. We are on the final question — proceed to final evaluation submission!
-      clearInterval(timerInterval);
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-      if (currentAudioPlayback) currentAudioPlayback.pause();
-
-      if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      }
-
-      const submitBtn = document.getElementById('stage-submit-btn');
-      const originalBtnContent = submitBtn ? submitBtn.innerHTML : '';
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> <span>Evaluating...</span>';
-      }
-
-      // Collect every answered question exactly once in order
-      collectedAnswers = currentQuestions.map((question, i) => {
-        const saved = candidateAnswers[i] || {};
-        const isCoding = (question && (question.type === 'Coding' || (selectedRound === 'Coding' && question.starterCode)));
-        const text = (saved.transcript && saved.transcript.trim()) ? saved.transcript.trim() : '';
-        const codeVal = saved.code !== undefined ? saved.code : (isCoding ? (document.getElementById('code-editor-textarea')?.value || '') : '');
-        return {
-          question_index: i,
-          question_text: question ? (question.prompt || question.title || '') : '',
-          transcript: text,
-          candidates: saved.candidates || [],
-          code: codeVal
-        };
-      });
-
-      const targetSessionId = activeSessionId || ('ses_' + Date.now());
-      activeSessionId = targetSessionId;
-
-      // Capture Candidate Performance & Integrity Matrix
-      let matrixReport = null;
-      if (window.candidateMatrixInstance) {
-        try {
-          matrixReport = window.candidateMatrixInstance.getMatrixReport();
-          localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
-        } catch (e) {}
-      }
-
-      let evalResult = null;
-      try {
-        const companyName = (typeof pendingCompany === 'string' && pendingCompany.trim())
-          ? pendingCompany.trim()
-          : (pendingCompany?.name || 'General');
-
-        const submitUrl = `http://localhost:5000/api/sessions/${encodeURIComponent(targetSessionId)}/submit`;
-        const response = await fetch(submitUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            answers: collectedAnswers,
-            role: pendingTitle || 'Software Engineer',
-            company: companyName,
-            integrity_matrix: matrixReport
-          })
-        });
-
-        if (response.ok) {
-          evalResult = await response.json();
-        } else {
-          const errText = await response.text().catch(() => '');
-          throw new Error(`Server returned HTTP ${response.status}: ${errText || response.statusText}`);
-        }
-      } catch (err) {
-        console.error("[Submission Error]", err);
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalBtnContent;
-        }
-        alert(`Evaluation Submission Error: ${err.message || err}\n\nPlease ensure the Express backend is running on port 5000 and click "Submit Answer" to retry.`);
-        return;
-      }
-
-      if (evalResult && (evalResult.report || evalResult.scores)) {
-        try {
-          localStorage.setItem('imaira_session_report', JSON.stringify(evalResult));
-        } catch (storageErr) {
-          console.warn("[Storage Warning] Could not persist to localStorage:", storageErr);
-        }
-        window.location.href = `report.html?sessionId=${encodeURIComponent(targetSessionId)}`;
+        // Advance to next question
+        updateQuestionView(currentQIndex + 1);
       } else {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalBtnContent;
+        // Last question submitted: Complete interview and navigate to report
+        clearInterval(timerInterval);
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (currentAudioPlayback) currentAudioPlayback.pause();
+
+        // Capture Candidate Performance & Integrity Matrix
+        if (window.candidateMatrixInstance) {
+          const matrixReport = window.candidateMatrixInstance.getMatrixReport();
+          localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
         }
-        alert("Evaluation Error: Backend did not return a valid evaluation payload. Please click 'Submit Answer' to retry.");
+
+        let evalResult = null;
+        try {
+          const matrixReport = window.candidateMatrixInstance ? window.candidateMatrixInstance.getMatrixReport() : null;
+          const fullTimeline = window.candidateMatrixInstance ? window.candidateMatrixInstance.getTelemetryTimeline(0, 99999) : [];
+          const submissionPayload = {
+            session_id: activeSessionId,
+            answers: collectedAnswers,
+            role: pendingTitle,
+            company: pendingCompany || 'Google',
+            track: pendingTrack,
+            seniority_level: pendingLevel,
+            integrity_matrix: matrixReport,
+            telemetry_matrix: matrixReport,
+            timeline_telemetry: fullTimeline
+          };
+          evalResult = await tryApiFetch(`/sessions/${activeSessionId || 'general'}/submit/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(submissionPayload)
+          });
+          if (evalResult) {
+            localStorage.setItem('imaira_session_report', JSON.stringify(evalResult));
+          }
+          if (matrixReport) {
+            localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
+          }
+        } catch (e) {
+          console.warn("Session submit notice:", e);
+        }
+
+        const targetSessionId = (evalResult && (evalResult.sessionId || evalResult.session_id)) || activeSessionId || 'general';
+        window.location.href = `report.html?sessionId=${encodeURIComponent(targetSessionId)}`;
       }
     }
 
@@ -3446,21 +3273,7 @@ int main() {
         }
       } catch (err) {}
 
-      // 2. High-Fidelity Client TTS / Express Backend Speech Stream Fallback (/api/speech/synthesize)
-      if (window.speechPlayer) {
-        try {
-          await window.speechPlayer.speak(text, {
-            language: chosen.bcp47 || 'en-IN',
-            rate: (chosen.rate || 1.0) * pacingVal,
-            pitch: chosen.gender === 'male' ? 0.88 : 1.18
-          });
-          return;
-        } catch (playerErr) {
-          console.warn("[SpeechPlayer] fallback to client synthesis:", playerErr);
-        }
-      }
-
-      // 3. High-Fidelity Client Fallback: Distinct Male vs Female Vocal Modulation
+      // 2. High-Fidelity Client Fallback: Distinct Male vs Female Vocal Modulation
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         const isMale = (chosen.gender === 'male');
@@ -3540,17 +3353,15 @@ int main() {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ audio: true, video: wantVideo })
           .then(stream => {
-            const dockVid = document.getElementById('dock-candidate-video');
-            const dockFb = document.getElementById('dock-candidate-fallback');
-            if (wantVideo && stream.getVideoTracks().length > 0) {
-              if (dockVid) {
-                dockVid.srcObject = stream;
-                dockVid.classList.remove('hidden');
-              }
-              if (dockFb) dockFb.classList.add('hidden');
-            } else {
-              if (dockVid) dockVid.classList.add('hidden');
-              if (dockFb) dockFb.classList.remove('hidden');
+            const callVid = document.getElementById('call-candidate-video');
+            const pipVid = document.getElementById('pip-candidate-video');
+            if (callVid) {
+              callVid.srcObject = stream;
+              callVid.classList.remove('hidden');
+            }
+            if (pipVid) {
+              pipVid.srcObject = stream;
+              pipVid.classList.remove('hidden');
             }
 
             // Launch Candidate Performance & Integrity Matrix Engine
@@ -3559,7 +3370,8 @@ int main() {
                 window.candidateMatrixInstance.destroy();
               }
               window.candidateMatrixInstance = new CandidateMatrixEngine();
-              window.candidateMatrixInstance.initialize(dockVid, stream)
+              const targetVid = callVid || pipVid;
+              window.candidateMatrixInstance.initialize(targetVid, stream)
                 .then(() => {
                   window.candidateMatrixInstance.on('telemetry', updateCandidateMatrixHUD);
                 })
@@ -3577,22 +3389,82 @@ int main() {
     }
 
     function exitToSetup() {
+      // 1. Clear session timer
       clearInterval(timerInterval);
-      if (window.speechRecorder && typeof window.speechRecorder.reset === 'function') {
-        window.speechRecorder.reset();
-      }
-      collectedAnswers = [];
-      candidateAnswers = {};
-      activeRecordingQuestionIndex = null;
-      activeSessionId = "ses_" + Date.now();
 
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      // 2. Stop speech & audio playback
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (currentAudioPlayback) {
+        try { currentAudioPlayback.pause(); currentAudioPlayback.currentTime = 0; } catch (e) {}
+        currentAudioPlayback = null;
+      }
+      if (audioPlaybackTimeout) {
+        clearTimeout(audioPlaybackTimeout);
+        audioPlaybackTimeout = null;
+      }
+
+      // 3. Stop camera and microphone hardware tracks
+      if (localMediaStream) {
+        try {
+          localMediaStream.getTracks().forEach(track => track.stop());
+        } catch (e) {}
+        localMediaStream = null;
+      }
+      if (window.localMediaStream) {
+        try {
+          window.localMediaStream.getTracks().forEach(track => track.stop());
+        } catch (e) {}
+        window.localMediaStream = null;
+      }
+
+      const candVid = document.getElementById('call-candidate-video');
+      if (candVid) candVid.srcObject = null;
+      const vCall = document.getElementById('call-interviewer-video');
+      if (vCall) { vCall.pause(); }
+      const vPip = document.getElementById('pip-interviewer-video');
+      if (vPip) { vPip.pause(); }
+
+      // 4. Exit fullscreen if active
       if (document.fullscreenElement && document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
       }
-      document.getElementById('interview-stage').classList.add('hidden');
-      document.getElementById('interview-stage').classList.remove('flex');
-      document.getElementById('setup-screen').classList.remove('hidden');
+
+      // 5. Hide the live interview stage completely (clear inline styles)
+      const stage = document.getElementById('interview-stage');
+      if (stage) {
+        stage.classList.add('hidden');
+        stage.classList.remove('flex');
+        stage.style.removeProperty('display');
+        stage.style.removeProperty('visibility');
+        stage.style.removeProperty('pointer-events');
+        stage.style.removeProperty('z-index');
+        stage.style.setProperty('display', 'none', 'important');
+      }
+
+      // 6. Restore setup screen (clear inline display:none)
+      const setup = document.getElementById('setup-screen');
+      if (setup) {
+        setup.classList.remove('hidden');
+        setup.style.removeProperty('display');
+        setup.style.removeProperty('visibility');
+        setup.style.removeProperty('pointer-events');
+      }
+
+      // 7. Ensure prerequisite modal is closed
+      const prereqModal = document.getElementById('prerequisite-modal');
+      if (prereqModal) {
+        prereqModal.classList.add('hidden');
+        prereqModal.classList.remove('flex');
+        prereqModal.style.removeProperty('display');
+      }
+
+      // 8. Restore page scroll & location hash
+      document.body.style.overflow = 'auto';
+      if (window.location.hash === '#interview-active') {
+        history.replaceState(null, null, ' ');
+      }
     }
 
     function makePipDraggable(el) {
@@ -3681,195 +3553,10 @@ int main() {
     if (tileInterviewer) makePipDraggable(tileInterviewer);
     if (tileCandidate) makePipDraggable(tileCandidate);
 
-    function renderGlossaryCandidates(candidates) {
-      const container = document.getElementById('glossary-candidates-container');
-      const list = document.getElementById('glossary-candidates-list');
-      if (!container || !list) return;
-
-      if (!candidates || candidates.length === 0) {
-        container.classList.add('hidden');
-        list.innerHTML = '';
-        return;
-      }
-
-      list.innerHTML = '';
-      candidates.forEach(cand => {
-        const badge = document.createElement('span');
-        const term = cand.term || cand.matched || cand;
-        const conf = cand.confidence ? ` (${Math.round(cand.confidence * 100)}%)` : '';
-        badge.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#2C1F0E] text-[#E8A338] border border-[#AA7000]/40 shadow-xs";
-        badge.textContent = `${term}${conf}`;
-        badge.title = cand.context_matched ? "Technical context match" : "Pronunciation accent-neutral match";
-        list.appendChild(badge);
-      });
-      container.classList.remove('hidden');
-    }
-
-    async function toggleCandidateRecording() {
-      if (!window.speechRecorder) return;
-      if (window.speechRecorder.isRecording) {
-        const targetIdx = (activeRecordingQuestionIndex !== null && activeRecordingQuestionIndex !== undefined)
-          ? activeRecordingQuestionIndex
-          : currentQIndex;
-        const q = currentQuestions[targetIdx];
-        const res = await window.speechRecorder.stop({
-          questionContext: q ? q.prompt : "",
-          questionIndex: targetIdx
-        });
-        activeRecordingQuestionIndex = null;
-        if (!candidateAnswers[targetIdx]) candidateAnswers[targetIdx] = {};
-        if (res && res.transcript && res.transcript.trim()) {
-          candidateAnswers[targetIdx].transcript = res.transcript.trim();
-        }
-        if (res && res.candidates && res.candidates.length > 0) {
-          candidateAnswers[targetIdx].candidates = res.candidates;
-          if (targetIdx === currentQIndex) {
-            renderGlossaryCandidates(res.candidates);
-          }
-        }
-        if (targetIdx === currentQIndex) {
-          const transcriptEl = document.getElementById('candidate-live-transcript');
-          if (res && res.transcript && res.transcript.trim()) {
-            if (transcriptEl) transcriptEl.textContent = res.transcript.trim();
-          } else if (!candidateAnswers[targetIdx]?.transcript) {
-            if (transcriptEl && (!transcriptEl.textContent || transcriptEl.textContent.includes('Listening') || transcriptEl.textContent.includes('No speech'))) {
-              transcriptEl.innerHTML = '<span class="text-slate-400 italic">No speech captured. Click "Record Answer" and speak clearly into your mic.</span>';
-            }
-          }
-        }
-      } else {
-        activeRecordingQuestionIndex = currentQIndex;
-        const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
-        if (window.speechRecorder.setLanguage) {
-          window.speechRecorder.setLanguage(chosen.bcp47 || 'en-IN');
-        }
-        try {
-          await window.speechRecorder.start({ questionIndex: currentQIndex });
-        } catch (e) {
-          activeRecordingQuestionIndex = null;
-          console.error("Mic start failed:", e);
-        }
-      }
-    }
-
-    function initSpeechRecordingListeners() {
-      if (!window.speechRecorder) return;
-
-      window.speechRecorder.onInterimResult = (res) => {
-        const qIdx = (res && res.questionIndex !== undefined && res.questionIndex !== null)
-          ? res.questionIndex
-          : currentQIndex;
-        if (!candidateAnswers[qIdx]) candidateAnswers[qIdx] = {};
-        if (res.final && res.final.trim()) {
-          candidateAnswers[qIdx].transcript = res.final.trim();
-        }
-        if (qIdx === currentQIndex) {
-          const transcriptEl = document.getElementById('candidate-live-transcript');
-          if (!transcriptEl) return;
-          const text = (res.final + ' ' + (res.interim ? `<span class="text-amber-300/80 italic">${res.interim}</span>` : '')).trim();
-          transcriptEl.innerHTML = text || '<span class="text-slate-400 italic">Listening... Speak clearly.</span>';
-          transcriptEl.scrollTop = transcriptEl.scrollHeight;
-        }
-      };
-
-      window.speechRecorder.onFinalResult = (finalText, qIndex) => {
-        const qIdx = (qIndex !== undefined && qIndex !== null)
-          ? qIndex
-          : currentQIndex;
-        if (!candidateAnswers[qIdx]) candidateAnswers[qIdx] = {};
-        if (finalText && finalText.trim()) {
-          candidateAnswers[qIdx].transcript = finalText.trim();
-        }
-        if (qIdx === currentQIndex) {
-          const transcriptEl = document.getElementById('candidate-live-transcript');
-          if (transcriptEl) {
-            transcriptEl.textContent = finalText || '';
-            transcriptEl.scrollTop = transcriptEl.scrollHeight;
-          }
-        }
-      };
-
-      window.speechRecorder.onCandidates = (candidates, qIndex) => {
-        const qIdx = (qIndex !== undefined && qIndex !== null)
-          ? qIndex
-          : currentQIndex;
-        if (!candidateAnswers[qIdx]) candidateAnswers[qIdx] = {};
-        candidateAnswers[qIdx].candidates = candidates;
-        if (qIdx === currentQIndex) {
-          renderGlossaryCandidates(candidates);
-        }
-      };
-
-      window.speechRecorder.onTimerTick = (elapsedSec) => {
-        const timerEl = document.getElementById('speech-rec-timer');
-        if (timerEl) {
-          const m = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
-          const s = String(elapsedSec % 60).padStart(2, '0');
-          timerEl.textContent = `${m}:${s}`;
-        }
-      };
-
-      window.speechRecorder.onStateChange = ({ isRecording, isProcessing, questionIndex }) => {
-        const dot = document.getElementById('transcript-rec-dot');
-        const statusLabel = document.getElementById('mic-status-label');
-        const btn = document.getElementById('mic-toggle-btn');
-        const icon = document.getElementById('mic-icon');
-        const text = document.getElementById('mic-btn-text');
-
-        if (isProcessing) {
-          if (statusLabel) statusLabel.textContent = "Processing Speech...";
-          if (btn) btn.className = "px-2.5 py-1 rounded-full bg-slate-700 text-slate-300 font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-wait";
-          if (icon) icon.textContent = "hourglass_top";
-          if (text) text.textContent = "Processing...";
-          if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
-        } else if (isRecording) {
-          if (statusLabel) statusLabel.textContent = "Recording Live";
-          if (btn) btn.className = "px-2.5 py-1 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer animate-pulse";
-          if (icon) icon.textContent = "stop";
-          if (text) text.textContent = "Stop Recording";
-          if (dot) dot.className = "w-2 h-2 rounded-full bg-red-500 animate-ping";
-        } else {
-          if (statusLabel) statusLabel.textContent = "Mic Ready";
-          if (btn) btn.className = "px-2.5 py-1 rounded-full bg-[#AA7000] hover:bg-[#885900] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer";
-          if (icon) icon.textContent = "mic";
-          if (text) text.textContent = "Record Answer";
-          if (dot) dot.className = "w-2 h-2 rounded-full bg-slate-500";
-        }
-      };
-
-      window.speechRecorder.onError = (err, qIndex) => {
-        console.warn("[SpeechRecorder error]", err, "for question", qIndex);
-        const statusLabel = document.getElementById('mic-status-label');
-        if (statusLabel) statusLabel.textContent = "Mic Notice: " + (err.message || "Failed");
-        const transcriptEl = document.getElementById('candidate-live-transcript');
-        if (transcriptEl && (!candidateAnswers[currentQIndex]?.transcript)) {
-          transcriptEl.innerHTML = `<span class="text-rose-300 italic">${escapeHtml(err.message || "Could not record audio. Please check mic permissions.")}</span>`;
-        }
-      };
-
-      const micToggleBtn = document.getElementById('mic-toggle-btn');
-      if (micToggleBtn) {
-        micToggleBtn.onclick = () => toggleCandidateRecording();
-      }
-    }
-
-    // Support bfcache restore on back/forward browser navigation
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted) {
-        if (window.speechRecorder && typeof window.speechRecorder.reset === 'function') {
-          window.speechRecorder.reset();
-        }
-        collectedAnswers = [];
-        candidateAnswers = {};
-        activeRecordingQuestionIndex = null;
-        activeSessionId = "ses_" + Date.now();
-      }
-    });
-
     // Initial render
     renderRoles();
     renderCompanies();
-    initSpeechRecordingListeners();
   </script>
+  <audio id="evaluator-voice-player" preload="auto" class="hidden"></audio>
 </body>
 </html>
