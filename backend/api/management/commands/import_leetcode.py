@@ -99,3 +99,4 @@ class Command(BaseCommand):
             f"Total CatalogQuestions: {CatalogQuestion.objects.count()}\n"
             f"Total InterviewQuestions: {InterviewQuestion.objects.count()}"
         ))
+

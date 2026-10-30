@@ -71,6 +71,35 @@ class CodingTestCase(models.Model):
         return f"Test for {self.question.question_key} (Hidden={self.is_hidden})"
 
 
+class CompanyQuestionMapping(models.Model):
+    """
+    Stores company-specific LeetCode interview question mappings with frequency and timeframes.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company_name = models.CharField(max_length=200, db_index=True)
+    question_slug = models.CharField(max_length=200, db_index=True)
+    title = models.CharField(max_length=400)
+    difficulty = models.CharField(max_length=50, default="Medium")
+    frequency = models.FloatField(default=0.0)
+    acceptance_rate = models.FloatField(default=0.0)
+    time_window = models.CharField(max_length=50, default="All")
+    topics = models.JSONField(default=list, blank=True)
+    leetcode_url = models.URLField(max_length=500, blank=True, default="")
+    catalog_question = models.ForeignKey(CatalogQuestion, null=True, blank=True, on_delete=models.SET_NULL, related_name="company_mappings")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['company_name', '-frequency']
+        indexes = [
+            models.Index(fields=['company_name', 'time_window']),
+            models.Index(fields=['company_name', 'difficulty']),
+            models.Index(fields=['question_slug']),
+        ]
+
+    def __str__(self):
+        return f"{self.company_name} - {self.title} ({self.difficulty})"
+
+
 class PhoneticGlossary(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     misheard_token = models.CharField(max_length=200, unique=True)

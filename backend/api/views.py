@@ -527,8 +527,37 @@ def start_interview_session(request):
 
     questions = []
 
-    # Prefer questions stored in PostgreSQL.
-    bank_questions = get_interview_questions(technology=technology, count=4)
+    # 1. Prefer distinct company-specific LeetCode questions from PostgreSQL CompanyQuestionMapping
+    from api.models import CompanyQuestionMapping
+    company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company, time_window='Thirty Days').order_by('-frequency')
+    if not company_qs.exists():
+        company_qs = CompanyQuestionMapping.objects.filter(company_name__iexact=company, time_window='All').order_by('-frequency')
+
+    seen_slugs = set()
+    for cm in company_qs:
+        if cm.question_slug in seen_slugs:
+            continue
+        seen_slugs.add(cm.question_slug)
+
+        prompt_text = cm.catalog_question.prompt if cm.catalog_question and cm.catalog_question.prompt else f"Write an optimal function to solve '{cm.title}'. Detail time and space complexity upfront."
+        starter = cm.catalog_question.starter_code if cm.catalog_question and cm.catalog_question.starter_code else f"# Problem: {cm.title} ({cm.difficulty})\n\n"
+        questions.append({
+            'index': len(questions),
+            'title': f"{cm.title} ({cm.difficulty})",
+            'text': prompt_text,
+            'prompt': prompt_text,
+            'expected_concepts': cm.topics or [cm.difficulty, "time_complexity", "space_complexity"],
+            'starter_code': starter,
+            'source_id': cm.question_slug,
+            'reference_answer': cm.catalog_question.sample_solution if cm.catalog_question else "",
+            'explanation': f"Asked at {cm.company_name} with {cm.frequency}% frequency.",
+            'source_metadata': {'company': cm.company_name, 'slug': cm.question_slug, 'frequency': cm.frequency}
+        })
+        if len(questions) >= 4:
+            break
+
+    # 2. Prefer questions stored in PostgreSQL technology bank for remaining slots
+    bank_questions = get_interview_questions(technology=technology, count=4 - len(questions)) if len(questions) < 4 else []
 
     for bank_q in bank_questions:
         answer = bank_q.answer or {}

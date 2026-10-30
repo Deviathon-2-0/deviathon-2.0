@@ -51,3 +51,6 @@ stitch_imaira_ai_mock_interviews/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Leetcode company raw clone
+data/leetcode_companies/
