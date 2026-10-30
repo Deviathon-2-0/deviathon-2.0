@@ -48,12 +48,12 @@ urlpatterns = [
     path('sessions/start/', views.start_interview_session, name='api_sessions_start'),
     path('sessions/evaluate', views.evaluate_session_pipeline, name='api_sessions_evaluate_raw'),
     path('sessions/evaluate/', views.evaluate_session_pipeline, name='api_sessions_evaluate'),
-    path('sessions/<uuid:session_id>/submit', views.submit_interview_session, name='api_sessions_submit_raw'),
-    path('sessions/<uuid:session_id>/submit/', views.submit_interview_session, name='api_sessions_submit'),
-    path('sessions/<uuid:session_id>/report', views.get_session_report, name='api_sessions_report_raw'),
-    path('sessions/<uuid:session_id>/report/', views.get_session_report, name='api_sessions_report'),
-    path('sessions/<uuid:session_id>/telemetry', views.record_session_telemetry, name='api_session_telemetry_raw'),
-    path('sessions/<uuid:session_id>/telemetry/', views.record_session_telemetry, name='api_session_telemetry'),
+    path('sessions/<str:session_id>/submit', views.submit_interview_session, name='api_sessions_submit_raw'),
+    path('sessions/<str:session_id>/submit/', views.submit_interview_session, name='api_sessions_submit'),
+    path('sessions/<str:session_id>/report', views.get_session_report, name='api_sessions_report_raw'),
+    path('sessions/<str:session_id>/report/', views.get_session_report, name='api_sessions_report'),
+    path('sessions/<str:session_id>/telemetry', views.record_session_telemetry, name='api_session_telemetry_raw'),
+    path('sessions/<str:session_id>/telemetry/', views.record_session_telemetry, name='api_session_telemetry'),
 
     # 5. Compiler & Code Execution Sandbox
     path('compiler/execute', views.execute_compiler_code, name='api_compiler_execute_raw'),

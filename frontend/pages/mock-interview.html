@@ -1138,6 +1138,7 @@
 
     let currentAudioPlayback = null;
     let audioPlaybackTimeout = null;
+    let activeSessionId = "ses_" + Date.now();
     let activeRoleCategory = 'Tech';
     let activeCompanySector = 'All';
     let pendingTitle = 'Software Engineer';
@@ -2670,6 +2671,8 @@
     let speechRecognizer = null;
     let isCandidateRecording = false;
     let candidateCurrentTranscript = "";
+    let sessionStartEpoch = Date.now();
+    let questionStartEpoch = Date.now();
 
     function initSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -3142,12 +3145,21 @@
       const spokenText = candidateCurrentTranscript.trim() || 
         "Demonstrated systematic algorithm breakdown, stating data structures, invariants, and edge case mitigation upfront.";
 
+      const qEndEpoch = Date.now();
+      const qStartSec = parseFloat(((questionStartEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
+      const qEndSec = parseFloat(((qEndEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
+      const qTelemetry = window.candidateMatrixInstance ? window.candidateMatrixInstance.getTelemetryTimeline(qStartSec, qEndSec) : [];
       collectedAnswers.push({
         question_index: currentQIndex,
         question_text: q ? q.title : '',
+        question_id: q ? (q.id || q.title) : '',
         prompt: q ? q.prompt : '',
         transcript: spokenText,
-        code: codeVal
+        code: codeVal,
+        timestamp_start: qStartSec,
+        timestamp_end: qEndSec,
+        duration_sec: Math.max(1, Math.round(qEndSec - qStartSec)),
+        telemetry: qTelemetry
       });
 
       // Mark current question submitted
@@ -3181,24 +3193,38 @@
           localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
         }
 
+        let evalResult = null;
         try {
           const matrixReport = window.candidateMatrixInstance ? window.candidateMatrixInstance.getMatrixReport() : null;
-          const evalResult = await tryApiFetch(`/sessions/${activeSessionId || 'general'}/submit/`, {
+          const fullTimeline = window.candidateMatrixInstance ? window.candidateMatrixInstance.getTelemetryTimeline(0, 99999) : [];
+          const submissionPayload = {
+            session_id: activeSessionId,
+            answers: collectedAnswers,
+            role: pendingTitle,
+            company: pendingCompany || 'Google',
+            track: pendingTrack,
+            seniority_level: pendingLevel,
+            integrity_matrix: matrixReport,
+            telemetry_matrix: matrixReport,
+            timeline_telemetry: fullTimeline
+          };
+          evalResult = await tryApiFetch(`/sessions/${activeSessionId || 'general'}/submit/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              answers: collectedAnswers,
-              role: pendingTitle,
-              company: pendingCompany || 'Google',
-              integrity_matrix: matrixReport
-            })
+            body: JSON.stringify(submissionPayload)
           });
           if (evalResult) {
             localStorage.setItem('imaira_session_report', JSON.stringify(evalResult));
           }
-        } catch (e) {}
+          if (matrixReport) {
+            localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
+          }
+        } catch (e) {
+          console.warn("Session submit notice:", e);
+        }
 
-        window.location.href = "report.html";
+        const targetSessionId = (evalResult && (evalResult.sessionId || evalResult.session_id)) || activeSessionId || 'general';
+        window.location.href = `report.html?sessionId=${encodeURIComponent(targetSessionId)}`;
       }
     }
 
@@ -3327,17 +3353,15 @@
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ audio: true, video: wantVideo })
           .then(stream => {
-            const dockVid = document.getElementById('dock-candidate-video');
-            const dockFb = document.getElementById('dock-candidate-fallback');
-            if (wantVideo && stream.getVideoTracks().length > 0) {
-              if (dockVid) {
-                dockVid.srcObject = stream;
-                dockVid.classList.remove('hidden');
-              }
-              if (dockFb) dockFb.classList.add('hidden');
-            } else {
-              if (dockVid) dockVid.classList.add('hidden');
-              if (dockFb) dockFb.classList.remove('hidden');
+            const callVid = document.getElementById('call-candidate-video');
+            const pipVid = document.getElementById('pip-candidate-video');
+            if (callVid) {
+              callVid.srcObject = stream;
+              callVid.classList.remove('hidden');
+            }
+            if (pipVid) {
+              pipVid.srcObject = stream;
+              pipVid.classList.remove('hidden');
             }
 
             // Launch Candidate Performance & Integrity Matrix Engine
@@ -3346,7 +3370,8 @@
                 window.candidateMatrixInstance.destroy();
               }
               window.candidateMatrixInstance = new CandidateMatrixEngine();
-              window.candidateMatrixInstance.initialize(dockVid, stream)
+              const targetVid = callVid || pipVid;
+              window.candidateMatrixInstance.initialize(targetVid, stream)
                 .then(() => {
                   window.candidateMatrixInstance.on('telemetry', updateCandidateMatrixHUD);
                 })
