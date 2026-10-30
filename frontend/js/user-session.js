@@ -21,7 +21,7 @@ const IMAIRA_MOCK_USERS = [
     bio: "Principal backend & systems architect specializing in Raft consensus, zero-loss Kafka streaming, and sub-10ms gRPC microservices.",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80",
     initials: "RK",
-    score: 89.5,
+    score: 85.0,
     benchmarkSessionId: "11111111-2222-3333-4444-555555555551"
   },
   {

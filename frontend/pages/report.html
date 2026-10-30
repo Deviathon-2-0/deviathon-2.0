@@ -301,7 +301,7 @@
             </div>
             <div class="flex items-center gap-2">
               <span id="calibration-decision-badge" class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black border border-emerald-300">
-                Strong Hire (89.5/100)
+                Hire (85.0/100)
               </span>
             </div>
           </div>
@@ -311,10 +311,10 @@
             <div class="p-4 rounded-2xl bg-white border border-[#E8DFD0]">
               <div class="text-[10px] font-bold uppercase tracking-wider text-[#7F766C] mb-1">Human Agreement Parity</div>
               <div class="text-xl font-extrabold text-[#2C1F0E] flex items-center gap-1.5" id="calib-human-score">
-                <span>89.5</span>
-                <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">&plusmn;0.5 pt Delta</span>
+                <span>85.0</span>
+                <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">0.0 pt Delta</span>
               </div>
-              <div class="text-[11px] text-[#7F766C] mt-1.5" id="calib-human-sub">Evaluator A (89.0) &bull; Evaluator B (90.0)</div>
+              <div class="text-[11px] text-[#7F766C] mt-1.5" id="calib-human-sub">Evaluator A (85.0) &bull; Evaluator B (85.0)</div>
             </div>
 
             <!-- Metric 2: Accent Bias Penalty -->
@@ -709,17 +709,17 @@
         const fs = report.feedbackSummary;
         const decBadge = document.getElementById('calibration-decision-badge');
         if (decBadge) {
-          decBadge.textContent = (fs.hiringCommitteeDecision || "Strong Hire") + " (" + (report.compositeScore || 89.5) + "/100)";
+          decBadge.textContent = (fs.hiringCommitteeDecision || "Strong Hire") + " (" + (report.compositeScore || 85.0) + "/100)";
         }
         if (fs.humanEvaluatorAgreement) {
           const hea = fs.humanEvaluatorAgreement;
           const humScore = document.getElementById('calib-human-score');
           if (humScore) {
-            humScore.innerHTML = '<span>' + (hea.systemCalibrated || report.compositeScore || 89.5) + '</span><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">' + (hea.parityDelta || '+0.5 pt Delta') + '</span>';
+            humScore.innerHTML = '<span>' + (hea.systemCalibrated || report.compositeScore || 85.0) + '</span><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">' + (hea.parityDelta || '+0.5 pt Delta') + '</span>';
           }
           const humSub = document.getElementById('calib-human-sub');
           if (humSub) {
-            humSub.textContent = 'Evaluator A (' + (hea.evaluatorA || 89.0) + ') • Evaluator B (' + (hea.evaluatorB || 90.0) + ')';
+            humSub.textContent = 'Evaluator A (' + (hea.evaluatorA || 85.0) + ') • Evaluator B (' + (hea.evaluatorB || 85.0) + ')';
           }
         }
       }

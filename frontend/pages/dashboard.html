@@ -118,7 +118,7 @@
           <div class="mb-4">
             <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Mean Evaluated Score</span>
           </div>
-          <div class="text-3xl font-black text-[#2C1F0E]">88.4 <span class="text-sm font-semibold text-[#7F766C]">/ 100</span></div>
+          <div class="text-3xl font-black text-[#2C1F0E]">85.0 <span class="text-sm font-semibold text-[#7F766C]">/ 100</span></div>
         </div>
 
         <!-- Accent Neutrality Check -->
@@ -315,32 +315,15 @@
           {
             id: "11111111-2222-3333-4444-555555555551",
             role: "Google SDE-2 • Distributed Systems",
+            company: "Google",
             track: "Tech",
-            score_technical_depth: 92.0,
-            score_structural_logic: 88.0,
-            score_speech_clarity: 95.0,
-            overall_score: 91.6,
-            created_at: "Oct 28, 2026"
-          },
-          {
-            id: "22222222-3333-4444-5555-666666666662",
-            role: "AWS Systems Architect • Microservices",
-            track: "System Design",
+            seniority_level: "SDE 2",
             score_technical_depth: 86.0,
             score_structural_logic: 84.0,
-            score_speech_clarity: 90.0,
-            overall_score: 86.7,
-            created_at: "Oct 25, 2026"
-          },
-          {
-            id: "33333333-4444-5555-6666-777777777773",
-            role: "Meta Engineering Lead • STAR Behavioral",
-            track: "Behavioral",
-            score_technical_depth: 90.0,
-            score_structural_logic: 92.0,
-            score_speech_clarity: 94.0,
-            overall_score: 92.0,
-            created_at: "Oct 22, 2026"
+            score_speech_clarity: 85.0,
+            score_body_language: 85.0,
+            overall_score: 85.0,
+            created_at: "Oct 28, 2026"
           }
         ];
       }
@@ -367,7 +350,7 @@
             <span class="px-2.5 py-1 rounded-full ${pillBg} font-bold text-[11px]">${(s.overall_score || 0).toFixed(1)} (${gradeLetter})</span>
           </td>
           <td class="py-4 px-6 text-right">
-            <a href="report.html?sessionId=11111111-2222-3333-4444-555555555551" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white font-bold transition-all text-xs shadow-sm">
+            <a href="report.html?sessionId=${encodeURIComponent(s.id)}" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white font-bold transition-all text-xs shadow-sm">
               <span>Report</span>
               <span class="material-symbols-outlined text-xs">chevron_right</span>
             </a>

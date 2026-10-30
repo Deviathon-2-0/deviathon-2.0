@@ -217,7 +217,7 @@
         <div class="pt-4 mt-2 border-t border-[#E8DFD0] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#7F766C]">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-[#4F6B2D] animate-ping"></span>
-            <span>Overall composite score trajectory: <strong class="text-[#4F6B2D]">+21.4% improvement</strong> across 6 evaluation sessions</span>
+            <span>Overall composite score trajectory: <strong id="chart-trajectory-label" class="text-[#4F6B2D]">85.0% on Google SDE-2 evaluation</strong></span>
           </div>
           <span class="font-medium text-[#8C7B6B]">Zero accent phoneme bias deduction across all runs</span>
         </div>
@@ -251,9 +251,7 @@
           </select>
         </div>
 
-        <div class="text-xs text-[#7F766C] font-semibold">
-          Showing <strong>5</strong> of 14 sessions
-        </div>
+        <div id="history-filter-count" class="text-xs text-[#7F766C] font-semibold">Showing <strong>1</strong> session</div>
       </div>
 
       <!-- SESSIONS TABLE LIST -->
@@ -272,132 +270,15 @@
               </tr>
             </thead>
             <tbody id="history-table-body" class="divide-y divide-[#E8DFD0] text-[#2C1F0E]">
-              
-              <!-- Session 1 -->
-              <tr class="hover:bg-[#FAF6EE]/60 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="font-bold text-[#2C1F0E] text-sm">Distributed Consensus &amp; Raft</div>
-                  <div class="text-[11px] text-[#7F766C] mt-0.5">Oct 28, 2026 • 28 mins • Staff Backend Architect</div>
-                </td>
-                <td class="py-4 px-6">
-                  <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold">System Design</span>
-                </td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">92/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">88/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">95/100</td>
-                <td class="py-4 px-6 text-center">
-                  <span class="px-2.5 py-1 rounded-full bg-[#EFF4E8] text-[#4F6B2D] font-bold">91.6 (A)</span>
-                </td>
-                <td class="py-4 px-6 text-right space-x-2">
-                  <a href="report.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white font-bold transition-all">
-                    <span>View Report</span>
-                  </a>
-                  <button onclick="deleteSession(this)" class="p-1.5 rounded-full text-[#7F766C] hover:text-rose-600 hover:bg-rose-50 transition-all" title="Delete record">
-                    <span class="material-symbols-outlined text-base">delete</span>
-                  </button>
+              <!-- Dynamically populated from API & Real Sessions -->
+              <tr>
+                <td colspan="7" class="py-8 text-center text-xs text-[#7F766C]">
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined animate-spin text-sm text-[#AA7000]">sync</span>
+                    <span>Loading interview session archives...</span>
+                  </div>
                 </td>
               </tr>
-
-              <!-- Session 2 -->
-              <tr class="hover:bg-[#FAF6EE]/60 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="font-bold text-[#2C1F0E] text-sm">Microservices Saga &amp; Dual-Write</div>
-                  <div class="text-[11px] text-[#7F766C] mt-0.5">Oct 25, 2026 • 32 mins • Lead Systems Engineer</div>
-                </td>
-                <td class="py-4 px-6">
-                  <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold">Architecture</span>
-                </td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">86/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">84/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">90/100</td>
-                <td class="py-4 px-6 text-center">
-                  <span class="px-2.5 py-1 rounded-full bg-[#EFF4E8] text-[#4F6B2D] font-bold">86.7 (B+)</span>
-                </td>
-                <td class="py-4 px-6 text-right space-x-2">
-                  <a href="report.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white font-bold transition-all">
-                    <span>View Report</span>
-                  </a>
-                  <button onclick="deleteSession(this)" class="p-1.5 rounded-full text-[#7F766C] hover:text-rose-600 hover:bg-rose-50 transition-all" title="Delete record">
-                    <span class="material-symbols-outlined text-base">delete</span>
-                  </button>
-                </td>
-              </tr>
-
-              <!-- Session 3 -->
-              <tr class="hover:bg-[#FAF6EE]/60 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="font-bold text-[#2C1F0E] text-sm">Executive Conflict: SLA Degradation</div>
-                  <div class="text-[11px] text-[#7F766C] mt-0.5">Oct 22, 2026 • 20 mins • Engineering Leadership</div>
-                </td>
-                <td class="py-4 px-6">
-                  <span class="px-2.5 py-1 rounded-full bg-[#F2EBD8] text-[#594300] font-semibold">Behavioural</span>
-                </td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">90/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">92/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">94/100</td>
-                <td class="py-4 px-6 text-center">
-                  <span class="px-2.5 py-1 rounded-full bg-[#EFF4E8] text-[#4F6B2D] font-bold">92.0 (A)</span>
-                </td>
-                <td class="py-4 px-6 text-right space-x-2">
-                  <a href="report.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white font-bold transition-all">
-                    <span>View Report</span>
-                  </a>
-                  <button onclick="deleteSession(this)" class="p-1.5 rounded-full text-[#7F766C] hover:text-rose-600 hover:bg-rose-50 transition-all" title="Delete record">
-                    <span class="material-symbols-outlined text-base">delete</span>
-                  </button>
-                </td>
-              </tr>
-
-              <!-- Session 4 -->
-              <tr class="hover:bg-[#FAF6EE]/60 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="font-bold text-[#2C1F0E] text-sm">LRU Cache with O(1) Eviction &amp; TTL</div>
-                  <div class="text-[11px] text-[#7F766C] mt-0.5">Oct 18, 2026 • 24 mins • Senior Software Engineer</div>
-                </td>
-                <td class="py-4 px-6">
-                  <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold">DSA &amp; Code</span>
-                </td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">82/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">79/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">88/100</td>
-                <td class="py-4 px-6 text-center">
-                  <span class="px-2.5 py-1 rounded-full bg-[#F2EBD8] text-[#594300] font-bold">83.0 (B)</span>
-                </td>
-                <td class="py-4 px-6 text-right space-x-2">
-                  <a href="report.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white font-bold transition-all">
-                    <span>View Report</span>
-                  </a>
-                  <button onclick="deleteSession(this)" class="p-1.5 rounded-full text-[#7F766C] hover:text-rose-600 hover:bg-rose-50 transition-all" title="Delete record">
-                    <span class="material-symbols-outlined text-base">delete</span>
-                  </button>
-                </td>
-              </tr>
-
-              <!-- Session 5 -->
-              <tr class="hover:bg-[#FAF6EE]/60 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="font-bold text-[#2C1F0E] text-sm">Real-Time Collaborative Document Canvas</div>
-                  <div class="text-[11px] text-[#7F766C] mt-0.5">Oct 14, 2026 • 35 mins • Staff Frontend Architect</div>
-                </td>
-                <td class="py-4 px-6">
-                  <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold">Frontend Arch</span>
-                </td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">74/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">75/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">82/100</td>
-                <td class="py-4 px-6 text-center">
-                  <span class="px-2.5 py-1 rounded-full bg-[#F2EBD8] text-[#594300] font-bold">77.0 (C+)</span>
-                </td>
-                <td class="py-4 px-6 text-right space-x-2">
-                  <a href="report.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white font-bold transition-all">
-                    <span>View Report</span>
-                  </a>
-                  <button onclick="deleteSession(this)" class="p-1.5 rounded-full text-[#7F766C] hover:text-rose-600 hover:bg-rose-50 transition-all" title="Delete record">
-                    <span class="material-symbols-outlined text-base">delete</span>
-                  </button>
-                </td>
-              </tr>
-
             </tbody>
           </table>
         </div>
@@ -430,41 +311,179 @@
       }
     }
   </script>
-  <!-- Interactive Chart Engine Script -->
+  <!-- Dynamic Session Loader & Chart Engine Script -->
   <script>
-    const sessionsTrend = [
-      { date: "Oct 10", title: "System Design - Distributed Caching", depth: 68, logic: 70, speech: 76, composite: 71.3 },
-      { date: "Oct 14", title: "API Gateway Rate Limiting Invariants", depth: 74, logic: 76, speech: 81, composite: 77.0 },
-      { date: "Oct 18", title: "Database Sharding & LSM Storage Trees", depth: 80, logic: 79, speech: 85, composite: 81.3 },
-      { date: "Oct 22", title: "Cross-Functional Deprecation Conflict", depth: 84, logic: 83, speech: 88, composite: 85.0 },
-      { date: "Oct 25", title: "Microservices Saga & Dual-Write Mitigation", depth: 88, logic: 85, speech: 91, composite: 88.0 },
-      { date: "Oct 28", title: "Distributed Consensus & Raft Invariants", depth: 93, logic: 89, speech: 96, composite: 92.7 }
+    let sessionsTrend = [
+      { date: "Oct 28", title: "Google SDE-2 • Distributed Systems", depth: 86, logic: 84, speech: 85, composite: 85.0 }
     ];
 
     let chartMode = 'spline';
     let visibleMetrics = { depth: true, logic: true, speech: true };
 
+    // Fetch and dynamically populate history sessions from Server & Local Storage
+    async function loadHistorySessions() {
+      const tbody = document.getElementById('history-table-body');
+      const countEl = document.getElementById('history-filter-count');
+      if (!tbody) return;
+
+      let sessions = [];
+      const seenIds = new Set();
+
+      // 1. Try fetching from Backend API
+      try {
+        const endpoints = ['/api/sessions/', 'http://localhost:8000/api/sessions/'];
+        for (const ep of endpoints) {
+          try {
+            const res = await fetch(ep);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && Array.isArray(data.sessions) && data.sessions.length > 0) {
+                data.sessions.forEach(s => {
+                  if (s && s.id && !seenIds.has(s.id)) {
+                    seenIds.add(s.id);
+                    sessions.push(s);
+                  }
+                });
+                break;
+              }
+            }
+          } catch (err) {}
+        }
+      } catch (e) {}
+
+      // 2. Check for real active interview session saved in local storage
+      try {
+        const rawLocal = localStorage.getItem('imaira_session_report');
+        if (rawLocal) {
+          const parsed = JSON.parse(rawLocal);
+          const report = parsed.report || parsed;
+          const sid = report.sessionId || report.session_id;
+          if (sid && !seenIds.has(sid) && report.scores) {
+            seenIds.add(sid);
+            sessions.unshift({
+              id: sid,
+              role: report.role || 'Google SDE-2 • Distributed Systems',
+              company: report.company || 'Google',
+              track: report.track || 'Tech',
+              seniority_level: report.seniority_level || 'SDE 2',
+              overall_score: report.compositeScore || report.overall_score || 85.0,
+              score_technical_depth: report.scores.technicalDepth || report.scores.technical_depth || 86.0,
+              score_structural_logic: report.scores.structuralLogic || report.scores.structural_logic || 84.0,
+              score_speech_clarity: report.scores.speechClarity || report.scores.speech_clarity || 85.0,
+              score_body_language: report.scores.bodyLanguage || report.scores.body_language || 85.0,
+              created_at: new Date(report.evaluatedAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              duration: '28 mins'
+            });
+          }
+        }
+      } catch (e) {}
+
+      // 3. Fallback to JUST 1 Google interview where candidate scored 85%
+      if (!sessions || sessions.length === 0) {
+        sessions = [
+          {
+            id: "11111111-2222-3333-4444-555555555551",
+            role: "Google SDE-2 • Distributed Systems",
+            company: "Google",
+            track: "Tech",
+            seniority_level: "SDE 2",
+            score_technical_depth: 86.0,
+            score_structural_logic: 84.0,
+            score_speech_clarity: 85.0,
+            score_body_language: 85.0,
+            overall_score: 85.0,
+            created_at: "Oct 28, 2026",
+            duration: "28 mins"
+          }
+        ];
+      }
+
+      // Update Filter Summary
+      if (countEl) {
+        countEl.innerHTML = `Showing <strong>${sessions.length}</strong> completed session${sessions.length > 1 ? 's' : ''}`;
+      }
+
+      // Update Chart Telemetry Label
+      const trajEl = document.getElementById('chart-trajectory-label');
+      if (trajEl) {
+        const top = sessions[0];
+        trajEl.textContent = `${(top.overall_score || 85.0).toFixed(1)}% on ${top.role}`;
+      }
+
+      // Update Trend Chart Data
+      sessionsTrend = sessions.map((s, idx) => ({
+        date: s.created_at ? s.created_at.replace(', 2026', '') : `Session ${idx+1}`,
+        title: s.role || 'Interview Session',
+        depth: Math.round(s.score_technical_depth || 86),
+        logic: Math.round(s.score_structural_logic || 84),
+        speech: Math.round(s.score_speech_clarity || 85),
+        composite: parseFloat((s.overall_score || 85.0).toFixed(1))
+      }));
+
+      // Render Table Rows
+      tbody.innerHTML = '';
+      sessions.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-[#FAF6EE]/60 transition-colors";
+        const score = s.overall_score || 85.0;
+        const gradeLetter = score >= 90 ? 'S' : (score >= 80 ? 'A' : (score >= 70 ? 'B' : (score >= 55 ? 'C' : 'D')));
+        const pillBg = score >= 80 ? 'bg-[#EFF4E8] text-[#4F6B2D]' : (score >= 55 ? 'bg-[#FBF3E0] text-[#AA7000]' : 'bg-rose-50 text-rose-700');
+
+        tr.innerHTML = `
+          <td class="py-4 px-6">
+            <div class="font-bold text-[#2C1F0E] text-sm">${s.role} ${s.company ? '• ' + s.company : ''}</div>
+            <div class="text-[11px] text-[#7F766C] mt-0.5">${s.created_at} • ${s.duration || '28 mins'} • ${s.seniority_level || 'SDE 2'} • ID #${s.id.slice(0, 8)}</div>
+          </td>
+          <td class="py-4 px-6">
+            <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold text-[11px]">${s.track || 'Tech'}</span>
+          </td>
+          <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">${Math.round(s.score_technical_depth || 0)}/100</td>
+          <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">${Math.round(s.score_structural_logic || 0)}/100</td>
+          <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">${Math.round(s.score_speech_clarity || 0)}/100</td>
+          <td class="py-4 px-6 text-center">
+            <span class="px-2.5 py-1 rounded-full ${pillBg} font-bold text-[11px]">${score.toFixed(1)} (${gradeLetter})</span>
+          </td>
+          <td class="py-4 px-6 text-right space-x-2">
+            <a href="report.html?sessionId=${encodeURIComponent(s.id)}" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white font-bold transition-all text-xs shadow-sm">
+              <span>View Report</span>
+            </a>
+            <button onclick="deleteSession(this, '${s.id}')" class="p-1.5 rounded-full text-[#7F766C] hover:text-rose-600 hover:bg-rose-50 transition-all" title="Delete record">
+              <span class="material-symbols-outlined text-base">delete</span>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      renderTrendChart();
+    }
+
     function renderTrendChart() {
       const svg = document.getElementById('svg-chart-element');
       const bars = document.getElementById('bars-chart-container');
+      if (!svg || !bars) return;
+
       const w = 800;
       const h = 240;
-      const count = sessionsTrend.length;
+      const count = Math.max(sessionsTrend.length, 2);
 
-      // X positions
-      const xs = sessionsTrend.map((_, i) => 40 + (i * ((w - 80) / (count - 1))));
-      // Y converter: score 0 -> h-10, score 100 -> 15
-      const getY = val => h - 15 - ((val / 100) * (h - 30));
+      // If only 1 session, display clean trend representation
+      const displayTrend = sessionsTrend.length === 1 
+        ? [{ date: "Prep Start", title: "Target Baseline", depth: 78, logic: 76, speech: 80, composite: 78.0 }, sessionsTrend[0]]
+        : sessionsTrend;
+
+      const n = displayTrend.length;
+      const xs = displayTrend.map((_, i) => 40 + (i * ((w - 80) / (n - 1))));
+      const getY = val => h - 25 - ((val / 100) * (h - 50));
 
       if (chartMode === 'spline') {
         svg.classList.remove('hidden');
         bars.classList.add('hidden');
         svg.innerHTML = '';
 
-        // Helper for bezier curves
         function createPath(key, strokeColor, fillColor, isVisible) {
           if (!isVisible) return '';
-          const pts = sessionsTrend.map((s, i) => [xs[i], getY(s[key])]);
+          const pts = displayTrend.map((s, i) => [xs[i], getY(s[key])]);
           let d = `M ${pts[0][0]} ${pts[0][1]}`;
           for (let i = 0; i < pts.length - 1; i++) {
             const p0 = pts[i];
@@ -472,9 +491,7 @@
             const cx = (p0[0] + p1[0]) / 2;
             d += ` C ${cx} ${p0[1]}, ${cx} ${p1[1]}, ${p1[0]} ${p1[1]}`;
           }
-
-          // Area fill
-          const areaD = d + ` L ${pts[pts.length - 1][0]} ${h - 15} L ${pts[0][0]} ${h - 15} Z`;
+          const areaD = d + ` L ${pts[pts.length - 1][0]} ${h - 20} L ${pts[0][0]} ${h - 20} Z`;
           return `
             <path d="${areaD}" fill="${fillColor}" opacity="0.12" />
             <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
@@ -486,33 +503,27 @@
         inner += createPath('logic', '#2C1F0E', '#2C1F0E', visibleMetrics.logic);
         inner += createPath('speech', '#4F6B2D', '#4F6B2D', visibleMetrics.speech);
 
-        // Nodes & hover circles
-        sessionsTrend.forEach((s, i) => {
+        displayTrend.forEach((s, i) => {
           const x = xs[i];
           if (visibleMetrics.depth) {
-            const yd = getY(s.depth);
-            inner += `<circle cx="${x}" cy="${yd}" r="5" fill="#AA7000" stroke="#FFFDF8" stroke-width="2" class="cursor-pointer hover:r-7 transition-all" />`;
+            inner += `<circle cx="${x}" cy="${getY(s.depth)}" r="5" fill="#AA7000" stroke="#FFFDF8" stroke-width="2" />`;
           }
           if (visibleMetrics.logic) {
-            const yl = getY(s.logic);
-            inner += `<circle cx="${x}" cy="${yl}" r="5" fill="#2C1F0E" stroke="#FFFDF8" stroke-width="2" class="cursor-pointer hover:r-7 transition-all" />`;
+            inner += `<circle cx="${x}" cy="${getY(s.logic)}" r="5" fill="#2C1F0E" stroke="#FFFDF8" stroke-width="2" />`;
           }
           if (visibleMetrics.speech) {
-            const ys = getY(s.speech);
-            inner += `<circle cx="${x}" cy="${ys}" r="5" fill="#4F6B2D" stroke="#FFFDF8" stroke-width="2" class="cursor-pointer hover:r-7 transition-all" />`;
+            inner += `<circle cx="${x}" cy="${getY(s.speech)}" r="5" fill="#4F6B2D" stroke="#FFFDF8" stroke-width="2" />`;
           }
-          // Invisible full height hit area for tooltip
           inner += `<rect x="${x - 30}" y="0" width="60" height="${h}" fill="transparent" class="cursor-pointer" onmouseenter="showTooltip(${i}, event)" onmouseleave="hideTooltip()" />`;
         });
 
         svg.innerHTML = inner;
       } else {
-        // Bars Mode
         svg.classList.add('hidden');
         bars.classList.remove('hidden');
         bars.innerHTML = '';
 
-        sessionsTrend.forEach((s, i) => {
+        displayTrend.forEach((s, i) => {
           const col = document.createElement('div');
           col.className = "flex flex-col items-center gap-1.5 h-full justify-end cursor-pointer group";
           col.onmouseenter = (e) => showTooltip(i, e);
@@ -520,9 +531,9 @@
 
           col.innerHTML = `
             <div class="flex items-end justify-center gap-1.5 h-48 w-16">
-              ${visibleMetrics.depth ? `<div class="w-3.5 bg-[#AA7000] rounded-t-lg transition-all group-hover:brightness-110 shadow-sm" style="height: ${s.depth}%"></div>` : ''}
-              ${visibleMetrics.logic ? `<div class="w-3.5 bg-[#2C1F0E] rounded-t-lg transition-all group-hover:brightness-125 shadow-sm" style="height: ${s.logic}%"></div>` : ''}
-              ${visibleMetrics.speech ? `<div class="w-3.5 bg-[#4F6B2D] rounded-t-lg transition-all group-hover:brightness-110 shadow-sm" style="height: ${s.speech}%"></div>` : ''}
+              ${visibleMetrics.depth ? `<div class="w-3.5 bg-[#AA7000] rounded-t-lg shadow-sm" style="height: ${s.depth}%"></div>` : ''}
+              ${visibleMetrics.logic ? `<div class="w-3.5 bg-[#2C1F0E] rounded-t-lg shadow-sm" style="height: ${s.logic}%"></div>` : ''}
+              ${visibleMetrics.speech ? `<div class="w-3.5 bg-[#4F6B2D] rounded-t-lg shadow-sm" style="height: ${s.speech}%"></div>` : ''}
             </div>
             <span class="text-[11px] font-mono text-[#7F766C] group-hover:text-[#2C1F0E] font-bold">${s.date}</span>
           `;
@@ -557,11 +568,17 @@
     }
 
     function showTooltip(idx, e) {
-      const s = sessionsTrend[idx];
+      const displayTrend = sessionsTrend.length === 1 
+        ? [{ date: "Prep Start", title: "Target Baseline", depth: 78, logic: 76, speech: 80, composite: 78.0 }, sessionsTrend[0]]
+        : sessionsTrend;
+
+      const s = displayTrend[idx];
+      if (!s) return;
       const tt = document.getElementById('chart-tooltip');
       const container = document.getElementById('chart-main-container');
-      const rect = container.getBoundingClientRect();
+      if (!tt || !container) return;
 
+      const rect = container.getBoundingClientRect();
       document.getElementById('tt-date').textContent = s.date;
       document.getElementById('tt-composite').textContent = s.composite.toFixed(1) + ' / 100';
       document.getElementById('tt-title').textContent = s.title;
@@ -569,8 +586,7 @@
       document.getElementById('tt-logic').textContent = s.logic + '%';
       document.getElementById('tt-speech').textContent = s.speech + '%';
 
-      // Position tooltip
-      const pct = (idx / (sessionsTrend.length - 1));
+      const pct = (idx / (displayTrend.length - 1));
       const leftPos = (pct * (rect.width - 80)) + 40;
       tt.style.left = leftPos + 'px';
       tt.style.top = '120px';
@@ -578,20 +594,26 @@
     }
 
     function hideTooltip() {
-      document.getElementById('chart-tooltip').classList.add('hidden');
+      const tt = document.getElementById('chart-tooltip');
+      if (tt) tt.classList.add('hidden');
     }
 
     function spotlightSession(idx) {
       showTooltip(idx);
     }
 
-    // Auto-render chart
-    document.addEventListener('DOMContentLoaded', () => {
-      renderTrendChart();
-    });
-    renderTrendChart();
-  </script>
+    function deleteSession(btn, sessionId) {
+      if (confirm("Are you sure you want to remove this interview session record?")) {
+        const row = btn.closest('tr');
+        if (row) row.remove();
+      }
+    }
 
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHistorySessions();
+    });
+    loadHistorySessions();
+  </script>
   <script src="../js/user-session.js"></script>
 </body>
 </html>
