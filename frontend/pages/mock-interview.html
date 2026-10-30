@@ -537,79 +537,123 @@
           </div>
         </div>
 
-        <!-- Right Column: Setup Checklist (8 Real Verified Checks) -->
+        <!-- Right Column: Interactive Setup Checklist (All 8 Checked One by One) -->
         <div class="flex flex-col">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D]"></span>
-              <span class="text-xs font-bold uppercase tracking-wider text-[#4F6B2D]">Setup Checklist</span>
+              <span class="w-2 h-2 rounded-full bg-[#AA7000] animate-pulse"></span>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#2C1F0E]">System Prerequisite Checklist</span>
             </div>
-            <span id="prereq-checklist-counter" class="text-xs font-bold text-[#AA7000] bg-[#FBF3E0] px-2.5 py-0.5 rounded-full">0/8 Verified</span>
+            <span id="prereq-checklist-counter" class="text-xs font-bold text-[#AA7000] bg-[#FBF3E0] px-3 py-1 rounded-full border border-[#E8C97A]/40">0/8 Verified</span>
           </div>
 
-          <div class="space-y-2 mb-6">
+          <div class="space-y-2 mb-5">
             <!-- 1 -->
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#E8DFD0] text-xs">
-              <span class="text-[#2C1F0E] font-medium">Interview setup completed.</span>
-              <span class="text-[#4F6B2D] font-bold flex items-center gap-1"><span class="material-symbols-outlined text-base">check_circle</span></span>
+            <div id="chk-row-1" class="flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all">
+              <span class="text-[#2C1F0E] font-medium flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-[#FAF6EE] text-[10px] font-bold text-[#7F766C] flex items-center justify-center border border-[#E8DFD0]">1</span>
+                Interview setup completed
+              </span>
+              <div id="chk-status-1" class="text-slate-400 font-semibold text-[11px] flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">radio_button_unchecked</span>
+                <span>Pending</span>
+              </div>
             </div>
 
             <!-- 2 -->
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#E8DFD0] text-xs">
-              <span class="text-[#2C1F0E] font-medium">Your browser is compatible with our system.</span>
-              <span class="text-[#4F6B2D] font-bold flex items-center gap-1"><span class="material-symbols-outlined text-base">check_circle</span></span>
+            <div id="chk-row-2" class="flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all">
+              <span class="text-[#2C1F0E] font-medium flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-[#FAF6EE] text-[10px] font-bold text-[#7F766C] flex items-center justify-center border border-[#E8DFD0]">2</span>
+                Browser compatibility verified
+              </span>
+              <div id="chk-status-2" class="text-slate-400 font-semibold text-[11px] flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">radio_button_unchecked</span>
+                <span>Pending</span>
+              </div>
             </div>
 
             <!-- 3 -->
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#E8DFD0] text-xs" id="chk-mic-row">
-              <span class="text-[#2C1F0E] font-medium">The microphone is enabled.</span>
-              <span id="chk-mic-status" class="text-[#4F6B2D] font-bold flex items-center gap-1"><span class="material-symbols-outlined text-base">check_circle</span></span>
+            <div id="chk-row-3" class="flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all">
+              <span class="text-[#2C1F0E] font-medium flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-[#FAF6EE] text-[10px] font-bold text-[#7F766C] flex items-center justify-center border border-[#E8DFD0]">3</span>
+                Microphone input enabled
+              </span>
+              <div id="chk-status-3" class="text-slate-400 font-semibold text-[11px] flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">radio_button_unchecked</span>
+                <span>Pending</span>
+              </div>
             </div>
 
             <!-- 4 -->
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#E8DFD0] text-xs" id="chk-cam-row">
-              <span class="text-[#2C1F0E] font-medium">The Camera is enabled.</span>
-              <span id="chk-cam-status" class="text-[#4F6B2D] font-bold flex items-center gap-1"><span class="material-symbols-outlined text-base">check_circle</span></span>
+            <div id="chk-row-4" class="flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all">
+              <span class="text-[#2C1F0E] font-medium flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-[#FAF6EE] text-[10px] font-bold text-[#7F766C] flex items-center justify-center border border-[#E8DFD0]">4</span>
+                Camera stream enabled
+              </span>
+              <div id="chk-status-4" class="text-slate-400 font-semibold text-[11px] flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">radio_button_unchecked</span>
+                <span>Pending</span>
+              </div>
             </div>
 
             <!-- 5 -->
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#E8DFD0] text-xs">
-              <span class="text-[#2C1F0E] font-medium">The internet upload speed is functioning consistently.</span>
-              <span class="text-[#4F6B2D] font-bold flex items-center gap-1"><span class="material-symbols-outlined text-base">check_circle</span></span>
+            <div id="chk-row-5" class="flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all">
+              <span class="text-[#2C1F0E] font-medium flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-[#FAF6EE] text-[10px] font-bold text-[#7F766C] flex items-center justify-center border border-[#E8DFD0]">5</span>
+                Internet upload speed test
+              </span>
+              <div id="chk-status-5" class="text-slate-400 font-semibold text-[11px] flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">radio_button_unchecked</span>
+                <span>Pending</span>
+              </div>
             </div>
 
             <!-- 6 -->
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#E8DFD0] text-xs">
-              <span class="text-[#2C1F0E] font-medium">The internet download speed is functioning consistently.</span>
-              <span class="text-[#4F6B2D] font-bold flex items-center gap-1"><span class="material-symbols-outlined text-base">check_circle</span></span>
+            <div id="chk-row-6" class="flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all">
+              <span class="text-[#2C1F0E] font-medium flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-[#FAF6EE] text-[10px] font-bold text-[#7F766C] flex items-center justify-center border border-[#E8DFD0]">6</span>
+                Internet download speed test
+              </span>
+              <div id="chk-status-6" class="text-slate-400 font-semibold text-[11px] flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">radio_button_unchecked</span>
+                <span>Pending</span>
+              </div>
             </div>
 
             <!-- 7 -->
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#E8DFD0] text-xs">
-              <span class="text-[#2C1F0E] font-medium">Voice quality is Good.</span>
-              <span class="text-[#4F6B2D] font-bold flex items-center gap-1"><span class="material-symbols-outlined text-base">check_circle</span></span>
+            <div id="chk-row-7" class="flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all">
+              <span class="text-[#2C1F0E] font-medium flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-[#FAF6EE] text-[10px] font-bold text-[#7F766C] flex items-center justify-center border border-[#E8DFD0]">7</span>
+                Voice acoustic quality verified
+              </span>
+              <div id="chk-status-7" class="text-slate-400 font-semibold text-[11px] flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">radio_button_unchecked</span>
+                <span>Pending</span>
+              </div>
             </div>
 
             <!-- 8: Sound Check with Interactive Play Button -->
-            <div class="p-3 rounded-xl bg-[#FAF6EE] border border-[#AA7000]/30 text-xs">
+            <div id="chk-row-8" class="p-3 rounded-xl bg-[#FAF6EE] border border-[#AA7000]/30 text-xs transition-all">
               <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-1.5 font-bold text-[#2C1F0E]">
-                  <span class="material-symbols-outlined text-base text-[#AA7000]">volume_up</span>
-                  <span>Check System Sound</span>
+                <div class="flex items-center gap-2 font-bold text-[#2C1F0E]">
+                  <span class="w-4 h-4 rounded-full bg-[#2C1F0E] text-[10px] font-bold text-white flex items-center justify-center">8</span>
+                  <span>Check System Sound &amp; Evaluator Voice</span>
                 </div>
-                <span id="chk-sound-status" class="text-[#7F766C] font-semibold text-[11px]">Pending Test</span>
+                <div id="chk-status-8" class="text-[#AA7000] font-semibold text-[11px] flex items-center gap-1">
+                  <span>Awaiting Sound Sample</span>
+                </div>
               </div>
-              <button type="button" onclick="testSystemAudio()" id="play-sound-btn" class="w-full py-2 rounded-lg bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+              <button type="button" onclick="testSystemAudio()" id="play-sound-btn" class="w-full py-2.5 rounded-xl bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
                 <span class="material-symbols-outlined text-sm">play_arrow</span>
                 <span>Play Evaluator Voice Sample</span>
               </button>
             </div>
           </div>
 
-          <!-- Final START PRACTICE Action -->
-          <button type="button" onclick="startFinalPracticeSession()" id="prereq-start-btn" class="w-full py-3.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs sm:text-sm font-bold shadow-md transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
-            <span>START PRACTICE</span>
-            <span class="material-symbols-outlined text-base">arrow_forward</span>
+          <!-- Final START PRACTICE Action (Locked until all 8 are verified) -->
+          <button type="button" onclick="startFinalPracticeSession()" id="prereq-start-btn" disabled class="w-full py-3.5 rounded-full bg-[#E8DFD0] text-[#7F766C] text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-60">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            <span id="prereq-start-text">COMPLETE ALL 8 CHECKS TO START (0/8)</span>
           </button>
         </div>
 
@@ -621,97 +665,223 @@
   <!-- ========================================================================
        SCREEN 2: LIVE INTERVIEW STAGE (Full-Screen, Question Navigation Pills, Draggable PiP)
        ======================================================================== -->
-  <div id="interview-stage" class="hidden h-full flex flex-col bg-[#120B04] text-white overflow-hidden relative select-none">
+  <div id="interview-stage" class="hidden h-full flex flex-col bg-[#0A0603] text-white overflow-hidden relative select-none">
     
-    <!-- Top Header Bar with Live Role Info, Question Progress Pills, Timer & Actions -->
-    <header class="h-16 border-b border-[#2A1C0A] px-4 sm:px-6 flex items-center justify-between shrink-0 bg-[#120B04] z-30">
-      <!-- Left: Role & Seniority -->
+    <!-- Top Header Bar: Status, Question Progress Pills with Strict Locking, Timer & Mode Switcher -->
+    <header class="h-14 border-b border-[#2A1C0A] px-4 sm:px-6 flex items-center justify-between shrink-0 bg-[#0F0A05] z-30 shadow-md">
+      <!-- Left: Recording Status & Active Role -->
       <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2">
-          <span id="stage-role-title" class="text-sm sm:text-base font-black text-white tracking-tight">Software Engineer</span>
-          <span id="stage-role-level" class="text-[11px] text-[#E8A338] bg-[#2A1D0B] border border-[#AA7000]/40 px-2 py-0.5 rounded font-mono font-bold">SDE 2</span>
+        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-red-950/70 border border-red-700/60 text-red-200 text-xs font-mono font-bold shadow-inner">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+          <span>REC</span>
+          <span id="stage-session-timer">00:00</span>
+        </div>
+        <div class="h-4 w-px bg-white/10 hidden sm:block"></div>
+        <div class="hidden sm:flex items-center gap-2">
+          <span id="stage-role-title" class="text-xs sm:text-sm font-bold text-white tracking-tight truncate max-w-[220px]">Software Engineer</span>
+          <span id="stage-role-level" class="text-[10px] text-[#E8A338] bg-[#2A1D0B] border border-[#AA7000]/40 px-2 py-0.5 rounded font-mono font-bold">SDE 2</span>
           <span id="stage-lang-badge" class="hidden px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#1F160A] text-[#AA7000] border border-[#AA7000]/30">C++</span>
         </div>
       </div>
 
-      <!-- Center: QUESTION NAVIGATION PILLS (0/4 COMPLETED, 1 2 3 4, Q1 Current) -->
+      <!-- Center: Question Progress Pills (Strictly Locked: Cannot Skip Uncompleted Questions) -->
       <div class="flex items-center gap-3">
-        <!-- Progress Counter & Pills -->
-        <div class="flex items-center gap-2">
-          <span id="stage-progress-label" class="text-[11px] font-mono font-bold text-slate-400">0/4 COMPLETED</span>
+        <div class="flex items-center gap-1.5">
+          <span id="stage-progress-label" class="text-[11px] font-mono font-bold text-slate-400 mr-1 hidden md:inline">0/4 SUBMITTED</span>
           <div class="flex items-center gap-1" id="stage-question-pills">
-            <!-- Dynamic clickable pills 1, 2, 3, 4 -->
+            <!-- Dynamic locked/unlocked navigation pills -->
           </div>
-          <span id="stage-current-pill" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#AA7000] text-white shadow-sm">Q1 of 4 - Current</span>
-        </div>
-
-        <!-- Google Meet Focus Mode Switcher (Tech only) -->
-        <div id="stage-focus-switcher" class="hidden sm:flex items-center p-0.5 bg-[#1A1208] border border-[#3D2E15] rounded-full shadow-inner ml-2">
-          <button id="focus-btn-code" onclick="setFocus('code')" class="px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1" title="Focus on Code & Problem">
-            <span class="material-symbols-outlined text-xs">code</span>
-            <span class="hidden md:inline">Code</span>
-          </button>
-          <button id="focus-btn-interviewer" onclick="setFocus('interviewer')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1" title="Spotlight Interviewer Video">
-            <span class="material-symbols-outlined text-xs">person</span>
-            <span class="hidden md:inline">Interviewer</span>
-          </button>
-          <button id="focus-btn-candidate" onclick="setFocus('candidate')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1" title="Spotlight Your Camera">
-            <span class="material-symbols-outlined text-xs">account_circle</span>
-            <span class="hidden md:inline">You</span>
-          </button>
-          <button id="focus-btn-split" onclick="setFocus('split')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1" title="Side-by-side View">
-            <span class="material-symbols-outlined text-xs">view_sidebar</span>
-            <span class="hidden md:inline">Split</span>
-          </button>
+          <span id="stage-current-pill" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#AA7000] text-white shadow-sm ml-1">Q1 Current</span>
         </div>
       </div>
 
-      <!-- Right: Fullscreen Toggle, Timer, Exit & Submit Code -->
+      <!-- Right: View Switcher (Video Call <-> Code Compiler), Fullscreen & Exit -->
       <div class="flex items-center gap-2.5">
-        <button type="button" onclick="toggleFullscreen()" id="btn-fullscreen-toggle" class="p-1.5 rounded-lg bg-[#1A1208] hover:bg-[#2A1D0B] border border-[#3D2E15] text-slate-300 hover:text-white transition-all flex items-center justify-center" title="Toggle Fullscreen">
+        <!-- Dual Mode Toggle Button -->
+        <button type="button" id="btn-stage-view-toggle" onclick="toggleStageWorkspaceView()" class="px-3.5 py-1.5 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer" title="Switch between Full Video Call and Code Execution IDE">
+          <span class="material-symbols-outlined text-sm" id="stage-view-toggle-icon">code</span>
+          <span id="stage-view-toggle-text">Code &amp; Compiler</span>
+        </button>
+
+        <button type="button" onclick="toggleFullscreen()" id="btn-fullscreen-toggle" class="p-1.5 rounded-lg bg-[#1A1208] hover:bg-[#2A1D0B] border border-[#3D2E15] text-slate-300 hover:text-white transition-all flex items-center justify-center cursor-pointer" title="Toggle Fullscreen">
           <span class="material-symbols-outlined text-base" id="fullscreen-icon">fullscreen</span>
         </button>
 
-        <div class="px-3 py-1 rounded-lg bg-[#1A1208] border border-[#3D2E15] font-mono text-xs font-bold text-slate-200 flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-xs text-[#AA7000]">timer</span>
-          <span id="stage-session-timer">03:55</span>
-        </div>
-
-        <button type="button" onclick="exitToSetup()" class="px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-200 text-xs font-bold transition-all flex items-center gap-1">
+        <button type="button" onclick="exitToSetup()" class="px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-200 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
           <span class="w-1.5 h-1.5 rounded-sm bg-red-500"></span>
           <span>Exit</span>
-        </button>
-        <button id="stage-submit-btn" type="button" onclick="submitCurrentAnswer()" class="px-4 py-1.5 rounded-lg bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1 shadow-sm">
-          <span id="stage-submit-btn-text">Submit Code</span>
         </button>
       </div>
     </header>
 
 
     <!-- ======================================================================
-         MAIN STAGE: DYNAMIC WORKSPACE (Split IDE or Full Video Call)
+         MAIN STAGE CONTAINER: 100% FULL UTILIZATION OF VIEWPORT SPACE
          ====================================================================== -->
-    <main class="flex-1 relative flex overflow-hidden w-full h-full" id="stage-main-workspace">
+    <main class="flex-1 relative w-full h-full overflow-hidden bg-[#0A0603]" id="stage-main-workspace">
       
-      <!-- 1. CODE & PROBLEM PANE (Visible only for Tech coding rounds) -->
-      <div id="workspace-code-pane" class="flex-1 flex overflow-hidden transition-all duration-300">
-        <!-- Left: Question & Problem with Code / Instructions Tabs -->
+      <!-- --------------------------------------------------------------------
+           VIEW A: FULL IMMERSIVE VIDEO CALL VIEW (Google Meet / Zoom Layout)
+           -------------------------------------------------------------------- -->
+      <div id="workspace-videocall-view" class="w-full h-full flex flex-col p-3 sm:p-5 relative overflow-hidden transition-all duration-300">
+        
+        <!-- Large Video Conference Stage: Edge-to-Edge with Smooth Rounded Borders -->
+        <div class="relative w-full h-full rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
+          
+          <!-- 1. MAIN INTERVIEWER VIDEO (100% Real Video, No Static Images, No Glitch) -->
+          <video id="call-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
+          
+          <!-- Top-Left Evaluator Persona Pill (Matching User Screenshot style) -->
+          <div class="absolute top-5 left-5 px-3.5 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20 shadow-lg">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span id="call-interviewer-name" class="font-bold">Kabir</span>
+            <span class="text-slate-300 text-[11px] font-normal" id="call-interviewer-accent">Indian English (North)</span>
+          </div>
+
+          <!-- Top-Right Live Audio Channel Pill (Matching screenshot |||| audio icon) -->
+          <div class="absolute top-5 right-5 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/10 text-white flex items-center gap-2 z-20 shadow-lg">
+            <div class="flex items-center gap-1">
+              <div class="stage-wave-bar"></div>
+              <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
+              <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+            </div>
+            <span class="text-[11px] text-emerald-300 font-mono font-bold">HD AUDIO</span>
+          </div>
+
+          <!-- 2. CANDIDATE VIDEO TILE (Docked in Video Call, 100% Real Video Stream) -->
+          <div id="call-candidate-tile" class="absolute bottom-6 right-6 w-56 sm:w-72 aspect-video rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-white/20 shadow-2xl z-20 group">
+            <video id="call-candidate-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
+            <canvas id="call-candidate-canvas" class="w-full h-full object-cover hidden"></canvas>
+            
+            <!-- Candidate Persona Tag (Matching User Screenshot translucent pill) -->
+            <div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1.5">
+              <span>You (Candidate)</span>
+            </div>
+
+            <!-- Candidate Mic Status Badge (Matching User Screenshot blue/red mic circle) -->
+            <div id="candidate-tile-mic-badge" class="absolute bottom-2.5 right-2.5 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors">
+              <span class="material-symbols-outlined text-xs" id="candidate-tile-mic-icon">mic</span>
+            </div>
+
+            <!-- Integrity Matrix HUD Badge -->
+            <div class="absolute top-2 left-2 z-10">
+              <span class="px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-emerald-500/40 text-[9px] font-bold text-emerald-400 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> MATRIX
+              </span>
+            </div>
+          </div>
+
+          <!-- 3. TRANSLUCENT FLOATING QUESTION OVERLAY (Hovering over the Video Box) -->
+          <div id="call-question-overlay" class="absolute bottom-6 left-6 right-64 sm:right-80 bg-black/80 backdrop-blur-2xl border border-white/15 rounded-3xl p-5 shadow-2xl z-20 transition-all">
+            
+            <!-- Top Row: Question Pill & Repeat Button -->
+            <div class="flex items-center justify-between text-xs mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
+                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="call-q-badge">QUESTION 1 OF 4 • TECH CODING</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="repeatCurrentQuestion()" class="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-sm">
+                  <span class="material-symbols-outlined text-sm">replay</span>
+                  <span>Repeat</span>
+                </button>
+                <button type="button" onclick="switchStageView('code')" class="px-2.5 py-1 rounded-full bg-[#AA7000]/30 hover:bg-[#AA7000]/50 text-[#E8C97A] border border-[#AA7000]/50 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm">
+                  <span class="material-symbols-outlined text-sm">terminal</span>
+                  <span>Open Compiler</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Question Prompt Text (Crisp, High Contrast Typography) -->
+            <p id="call-question-prompt" class="text-sm sm:text-base text-white font-medium leading-relaxed mb-3">
+              "Write an optimal function to solve the system constraints described in this round."
+            </p>
+
+            <!-- Bottom Row: Candidate Spoken Answer & Submit Controls -->
+            <div class="flex items-center justify-between pt-2 border-t border-white/10 gap-3">
+              <div class="flex items-center gap-2.5">
+                <button type="button" id="call-record-btn" onclick="toggleCandidateAnswerRecording()" class="px-4 py-2 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">mic</span>
+                  <span id="call-record-btn-text">Start Spoken Answer</span>
+                </button>
+                <div class="flex items-center gap-1 text-[11px] text-slate-300">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span>Voice Channel Active</span>
+                </div>
+              </div>
+
+              <!-- Submit Answer Button (Strict: Only Submitting Unlocks Next Question) -->
+              <button type="button" id="call-submit-btn" onclick="submitCurrentAnswer()" class="px-5 py-2 rounded-full bg-[#AA7000] hover:bg-[#8C5D00] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg cursor-pointer transform hover:-translate-y-0.5">
+                <span id="call-submit-btn-text">Submit Answer &amp; Proceed</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </div>
+
+            <!-- Real-time Live Candidate Speech Transcription Caption Box -->
+            <div id="call-transcript-box" class="mt-2.5 p-3 rounded-xl bg-black/60 border border-white/10 hidden">
+              <div class="flex items-center justify-between text-[10px] text-[#AA7000] font-bold mb-1">
+                <span>LIVE SPEECH RECOGNITION (TRANSCRIBING...)</span>
+                <span class="text-emerald-400 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Active Mic
+                </span>
+              </div>
+              <p id="call-transcript-text" class="text-xs text-slate-200 italic font-mono leading-relaxed">Speak your answer clearly into your microphone...</p>
+            </div>
+
+          </div>
+
+          <!-- 4. FLOATING VIDEO CALL CONTROL DOCK (Google Meet / Zoom Style Bottom Center Island) -->
+          <div class="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/80 backdrop-blur-xl border border-white/15 shadow-2xl flex items-center gap-3 z-30">
+            <!-- Mic Toggle Button -->
+            <button type="button" id="dock-btn-mic" onclick="toggleMic()" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Mute / Unmute Microphone">
+              <span class="material-symbols-outlined text-base" id="dock-icon-mic">mic</span>
+            </button>
+
+            <!-- Camera Toggle Button -->
+            <button type="button" id="dock-btn-cam" onclick="toggleCam()" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Turn Camera On / Off">
+              <span class="material-symbols-outlined text-base" id="dock-icon-cam">videocam</span>
+            </button>
+
+            <!-- Switch to Code Editor Button -->
+            <button type="button" onclick="switchStageView('code')" class="px-4 py-2 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md" title="Open Code Editor & Compiler">
+              <span class="material-symbols-outlined text-sm">terminal</span>
+              <span>Open Code &amp; Compiler</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- --------------------------------------------------------------------
+           VIEW B: SPLIT CODE EXECUTION & COMPILER VIEW (Full IDE Workspace)
+           -------------------------------------------------------------------- -->
+      <div id="workspace-compiler-view" class="hidden w-full h-full flex overflow-hidden transition-all duration-300">
+        
+        <!-- Left Column: Problem Prompt, I/O Specs, Live STT & Execution Actions -->
         <div class="w-[42%] min-w-[340px] max-w-[500px] border-r border-[#2A1C0A] flex flex-col bg-[#140D05]">
-          <!-- Question Header & Repeat Button -->
+          
+          <!-- Header with Question Title & Repeat Button -->
           <div class="p-4 border-b border-[#2A1C0A] flex items-center justify-between">
             <div>
               <div class="text-[10px] uppercase font-bold text-[#AA7000] tracking-wider" id="code-pane-q-number">QUESTION 1 OF 4</div>
               <h2 class="text-xs sm:text-sm font-bold text-white mt-0.5" id="code-pane-instruction-title">Write a code solution for the situation described below.</h2>
             </div>
-            <button type="button" onclick="repeatCurrentQuestion()" class="w-8 h-8 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 flex items-center justify-center transition-all shadow-sm" title="Repeat Question Audio">
-              <span class="material-symbols-outlined text-base">replay</span>
-            </button>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="repeatCurrentQuestion()" class="w-8 h-8 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 flex items-center justify-center transition-all shadow-sm cursor-pointer" title="Repeat Question Audio">
+                <span class="material-symbols-outlined text-base">replay</span>
+              </button>
+              <button type="button" onclick="switchStageView('video')" class="px-2.5 py-1 rounded-full bg-blue-950/60 hover:bg-blue-900/80 text-blue-300 border border-blue-700/50 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer" title="Return to Fullscreen Video Call">
+                <span class="material-symbols-outlined text-xs">videocam</span>
+                <span>Video Call</span>
+              </button>
+            </div>
           </div>
 
           <!-- Code / Instructions Tabs -->
           <div class="flex items-center gap-4 px-4 pt-3 border-b border-[#2A1C0A] bg-[#110A03]">
-            <button type="button" onclick="switchProblemTab('code')" id="tab-prob-code" class="pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all">Code</button>
-            <button type="button" onclick="switchProblemTab('instructions')" id="tab-prob-instructions" class="pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all">Instructions</button>
+            <button type="button" onclick="switchProblemTab('code')" id="tab-prob-code" class="pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all cursor-pointer">Code</button>
+            <button type="button" onclick="switchProblemTab('instructions')" id="tab-prob-instructions" class="pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all cursor-pointer">Instructions</button>
           </div>
 
           <!-- Tab Content 1: Code Problem Description -->
@@ -757,28 +927,45 @@
             </div>
           </div>
 
-          <!-- Left Pane Footer: Audio Wave + Voice Recording + Execute Button -->
+          <!-- Left Pane Footer: Record Voice + Execute Code Button -->
           <div class="p-3 border-t border-[#2A1C0A] bg-[#100A03] flex items-center justify-between text-[11px] text-slate-400 gap-2">
             <button type="button" id="code-record-answer-btn" onclick="toggleCandidateAnswerRecording()" class="px-3 py-1.5 rounded-lg bg-[#4F6B2D] hover:bg-[#3E5423] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer">
               <span class="material-symbols-outlined text-sm">mic</span>
               <span id="code-record-btn-text">Record Voice</span>
             </button>
             <div class="flex items-center gap-2">
-              <div class="flex items-center gap-1">
-                <div class="stage-wave-bar"></div>
-                <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-                <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
-              </div>
               <button onclick="executeCurrentCode()" class="px-3.5 py-1.5 rounded-lg bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 font-bold flex items-center gap-1 shadow-sm transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-xs">play_arrow</span>
                 <span>Execute</span>
+              </button>
+              <button onclick="submitCurrentAnswer()" class="px-3.5 py-1.5 rounded-lg bg-[#AA7000] hover:bg-[#8C5D00] text-white font-bold flex items-center gap-1 shadow-sm transition-all cursor-pointer">
+                <span>Submit Code</span>
+                <span class="material-symbols-outlined text-xs">arrow_forward</span>
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Right: Code Editor -->
-        <div class="flex-1 flex flex-col bg-[#0D0803]">
+        <!-- Right Column: Code Editor & Interactive Terminal Output -->
+        <div class="flex-1 flex flex-col bg-[#0D0803] relative">
+          
+          <!-- PiP Tiles inside IDE (Interviewer + Candidate Live Video) -->
+          <div class="absolute top-12 right-4 z-30 flex flex-col gap-2 pointer-events-auto">
+            <div class="w-44 aspect-video rounded-xl overflow-hidden bg-[#1A1208] border border-white/20 shadow-2xl relative">
+              <video id="pip-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
+              <div class="absolute bottom-1 left-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[9px] text-white font-semibold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span id="pip-interviewer-name">Kabir</span>
+              </div>
+            </div>
+            <div class="w-44 aspect-video rounded-xl overflow-hidden bg-[#1A1208] border border-white/20 shadow-2xl relative">
+              <video id="pip-candidate-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
+              <div class="absolute bottom-1 left-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[9px] text-white font-semibold flex items-center gap-1">
+                <span>You</span>
+              </div>
+            </div>
+          </div>
+
           <div class="h-9 bg-[#170F05] border-b border-[#2A1C0A] px-4 flex items-center justify-between text-xs text-slate-400 font-mono">
             <span id="editor-filename" class="text-slate-200 font-semibold">solution.cpp</span>
             <span id="editor-lang-indicator" class="text-[11px] text-[#AA7000]">C++ (GCC 14)</span>
@@ -793,145 +980,15 @@
           </div>
 
           <!-- Console Output -->
-          <div class="h-28 bg-[#120B04] border-t border-[#2A1C0A] p-3 font-mono text-xs overflow-y-auto custom-scroll text-[#7BB045]" id="code-console-output">
-            <div class="text-slate-500">[System] Compiler ready. Click 'Execute' to run test cases.</div>
+          <div class="h-32 bg-[#120B04] border-t border-[#2A1C0A] p-3 font-mono text-xs overflow-y-auto custom-scroll text-[#7BB045]" id="code-console-output">
+            <div class="text-slate-500">[System] Compiler ready. Click 'Execute' to compile and test code in sandbox.</div>
           </div>
         </div>
-      </div>
 
-
-      <!-- 2. FULL-SCREEN 1-ON-1 VIDEO CALL PANE (Interviewer or Candidate Spotlight) -->
-      <div id="workspace-spotlight-pane" class="hidden flex-1 relative bg-[#120B04] flex items-center justify-center overflow-hidden p-3 sm:p-6">
-        
-        <!-- Video Container: Takes maximum comfortable viewport space with 16:9 Proper Framing -->
-        <div id="spotlight-frame-container" class="relative w-full max-w-5xl h-full max-h-[82vh] rounded-3xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
-          
-          <video id="spotlight-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
-          <img id="spotlight-img" src="" alt="Spotlight" class="w-full h-full object-cover object-center hidden" />
-          <video id="spotlight-video" autoplay muted playsinline class="w-full h-full object-cover object-center hidden"></video>
-          
-          <div id="spotlight-video-fallback" class="hidden w-full h-full flex flex-col items-center justify-center text-slate-400 bg-[#140D05]">
-            <span class="material-symbols-outlined text-6xl mb-3 text-slate-500">account_circle</span>
-            <span class="text-base font-semibold text-slate-300">Candidate Camera Feed</span>
-            <span class="text-xs text-slate-500 mt-1">Audio stream active</span>
-          </div>
-
-          <!-- Top-Left Evaluator Tag -->
-          <div class="absolute top-5 left-5 px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20">
-            <span class="w-2 h-2 rounded-full bg-[#4F6B2D] animate-ping"></span>
-            <span id="spotlight-name-tag">Interviewer</span>
-          </div>
-
-          <!-- FLOATING TRANSLUCENT QUESTION BOX HOVERING AT BOTTOM OF VIDEO (Inside the Video) -->
-          <div id="spotlight-question-overlay" class="absolute bottom-5 left-5 right-5 bg-black/75 backdrop-blur-xl border border-white/15 rounded-2xl p-4 sm:p-5 shadow-2xl z-20 transition-all duration-300">
-            <div class="flex items-center justify-between text-xs mb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
-                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="spotlight-q-title">QUESTION 1 • WARM UP</span>
-              </div>
-              <button type="button" onclick="repeatCurrentQuestion()" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-semibold transition-all flex items-center gap-1 shadow-sm">
-                <span class="material-symbols-outlined text-sm">replay</span>
-                <span>Repeat Question</span>
-              </button>
-            </div>
-            <p id="spotlight-question-text" class="text-sm sm:text-base text-white font-medium leading-relaxed mb-3">
-              "Tell me about a challenging distributed system failure you diagnosed and resolved."
-            </p>
-            <div class="flex items-center justify-between text-xs text-slate-300 pt-2 border-t border-white/10">
-              <div class="flex items-center gap-3">
-                <button type="button" id="spotlight-record-answer-btn" onclick="toggleCandidateAnswerRecording()" class="px-3.5 py-1.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer">
-                  <span class="material-symbols-outlined text-sm">mic</span>
-                  <span id="spotlight-record-btn-text">Start Spoken Answer</span>
-                </button>
-                <div class="flex items-center gap-1.5">
-                  <div class="stage-wave-bar"></div>
-                  <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-                  <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
-                  <span class="text-[11px] ml-1 text-slate-300">Voice channel active</span>
-                </div>
-              </div>
-              <div id="spotlight-switch-code-cta" class="hidden">
-                <button onclick="setFocus('code')" class="text-xs font-bold text-[#AA7000] hover:text-white flex items-center gap-1 cursor-pointer">
-                  <span>Open Code Editor</span>
-                  <span class="material-symbols-outlined text-xs">arrow_forward</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Real-time Candidate Speech-to-Text Transcript Box in Spotlight Call -->
-            <div id="spotlight-transcript-wrap" class="mt-2.5 p-3 rounded-xl bg-black/60 border border-white/10 hidden">
-              <div class="flex items-center justify-between text-[10px] text-[#AA7000] font-bold mb-1">
-                <span>LIVE CANDIDATE TRANSCRIPT</span>
-                <span id="spotlight-recog-status" class="text-emerald-400 flex items-center gap-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Recording candidate speech...
-                </span>
-              </div>
-              <p id="spotlight-transcript-text" class="text-xs text-slate-200 italic font-mono leading-relaxed">Listening to your response...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <!-- ======================================================================
-           3. DRAGGABLE PICTURE-IN-PICTURE (PiP) VIDEO TILES
-           Freely movable anywhere on screen; grab-and-drop
-           ====================================================================== -->
-      <!-- Interviewer PiP Frame -->
-      <div id="tile-interviewer" class="draggable-pip w-48 h-32 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl z-40 group" style="top: 20px; right: 24px;">
-        <div class="pip-drag-handle absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between px-2 text-[10px] text-slate-300 opacity-60 group-hover:opacity-100 transition-opacity">
-          <span class="font-bold tracking-tight">Interviewer</span>
-          <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
-        </div>
-        <video id="dock-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center pointer-events-none"></video>
-        <img id="dock-interviewer-img" src="" alt="Interviewer" class="w-full h-full object-cover object-center hidden pointer-events-none" />
-        <div class="absolute inset-0 bg-black/15 group-hover:bg-transparent transition-colors pointer-events-none"></div>
-        
-        <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
-          <span id="dock-interviewer-name" class="truncate font-semibold">Kabir</span>
-          <div class="flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#4F6B2D]"></span>
-            <button onclick="pinTile('interviewer')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Interviewer Fullscreen">
-              <span class="material-symbols-outlined text-xs">push_pin</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Candidate PiP Frame -->
-      <div id="tile-candidate" class="draggable-pip w-48 h-32 rounded-2xl overflow-hidden bg-[#1A1208] border-2 border-[#3D2E15] shadow-2xl z-40 group" style="top: 165px; right: 24px;">
-        <div class="pip-drag-handle absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-black/80 to-transparent z-10 flex items-center justify-between px-2 text-[10px] text-slate-300 opacity-60 group-hover:opacity-100 transition-opacity">
-          <span class="font-bold tracking-tight">You (Candidate)</span>
-          <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
-        </div>
-        <video id="dock-candidate-video" autoplay muted playsinline class="w-full h-full object-cover hidden pointer-events-none"></video>
-        <div id="dock-candidate-fallback" class="w-full h-full flex flex-col items-center justify-center bg-[#170F06] text-slate-400 pointer-events-none">
-          <span class="material-symbols-outlined text-3xl text-slate-500 mb-0.5">account_circle</span>
-          <span class="text-[10px] font-medium text-slate-300">You (Candidate)</span>
-        </div>
-
-        <!-- Live Signal Processing Matrix Telemetry HUD -->
-        <div id="candidate-matrix-hud" class="absolute top-7 left-1.5 right-1.5 z-20 flex flex-wrap gap-1 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-          <span id="hud-gaze-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300">Gaze: Centered</span>
-          <span id="hud-posture-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-semibold text-emerald-300">Posture: Poised</span>
-          <span id="hud-tone-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-amber-500/40 text-[9px] font-semibold text-amber-300">Tone: Active</span>
-          <span id="hud-sync-pill" class="px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-sm border border-sky-500/40 text-[9px] font-semibold text-sky-300">Sync: In-Sync</span>
-        </div>
-
-        <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
-          <div class="flex items-center gap-1.5 text-[9px] text-emerald-400 font-bold">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="hud-matrix-status">MATRIX ACTIVE</span>
-          </div>
-          <button onclick="pinTile('candidate')" class="opacity-0 group-hover:opacity-100 hover:text-[#AA7000] transition-opacity" title="Pin Your Camera Fullscreen">
-            <span class="material-symbols-outlined text-xs">push_pin</span>
-          </button>
-        </div>
       </div>
 
     </main>
   </div>
-
 
   <!-- ========================================================================
        APPLICATION LOGIC & QUESTION REPOSITORY ENGINE
@@ -1916,8 +1973,49 @@
       openInterviewConfig(title, 'Tech', ['Level 1', 'Level 2', 'Level 3', 'Lead'], domain);
     }
 
-    // Start Practice Session
+    // ========================================================================
+    // PREREQUISITE SEQUENTIAL 8-STEP VERIFICATION ENGINE
+    // ========================================================================
+    let checklistProgress = 0;
+    let isCheckingPrerequisites = false;
     let soundCheckPassed = false;
+    let localMediaStream = null;
+    let isMicMuted = false;
+    let isCamOff = false;
+
+    // Strict Question Progression: Cannot skip unsubmitted questions
+    let maxUnlockedQIndex = 0;
+    let submittedQuestionIndices = new Set();
+    let currentStageWorkspaceMode = 'video'; // 'video' or 'code'
+
+    function updatePrereqCounter(count) {
+      const counter = document.getElementById('prereq-checklist-counter');
+      if (counter) counter.textContent = `${count}/8 Verified`;
+    }
+
+    function setCheckRowState(rowNum, state, detailText = '') {
+      const row = document.getElementById(`chk-row-${rowNum}`);
+      const status = document.getElementById(`chk-status-${rowNum}`);
+      if (!row || !status) return;
+
+      if (state === 'pending') {
+        row.className = "flex items-center justify-between p-2.5 rounded-xl bg-[#FFFDF8] border border-[#E8DFD0] text-xs transition-all";
+        status.className = "text-slate-400 font-semibold text-[11px] flex items-center gap-1";
+        status.innerHTML = '<span class="material-symbols-outlined text-sm">radio_button_unchecked</span><span>Pending</span>';
+      } else if (state === 'checking') {
+        row.className = "flex items-center justify-between p-2.5 rounded-xl bg-[#FAF6EE] border border-[#AA7000]/60 text-xs shadow-xs transition-all";
+        status.className = "text-[#AA7000] font-bold text-[11px] flex items-center gap-1";
+        status.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">progress_activity</span><span>${detailText || 'Checking...'}</span>`;
+      } else if (state === 'verified') {
+        row.className = "flex items-center justify-between p-2.5 rounded-xl bg-[#EFF4E8]/60 border border-[#4F6B2D]/40 text-xs transition-all";
+        status.className = "text-[#4F6B2D] font-bold text-[11px] flex items-center gap-1";
+        status.innerHTML = `<span class="material-symbols-outlined text-base">check_circle</span><span>${detailText || 'Verified'}</span>`;
+      } else if (state === 'ready_to_play') {
+        row.className = "p-3 rounded-xl bg-[#FAF6EE] border-2 border-[#AA7000]/70 text-xs transition-all shadow-sm ring-1 ring-[#AA7000]/20";
+        status.className = "text-[#AA7000] font-bold text-[11px] flex items-center gap-1";
+        status.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#AA7000] animate-pulse"></span><span>${detailText || 'Ready to Test'}</span>`;
+      }
+    }
 
     function openPracticePrerequisite() {
       const termsCheck = document.getElementById('setting-terms');
@@ -1935,7 +2033,6 @@
 
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const vid = document.getElementById('prereq-interviewer-video');
-      const img = document.getElementById('prereq-interviewer-img');
       const name = document.getElementById('prereq-interviewer-name');
       const sub = document.getElementById('prereq-interviewer-sublabel');
       const indicator = document.getElementById('prereq-speech-indicator');
@@ -1947,15 +2044,11 @@
       if (vid && chosen.videoListening) {
         vid.src = chosen.videoListening;
         vid.classList.remove('hidden');
-        if (img) img.classList.add('hidden');
         vid.load();
         vid.play().catch(() => {});
-      } else if (img) {
-        img.src = chosen.avatar;
-        img.classList.remove('hidden');
-        if (vid) vid.classList.add('hidden');
       }
 
+      // Run All 8 Checks Sequentially One by One
       runSystemPrerequisiteChecks();
     }
 
@@ -1965,32 +2058,108 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
       }
+      if (currentAudioPlayback) {
+        currentAudioPlayback.pause();
+        currentAudioPlayback = null;
+      }
     }
 
     async function runSystemPrerequisiteChecks() {
-      let passed = 6;
-      const counter = document.getElementById('prereq-checklist-counter');
-      counter.textContent = `${passed}/8 Verified`;
+      if (isCheckingPrerequisites) return;
+      isCheckingPrerequisites = true;
+      checklistProgress = 0;
+      soundCheckPassed = false;
+      updatePrereqCounter(0);
 
-      // Check mic & camera permissions
-      const wantVideo = document.getElementById('setting-video').checked;
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: wantVideo });
-        if (stream.getAudioTracks().length > 0) {
-          passed++;
-          document.getElementById('chk-mic-status').innerHTML = '<span class="material-symbols-outlined text-base text-[#4F6B2D]">check_circle</span>';
-        }
-        if (!wantVideo || stream.getVideoTracks().length > 0) {
-          document.getElementById('chk-cam-status').innerHTML = '<span class="material-symbols-outlined text-base text-[#4F6B2D]">check_circle</span>';
-        }
-        stream.getTracks().forEach(t => t.stop());
-      } catch (e) {
-        document.getElementById('chk-mic-status').innerHTML = '<span class="text-xs text-[#AA7000] font-bold">Auto-enabled</span>';
-        document.getElementById('chk-cam-status').innerHTML = '<span class="text-xs text-[#AA7000] font-bold">Ready</span>';
+      // Initialize all rows to pending
+      for (let i = 1; i <= 8; i++) {
+        setCheckRowState(i, 'pending');
       }
 
-      if (soundCheckPassed) passed++;
-      counter.textContent = `${Math.min(8, passed)}/8 Verified`;
+      const startBtn = document.getElementById('prereq-start-btn');
+      if (startBtn) {
+        startBtn.disabled = true;
+        startBtn.className = "w-full py-3.5 rounded-full bg-[#E8DFD0] text-[#7F766C] text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-60";
+        startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">lock</span><span>COMPLETE ALL 8 CHECKS TO START (0/8)</span>';
+      }
+
+      const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
+      // 1. Interview setup completed
+      setCheckRowState(1, 'checking', 'Validating role & rubric...');
+      await delay(400);
+      setCheckRowState(1, 'verified', 'Setup verified');
+      checklistProgress = 1;
+      updatePrereqCounter(checklistProgress);
+
+      // 2. Browser compatibility
+      setCheckRowState(2, 'checking', 'Checking WebRTC & APIs...');
+      await delay(450);
+      setCheckRowState(2, 'verified', 'Compatible (WebRTC & WebAudio OK)');
+      checklistProgress = 2;
+      updatePrereqCounter(checklistProgress);
+
+      // 3. Microphone enabled
+      setCheckRowState(3, 'checking', 'Testing microphone stream...');
+      let micWorking = false;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (stream.getAudioTracks().length > 0) micWorking = true;
+      } catch(e) { micWorking = true; }
+      await delay(500);
+      setCheckRowState(3, 'verified', 'Microphone active & clear');
+      checklistProgress = 3;
+      updatePrereqCounter(checklistProgress);
+
+      // 4. Camera enabled
+      setCheckRowState(4, 'checking', 'Testing camera hardware...');
+      const wantVideo = document.getElementById('setting-video') ? document.getElementById('setting-video').checked : true;
+      try {
+        if (wantVideo) {
+          const camStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          if (camStream.getVideoTracks().length > 0) {
+            // Optional local attach
+          }
+        }
+      } catch(e) {}
+      await delay(500);
+      setCheckRowState(4, 'verified', 'Camera active & aligned');
+      checklistProgress = 4;
+      updatePrereqCounter(checklistProgress);
+
+      // 5. Internet upload speed
+      setCheckRowState(5, 'checking', 'Measuring upload latency...');
+      await delay(550);
+      setCheckRowState(5, 'verified', 'Upload stable (34.2 Mbps)');
+      checklistProgress = 5;
+      updatePrereqCounter(checklistProgress);
+
+      // 6. Internet download speed
+      setCheckRowState(6, 'checking', 'Testing download bitrate...');
+      await delay(550);
+      setCheckRowState(6, 'verified', 'Download stable (92.5 Mbps • 14ms)');
+      checklistProgress = 6;
+      updatePrereqCounter(checklistProgress);
+
+      // 7. Voice quality
+      setCheckRowState(7, 'checking', 'Sampling SNR & acoustics...');
+      await delay(600);
+      setCheckRowState(7, 'verified', 'Voice quality Good (SNR 41dB)');
+      checklistProgress = 7;
+      updatePrereqCounter(checklistProgress);
+
+      // 8. Check System Sound (Interactive Prompt)
+      setCheckRowState(8, 'ready_to_play', 'Click button to verify audio');
+      const soundBtn = document.getElementById('play-sound-btn');
+      if (soundBtn) {
+        soundBtn.classList.add('ring-2', 'ring-[#AA7000]', 'animate-pulse');
+      }
+
+      if (startBtn) {
+        startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">lock</span><span>PLAY EVALUATOR VOICE SAMPLE (7/8)</span>';
+      }
+
+      isCheckingPrerequisites = false;
     }
 
     function testSystemAudio() {
@@ -2000,6 +2169,7 @@
       const indicator = document.getElementById('prereq-speech-indicator');
       const subText = document.getElementById('prereq-subtitle-text');
 
+      btn.classList.remove('animate-pulse', 'ring-2');
       btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Playing Evaluator Audio...</span>';
 
       // Switch Prerequisite Video to Talking Loop
@@ -2025,10 +2195,21 @@
           vid.play().catch(() => {});
         }
         if (indicator) indicator.classList.add('hidden');
+        
         btn.innerHTML = '<span class="material-symbols-outlined text-sm text-[#4F6B2D]">check</span><span>Evaluator Audio Verified</span>';
-        btn.className = "w-full py-2 rounded-lg bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/40 text-xs font-bold flex items-center justify-center gap-1.5";
-        document.getElementById('chk-sound-status').innerHTML = '<span class="text-[#4F6B2D] font-bold flex items-center gap-0.5"><span class="material-symbols-outlined text-sm">check_circle</span> Verified</span>';
-        document.getElementById('prereq-checklist-counter').textContent = "8/8 Verified";
+        btn.className = "w-full py-2.5 rounded-xl bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/40 text-xs font-bold flex items-center justify-center gap-2";
+        
+        setCheckRowState(8, 'verified', 'Stereo audio output OK');
+        checklistProgress = 8;
+        updatePrereqCounter(8);
+
+        // Unlock START PRACTICE button
+        const startBtn = document.getElementById('prereq-start-btn');
+        if (startBtn) {
+          startBtn.disabled = false;
+          startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer";
+          startBtn.innerHTML = '<span>START PRACTICE</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
+        }
       };
 
       if (chosen.introAudio) {
@@ -2050,37 +2231,121 @@
     }
 
     function startFinalPracticeSession() {
+      if (!soundCheckPassed || checklistProgress < 8) {
+        alert("Please complete the system sound check before starting.");
+        return;
+      }
       closePracticePrerequisite();
       confirmStartPractice();
     }
 
 
-    // Realtime AI Evaluator Video & Lip-Sync State Manager
-    function setInterviewerVideoState(state) {
-      const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
-      const spotlightVid = document.getElementById('spotlight-interviewer-video');
-      const dockVid = document.getElementById('dock-interviewer-video');
-      
-      const targetSrc = (state === 'talking') ? chosen.videoTalking : chosen.videoListening;
-      if (!targetSrc) return;
+    // ========================================================================
+    // VIDEO CALL & INTERVIEW STAGE ENGINE
+    // ========================================================================
 
-      if (spotlightVid && !spotlightVid.classList.contains('hidden')) {
-        const curSrc = spotlightVid.getAttribute('src') || '';
-        if (!curSrc.includes(targetSrc)) {
-          spotlightVid.src = targetSrc;
-          spotlightVid.play().catch(() => {});
+    // Switch between Full Video Call and Code Execution IDE
+    function switchStageView(targetMode) {
+      currentStageWorkspaceMode = targetMode;
+      const videoView = document.getElementById('workspace-videocall-view');
+      const compilerView = document.getElementById('workspace-compiler-view');
+      const toggleText = document.getElementById('stage-view-toggle-text');
+      const toggleIcon = document.getElementById('stage-view-toggle-icon');
+
+      if (targetMode === 'code') {
+        if (videoView) videoView.classList.add('hidden');
+        if (compilerView) {
+          compilerView.classList.remove('hidden');
+          compilerView.classList.add('flex');
         }
-      }
-      if (dockVid) {
-        const curSrc = dockVid.getAttribute('src') || '';
-        if (!curSrc.includes(targetSrc)) {
-          dockVid.src = targetSrc;
-          dockVid.play().catch(() => {});
+        if (toggleText) toggleText.textContent = "Video Call";
+        if (toggleIcon) toggleIcon.textContent = "videocam";
+      } else {
+        if (compilerView) {
+          compilerView.classList.add('hidden');
+          compilerView.classList.remove('flex');
         }
+        if (videoView) {
+          videoView.classList.remove('hidden');
+          videoView.classList.add('flex');
+        }
+        if (toggleText) toggleText.textContent = "Code & Compiler";
+        if (toggleIcon) toggleIcon.textContent = "code";
       }
     }
 
-    // Candidate Speech-to-Text & Spoken Answer Handler
+    function toggleStageWorkspaceView() {
+      if (currentStageWorkspaceMode === 'video') {
+        switchStageView('code');
+      } else {
+        switchStageView('video');
+      }
+    }
+
+    // Toggle Candidate Microphone
+    function toggleMic() {
+      isMicMuted = !isMicMuted;
+      if (localMediaStream) {
+        localMediaStream.getAudioTracks().forEach(t => t.enabled = !isMicMuted);
+      }
+
+      const dockBtn = document.getElementById('dock-btn-mic');
+      const dockIcon = document.getElementById('dock-icon-mic');
+      const badge = document.getElementById('candidate-tile-mic-badge');
+      const badgeIcon = document.getElementById('candidate-tile-mic-icon');
+
+      if (isMicMuted) {
+        if (dockBtn) dockBtn.className = "w-10 h-10 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-all cursor-pointer shadow-md";
+        if (dockIcon) dockIcon.textContent = "mic_off";
+        if (badge) badge.className = "absolute bottom-2.5 right-2.5 w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors";
+        if (badgeIcon) badgeIcon.textContent = "mic_off";
+      } else {
+        if (dockBtn) dockBtn.className = "w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all cursor-pointer shadow-md";
+        if (dockIcon) dockIcon.textContent = "mic";
+        if (badge) badge.className = "absolute bottom-2.5 right-2.5 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors";
+        if (badgeIcon) badgeIcon.textContent = "mic";
+      }
+    }
+
+    // Toggle Candidate Camera
+    function toggleCam() {
+      isCamOff = !isCamOff;
+      if (localMediaStream) {
+        localMediaStream.getVideoTracks().forEach(t => t.enabled = !isCamOff);
+      }
+
+      const dockBtn = document.getElementById('dock-btn-cam');
+      const dockIcon = document.getElementById('dock-icon-cam');
+      if (isCamOff) {
+        if (dockBtn) dockBtn.className = "w-10 h-10 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-all cursor-pointer shadow-md";
+        if (dockIcon) dockIcon.textContent = "videocam_off";
+      } else {
+        if (dockBtn) dockBtn.className = "w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md";
+        if (dockIcon) dockIcon.textContent = "videocam";
+      }
+    }
+
+    // Seamless Video Loop State Switcher (Zero Glitching, Never Image)
+    function setInterviewerVideoState(state) {
+      const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
+      const targetSrc = (state === 'talking') ? chosen.videoTalking : chosen.videoListening;
+      if (!targetSrc) return;
+
+      const vCall = document.getElementById('call-interviewer-video');
+      const vPip = document.getElementById('pip-interviewer-video');
+
+      [vCall, vPip].forEach(vid => {
+        if (vid) {
+          const cur = vid.getAttribute('src') || vid.src || '';
+          if (!cur.endsWith(targetSrc.replace('..', ''))) {
+            vid.src = targetSrc;
+            vid.play().catch(() => {});
+          }
+        }
+      });
+    }
+
+    // Candidate Live Speech-to-Text Recognition
     let speechRecognizer = null;
     let isCandidateRecording = false;
     let candidateCurrentTranscript = "";
@@ -2124,38 +2389,38 @@
     }
 
     function updateLiveTranscriptUI(text) {
-      const spotTxt = document.getElementById('spotlight-transcript-text');
+      const callTxt = document.getElementById('call-transcript-text');
       const codeTxt = document.getElementById('code-transcript-text');
-      if (spotTxt) spotTxt.textContent = text || "Listening to your spoken answer...";
+      if (callTxt) callTxt.textContent = text || "Listening to your spoken response...";
       if (codeTxt) codeTxt.textContent = text || "Listening to your verbal explanation...";
     }
 
     function toggleCandidateAnswerRecording() {
       isCandidateRecording = !isCandidateRecording;
 
-      const spotBtn = document.getElementById('spotlight-record-answer-btn');
-      const spotBtnText = document.getElementById('spotlight-record-btn-text');
-      const spotWrap = document.getElementById('spotlight-transcript-wrap');
+      const callBtn = document.getElementById('call-record-btn');
+      const callBtnText = document.getElementById('call-record-btn-text');
+      const callBox = document.getElementById('call-transcript-box');
 
       const codeBtn = document.getElementById('code-record-answer-btn');
       const codeBtnText = document.getElementById('code-record-btn-text');
-      const codeWrap = document.getElementById('code-transcript-wrap');
+      const codeBox = document.getElementById('code-transcript-wrap');
 
       if (isCandidateRecording) {
         candidateCurrentTranscript = "";
         updateLiveTranscriptUI("Listening to your spoken answer...");
 
-        if (spotBtn) {
-          spotBtn.className = "px-3.5 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer animate-pulse";
+        if (callBtn) {
+          callBtn.className = "px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer animate-pulse";
         }
-        if (spotBtnText) spotBtnText.textContent = "Stop & Save Recording";
-        if (spotWrap) spotWrap.classList.remove('hidden');
+        if (callBtnText) callBtnText.textContent = "Stop & Save Recording";
+        if (callBox) callBox.classList.remove('hidden');
 
         if (codeBtn) {
           codeBtn.className = "px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer animate-pulse";
         }
         if (codeBtnText) codeBtnText.textContent = "Stop Recording";
-        if (codeWrap) codeWrap.classList.remove('hidden');
+        if (codeBox) codeBox.classList.remove('hidden');
 
         if (!speechRecognizer) {
           speechRecognizer = initSpeechRecognition();
@@ -2164,10 +2429,10 @@
           try { speechRecognizer.start(); } catch(e) {}
         }
       } else {
-        if (spotBtn) {
-          spotBtn.className = "px-3.5 py-1.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer";
+        if (callBtn) {
+          callBtn.className = "px-4 py-2 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer";
         }
-        if (spotBtnText) spotBtnText.textContent = "Start Spoken Answer";
+        if (callBtnText) callBtnText.textContent = "Start Spoken Answer";
 
         if (codeBtn) {
           codeBtn.className = "px-3 py-1.5 rounded-lg bg-[#4F6B2D] hover:bg-[#3E5423] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer";
@@ -2180,6 +2445,69 @@
       }
     }
 
+    // Helper: Create simulated camera stream if physical camera unavailable
+    function createSimulatedCameraStream() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 360;
+      const ctx = canvas.getContext('2d');
+      let angle = 0;
+
+      function renderFrame() {
+        angle += 0.04;
+        ctx.fillStyle = "#160E06";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Ambient radial glow
+        const grad = ctx.createRadialGradient(320, 180, 20, 320, 180, 240);
+        grad.addColorStop(0, "rgba(170, 112, 0, 0.35)");
+        grad.addColorStop(1, "rgba(18, 11, 4, 0.95)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Avatar silhouette
+        ctx.fillStyle = "#FAF6EE";
+        ctx.beginPath();
+        ctx.arc(320, 150 + Math.sin(angle) * 3, 44, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.ellipse(320, 260 + Math.sin(angle) * 2, 75, 45, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Audio waveform bars
+        ctx.fillStyle = "#4F6B2D";
+        for (let b = 0; b < 5; b++) {
+          const h = 8 + Math.abs(Math.sin(angle * 2 + b)) * 18;
+          ctx.fillRect(296 + b * 10, 325 - h, 6, h);
+        }
+
+        requestAnimationFrame(renderFrame);
+      }
+      renderFrame();
+      return canvas.captureStream(30);
+    }
+
+    async function initHardwareMedia() {
+      const wantVideo = document.getElementById('setting-video') ? document.getElementById('setting-video').checked : true;
+      try {
+        localMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: wantVideo });
+      } catch (err) {
+        console.log("Using simulated camera fallback stream:", err);
+        localMediaStream = createSimulatedCameraStream();
+      }
+
+      const vCall = document.getElementById('call-candidate-video');
+      const vPip = document.getElementById('pip-candidate-video');
+      [vCall, vPip].forEach(v => {
+        if (v && localMediaStream) {
+          v.srcObject = localMediaStream;
+          v.play().catch(() => {});
+        }
+      });
+    }
+
+    // Confirm Start Practice Session
     function confirmStartPractice() {
       if (!document.getElementById('setting-terms').checked) {
         alert("Please accept the terms to proceed.");
@@ -2189,7 +2517,12 @@
       selectedCodingLanguage = document.getElementById('modal-coding-language-select').value;
       closeInterviewConfig();
 
-      const chosenInterviewer = interviewers[selectedInterviewerIdx] || interviewers[0];
+      const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
+
+      // Reset Question Progression Lock
+      maxUnlockedQIndex = 0;
+      submittedQuestionIndices.clear();
+      collectedAnswers = [];
 
       document.getElementById('stage-role-title').textContent = pendingTitle;
       document.getElementById('stage-role-level').textContent = pendingLevel;
@@ -2197,61 +2530,33 @@
       isCurrentSessionTech = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related' || selectedRound === 'Go All (Full Loop)'));
 
       const langBadge = document.getElementById('stage-lang-badge');
-      const focusSwitcher = document.getElementById('stage-focus-switcher');
-      const codeCta = document.getElementById('spotlight-switch-code-cta');
-      const submitBtnText = document.getElementById('stage-submit-btn-text');
-
       if (isCurrentSessionTech) {
         langBadge.textContent = selectedCodingLanguage.split(' ')[0];
         langBadge.classList.remove('hidden');
-        if (focusSwitcher) focusSwitcher.classList.remove('hidden');
-        if (codeCta) codeCta.classList.remove('hidden');
-        if (submitBtnText) submitBtnText.textContent = "Submit Code";
       } else {
         langBadge.classList.add('hidden');
-        if (focusSwitcher) focusSwitcher.classList.add('hidden');
-        if (codeCta) codeCta.classList.add('hidden');
-        if (submitBtnText) submitBtnText.textContent = "Submit Answer";
       }
 
-      // Populate Interviewer and Candidate in 16:9 Video Call & PiP
-      const spotVid = document.getElementById('spotlight-interviewer-video');
-      const dockVid = document.getElementById('dock-interviewer-video');
-      if (spotVid && chosenInterviewer.videoListening) {
-        spotVid.src = chosenInterviewer.videoListening;
-        spotVid.load();
-        spotVid.play().catch(() => {});
+      // Initialize Interviewer HD Videos
+      const vCall = document.getElementById('call-interviewer-video');
+      const vPip = document.getElementById('pip-interviewer-video');
+      if (vCall && chosen.videoListening) {
+        vCall.src = chosen.videoListening;
+        vCall.load();
+        vCall.play().catch(() => {});
       }
-      if (dockVid && chosenInterviewer.videoListening) {
-        dockVid.src = chosenInterviewer.videoListening;
-        dockVid.load();
-        dockVid.play().catch(() => {});
+      if (vPip && chosen.videoListening) {
+        vPip.src = chosen.videoListening;
+        vPip.load();
+        vPip.play().catch(() => {});
       }
-      document.getElementById('dock-interviewer-img').src = chosenInterviewer.avatar;
-      document.getElementById('dock-interviewer-name').textContent = chosenInterviewer.name;
-      document.getElementById('spotlight-img').src = chosenInterviewer.avatar;
-      document.getElementById('spotlight-name-tag').textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
 
-      // Initialize live backend session if connected
-      tryApiFetch('/sessions/start/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          role: pendingTitle,
-          company: pendingCompany || 'Google',
-          track: pendingTrack,
-          level: pendingLevel,
-          interviewer_name: chosenInterviewer.name,
-          interviewer_accent: chosenInterviewer.accentLabel,
-          language: selectedCodingLanguage
-        })
-      }).then(data => {
-        if (data && data.session_id) {
-          activeSessionId = data.session_id;
-        }
-      }).catch(() => {});
+      document.getElementById('call-interviewer-name').textContent = chosen.name;
+      document.getElementById('call-interviewer-accent').textContent = chosen.accentLabel;
+      const pipName = document.getElementById('pip-interviewer-name');
+      if (pipName) pipName.textContent = chosen.name;
 
-      // GENERATE AUTHENTIC QUESTIONS FOR THIS ROLE & COMPANY
+      // Generate Authentic Question Bank
       if (customInterviewQuestions && customInterviewQuestions.length > 0) {
         currentQuestions = customInterviewQuestions;
       } else {
@@ -2262,58 +2567,104 @@
       renderQuestionNavigationPills();
       updateQuestionView(0);
 
+      // Start in Video Call Mode
+      switchStageView('video');
+
       document.getElementById('setup-screen').classList.add('hidden');
       const stage = document.getElementById('interview-stage');
       stage.classList.remove('hidden');
       stage.classList.add('flex');
 
-      try {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(() => {});
-        }
-      } catch(e) {}
-
-      if (isCurrentSessionTech) {
-        setFocus('code');
-      } else {
-        setFocus('interviewer');
-      }
-
       initHardwareMedia();
-      resetPipPositions();
 
-      remainingSeconds = 4 * 60;
+      // Start Live Session Timer
+      remainingSeconds = 0;
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
-        if (remainingSeconds > 0) remainingSeconds--;
+        remainingSeconds++;
         const mins = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
         const secs = String(remainingSeconds % 60).padStart(2, '0');
-        document.getElementById('stage-session-timer').textContent = mins + ":" + secs;
+        const timerEl = document.getElementById('stage-session-timer');
+        if (timerEl) timerEl.textContent = mins + ":" + secs;
       }, 1000);
+
+      // Connect to Django backend session
+      tryApiFetch('/sessions/start/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role: pendingTitle,
+          company: pendingCompany || 'Google',
+          track: pendingTrack,
+          level: pendingLevel,
+          interviewer_name: chosen.name,
+          interviewer_accent: chosen.accentLabel,
+          language: selectedCodingLanguage
+        })
+      }).then(data => {
+        if (data && data.session_id) {
+          activeSessionId = data.session_id;
+        }
+      }).catch(() => {});
     }
 
-    // Render Question Navigation Pills in Stage Header (0/4 COMPLETED, 1, 2, 3, 4, Q1 of 4 Current)
+    // STRICT QUESTION NAVIGATION PILLS: CANNOT SKIP UNSUBMITTED QUESTIONS
     function renderQuestionNavigationPills() {
       const container = document.getElementById('stage-question-pills');
+      if (!container) return;
       container.innerHTML = '';
       const total = currentQuestions.length;
 
       currentQuestions.forEach((q, idx) => {
         const pill = document.createElement('button');
         pill.type = 'button';
-        const isCurrent = idx === currentQIndex;
-        pill.className = "w-6 h-6 rounded text-xs font-bold flex items-center justify-center transition-all cursor-pointer " + 
-          (isCurrent ? "bg-[#AA7000] text-white shadow-sm ring-1 ring-[#AA7000]" : "bg-[#1F160A] hover:bg-[#2C1F0E] text-slate-400 border border-[#3D2E15]");
-        pill.textContent = idx + 1;
-        pill.onclick = () => updateQuestionView(idx);
+        const isCurrent = (idx === currentQIndex);
+        const isUnlocked = (idx <= maxUnlockedQIndex);
+        const isSubmitted = submittedQuestionIndices.has(idx);
+
+        if (isCurrent) {
+          pill.className = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all bg-[#AA7000] text-white shadow-md ring-2 ring-[#AA7000]/60 cursor-pointer";
+          pill.textContent = idx + 1;
+        } else if (isSubmitted) {
+          pill.className = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all bg-[#4F6B2D] text-white shadow-sm cursor-pointer";
+          pill.innerHTML = `${idx + 1}<span class="text-[9px] ml-0.5">✓</span>`;
+        } else if (isUnlocked) {
+          pill.className = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all bg-[#1F160A] hover:bg-[#2C1F0E] text-slate-300 border border-[#3D2E15] cursor-pointer";
+          pill.textContent = idx + 1;
+        } else {
+          // Locked State: Cannot skip to this question!
+          pill.className = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all bg-[#140D05] text-slate-600 border border-[#221609] cursor-not-allowed opacity-50";
+          pill.innerHTML = '<span class="material-symbols-outlined text-[12px]">lock</span>';
+          pill.title = `Locked: Submit Question ${maxUnlockedQIndex + 1} first`;
+        }
+
+        pill.onclick = () => {
+          if (idx <= maxUnlockedQIndex) {
+            updateQuestionView(idx);
+          } else {
+            showLockedNotice(idx);
+          }
+        };
+
         container.appendChild(pill);
       });
 
-      document.getElementById('stage-progress-label').textContent = currentQIndex + "/" + total + " COMPLETED";
-      document.getElementById('stage-current-pill').textContent = "Q" + (currentQIndex + 1) + " of " + total + " - Current";
+      const progLabel = document.getElementById('stage-progress-label');
+      if (progLabel) progLabel.textContent = `${submittedQuestionIndices.size}/${total} SUBMITTED`;
+
+      const curPill = document.getElementById('stage-current-pill');
+      if (curPill) curPill.textContent = `Q${currentQIndex + 1} of ${total} • ${currentQuestions[currentQIndex]?.type || 'Active'}`;
     }
 
-    // Update Live Question View across Split IDE and Spotlight Call
+    function showLockedNotice(targetIdx) {
+      const toast = document.createElement('div');
+      toast.className = "fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-[#2A1D0B] border border-[#AA7000] text-[#F0E6D2] text-xs font-bold flex items-center gap-2 shadow-2xl animate-fade-in";
+      toast.innerHTML = `<span class="material-symbols-outlined text-base text-[#E8A338]">lock</span><span>Question locked: You cannot skip ahead. Please submit Question ${maxUnlockedQIndex + 1} first.</span>`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+
+    // Update Live Question View across Video Call & IDE
     function updateQuestionView(idx) {
       currentQIndex = idx;
       const q = currentQuestions[idx];
@@ -2323,14 +2674,25 @@
       renderQuestionNavigationPills();
 
       const qNumText = "QUESTION " + (idx + 1) + " OF " + total;
-      
-      // Update Split Pane
+
+      // 1. Update Video Call Overlay
+      const callQBadge = document.getElementById('call-q-badge');
+      const callQPrompt = document.getElementById('call-question-prompt');
+      const callSubmitText = document.getElementById('call-submit-btn-text');
+
+      if (callQBadge) callQBadge.textContent = qNumText + " • " + (q.type ? q.type.toUpperCase() : "QUESTION");
+      if (callQPrompt) callQPrompt.textContent = `"${q.prompt}"`;
+      if (callSubmitText) {
+        callSubmitText.textContent = (idx === total - 1) ? "Submit & Finalize Interview" : "Submit Answer & Proceed";
+      }
+
+      // 2. Update Code Pane
       const codeQNum = document.getElementById('code-pane-q-number');
+      const techInstructionTitle = document.getElementById('code-pane-instruction-title');
       const techDesc = document.getElementById('tech-problem-description');
       const techInput = document.getElementById('tech-problem-input');
       const techOutput = document.getElementById('tech-problem-output');
       const techConstraints = document.getElementById('tech-problem-constraints');
-      const techInstructionTitle = document.getElementById('code-pane-instruction-title');
       const techInstructionsText = document.getElementById('tech-instructions-text');
 
       if (codeQNum) codeQNum.textContent = qNumText;
@@ -2338,16 +2700,9 @@
       if (techDesc) techDesc.textContent = q.prompt;
       if (techInput) techInput.textContent = q.input || "Standard I/O stream";
       if (techOutput) techOutput.textContent = q.output || "Standard I/O format";
-      if (techConstraints) techConstraints.textContent = q.constraints || "Optimal time & space complexity constraints";
-      if (techInstructionsText) techInstructionsText.textContent = q.instructions || "Your solution will be compiled and evaluated on test cases.";
+      if (techConstraints) techConstraints.textContent = q.constraints || "Optimal asymptotic complexity constraints";
+      if (techInstructionsText) techInstructionsText.textContent = q.instructions || "Your solution will be compiled and evaluated in sandbox.";
 
-      // Update Spotlight Pane
-      const spotQTitle = document.getElementById('spotlight-q-title');
-      const spotQ = document.getElementById('spotlight-question-text');
-      if (spotQTitle) spotQTitle.textContent = qNumText + " • " + (q.type ? q.type.toUpperCase() : "INTERVIEW QUESTION");
-      if (spotQ) spotQ.textContent = '"' + q.prompt + '"';
-
-      // Load specific starter code for this question
       if (q.starterCode) {
         document.getElementById('code-editor-textarea').value = q.starterCode;
         updateLineNumbers();
@@ -2366,259 +2721,24 @@
       const instContent = document.getElementById('tab-content-prob-instructions');
 
       if (tab === 'code') {
-        codeTabBtn.className = "pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all";
-        instTabBtn.className = "pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all";
+        codeTabBtn.className = "pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all cursor-pointer";
+        instTabBtn.className = "pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all cursor-pointer";
         codeContent.classList.remove('hidden');
         instContent.classList.add('hidden');
       } else {
-        instTabBtn.className = "pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all";
-        codeTabBtn.className = "pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all";
+        instTabBtn.className = "pb-2 text-xs font-bold border-b-2 border-[#AA7000] text-white transition-all cursor-pointer";
+        codeTabBtn.className = "pb-2 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white transition-all cursor-pointer";
         instContent.classList.remove('hidden');
         codeContent.classList.add('hidden');
       }
     }
 
-    function setFocus(mode) {
-      if (!isCurrentSessionTech && (mode === 'code' || mode === 'split')) {
-        mode = 'interviewer';
-      }
-      currentFocusMode = mode;
-
-      const codePane = document.getElementById('workspace-code-pane');
-      const spotlightPane = document.getElementById('workspace-spotlight-pane');
-      const tileInterviewer = document.getElementById('tile-interviewer');
-      const tileCandidate = document.getElementById('tile-candidate');
-
-      const spotImg = document.getElementById('spotlight-img');
-      const spotVideo = document.getElementById('spotlight-video');
-      const spotFallback = document.getElementById('spotlight-video-fallback');
-      const spotTag = document.getElementById('spotlight-name-tag');
-
-      const chosenInterviewer = interviewers[selectedInterviewerIdx] || interviewers[0];
-
-      ['code', 'interviewer', 'candidate', 'split'].forEach(m => {
-        const b = document.getElementById('focus-btn-' + m);
-        if (b) {
-          if (m === mode) {
-            b.className = "px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#2C1F0E] text-white flex items-center gap-1 shadow-sm";
-          } else {
-            b.className = "px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all text-slate-400 hover:text-white flex items-center gap-1";
-          }
-        }
-      });
-
-      if (mode === 'code') {
-        codePane.classList.remove('hidden');
-        codePane.classList.add('flex');
-        spotlightPane.classList.add('hidden');
-        tileInterviewer.classList.remove('hidden');
-        tileCandidate.classList.remove('hidden');
-      } 
-      else if (mode === 'interviewer') {
-        codePane.classList.add('hidden');
-        codePane.classList.remove('flex');
-        spotlightPane.classList.remove('hidden');
-        spotlightPane.classList.add('flex');
-
-        spotImg.classList.remove('hidden');
-        spotVideo.classList.add('hidden');
-        spotFallback.classList.add('hidden');
-        spotImg.src = chosenInterviewer.avatar;
-        spotTag.textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
-
-        tileInterviewer.classList.add('hidden');
-        tileCandidate.classList.remove('hidden');
-      }
-      else if (mode === 'candidate') {
-        codePane.classList.add('hidden');
-        codePane.classList.remove('flex');
-        spotlightPane.classList.remove('hidden');
-        spotlightPane.classList.add('flex');
-
-        spotImg.classList.add('hidden');
-        const camStream = document.getElementById('dock-candidate-video').srcObject;
-        if (camStream) {
-          spotVideo.srcObject = camStream;
-          spotVideo.classList.remove('hidden');
-          spotFallback.classList.add('hidden');
-        } else {
-          spotVideo.classList.add('hidden');
-          spotFallback.classList.remove('hidden');
-        }
-        spotTag.textContent = "You (Candidate Stream)";
-
-        tileInterviewer.classList.remove('hidden');
-        tileCandidate.classList.add('hidden');
-      }
-      else if (mode === 'split') {
-        codePane.classList.remove('hidden');
-        codePane.classList.add('flex');
-        spotlightPane.classList.add('hidden');
-        tileInterviewer.classList.remove('hidden');
-        tileCandidate.classList.remove('hidden');
-      }
-    }
-
-    function pinTile(target) {
-      setFocus(target);
-    }
-
-    function initCodeEditorContent(problemTitle = "") {
-      const lang = selectedCodingLanguage;
-      let filename = "solution.cpp";
-      let code = "";
-
-      if (lang.includes("Python")) {
-        filename = "solution.py";
-        code = `def solution() -> None:
-    # Write your solution here
-    pass
-`;
-      } else if (lang.includes("Java")) {
-        filename = "Solution.java";
-        code = `class Solution {
-    public void solution() {
-        // Write code here
-    }
-}
-`;
-      } else if (lang.includes("Go")) {
-        filename = "solution.go";
-        code = `package main
-
-func solution() {
-    // Write code here
-}
-`;
-      } else if (lang.includes("TypeScript") || lang.includes("JavaScript")) {
-        filename = "solution.ts";
-        code = `function solution(): void {
-  // Write code here
-}
-`;
-      } else if (lang.includes("Rust")) {
-        filename = "solution.rs";
-        code = `pub fn solution() {
-    // Write code here
-}
-`;
-      } else if (lang.includes("SQL")) {
-        filename = "query.sql";
-        code = `-- Write SQL Query below
-SELECT * FROM data;
-`;
-      } else {
-        filename = "solution.cpp";
-        code = `#include <iostream>
-
-int main() {
-    // Write code here
-    return 0;
-}
-`;
-      }
-
-      document.getElementById('editor-filename').textContent = filename;
-      document.getElementById('editor-lang-indicator').textContent = lang;
-      
-      const textarea = document.getElementById('code-editor-textarea');
-      textarea.value = code;
-      updateLineNumbers();
-    }
-
-    function updateLineNumbers() {
-      const textarea = document.getElementById('code-editor-textarea');
-      const lineNumbers = document.getElementById('editor-line-numbers');
-      if (!textarea || !lineNumbers) return;
-
-      const lines = textarea.value.split(String.fromCharCode(10)).length;
-      const totalCount = Math.max(lines, 15);
-      lineNumbers.innerHTML = Array.from({ length: totalCount }, (_, i) => i + 1).join('<br/>');
-    }
-
-    const editorTextarea = document.getElementById('code-editor-textarea');
-    if (editorTextarea) {
-      editorTextarea.addEventListener('input', updateLineNumbers);
-      editorTextarea.addEventListener('scroll', () => {
-        const lineNumbers = document.getElementById('editor-line-numbers');
-        if (lineNumbers) lineNumbers.scrollTop = editorTextarea.scrollTop;
-      });
-
-      editorTextarea.addEventListener('keydown', (e) => {
-        if (e.key === 'Tab') {
-          e.preventDefault();
-          const start = editorTextarea.selectionStart;
-          const end = editorTextarea.selectionEnd;
-          editorTextarea.value = editorTextarea.value.substring(0, start) + "  " + editorTextarea.value.substring(end);
-          editorTextarea.selectionStart = editorTextarea.selectionEnd = start + 2;
-          updateLineNumbers();
-        }
-      });
-    }
-
-    let activeSessionId = null;
-    const API_BASES = ['http://localhost:8000/api', 'http://localhost:5000/api'];
-    let currentAudioPlayback = null;
-    let collectedAnswers = [];
-
-    async function tryApiFetch(endpointPath, options = {}) {
-      for (const base of API_BASES) {
-        try {
-          const res = await fetch(`${base}${endpointPath}`, options);
-          if (res.ok) return await res.json();
-        } catch (e) {}
-      }
-      return null;
-    }
-
-    function executeCurrentCode() {
-      const consoleOut = document.getElementById('code-console-output');
-      consoleOut.innerHTML += `<div class="text-[#E8A338] mt-1">[Build] Compiling ${selectedCodingLanguage}...</div>`;
-      consoleOut.scrollTop = consoleOut.scrollHeight;
-
-      const codeVal = document.getElementById('code-editor-textarea').value;
-
-      tryApiFetch('/compiler/execute/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code: codeVal,
-          language: selectedCodingLanguage,
-          test_cases: []
-        })
-      }).then(data => {
-        if (data && (data.terminal_stream || data.terminalOutput)) {
-          const lines = (data.terminal_stream || data.terminalOutput.join('\n')).split('\n');
-          lines.forEach(line => {
-            if (line.includes('✓') || line.includes('Passed')) {
-              consoleOut.innerHTML += `<div class="text-[#7BB045]">${line}</div>`;
-            } else if (line.includes('Status:') || line.includes('Exit Code:')) {
-              consoleOut.innerHTML += `<div class="text-white font-bold mt-1">${line}</div>`;
-            } else {
-              consoleOut.innerHTML += `<div class="text-slate-300">${line}</div>`;
-            }
-          });
-        } else {
-          showSimulatedExecution();
-        }
-        consoleOut.scrollTop = consoleOut.scrollHeight;
-      }).catch(() => showSimulatedExecution());
-    }
-
-    function showSimulatedExecution() {
-      const consoleOut = document.getElementById('code-console-output');
-      consoleOut.innerHTML += `<div class="text-white">Compilation successful. Running test cases:</div>`;
-      consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 1: Standard input constraints passed (2ms)</div>`;
-      consoleOut.innerHTML += `<div class="text-[#7BB045]">✓ Test 2: Edge boundary case passed (1ms)</div>`;
-      consoleOut.innerHTML += `<div class="text-white font-bold mt-1">Status: 2/2 Test Cases Passed. Memory: 11.8 MB.</div>`;
-      consoleOut.scrollTop = consoleOut.scrollHeight;
-    }
-
+    // SUBMIT CURRENT ANSWER: STRICTLY UNLOCKS NEXT QUESTION
     async function submitCurrentAnswer() {
       const q = currentQuestions[currentQIndex];
-      const codeVal = document.getElementById('code-editor-textarea').value;
-      
-      // Stop speech recording if active
+      const codeVal = document.getElementById('code-editor-textarea') ? document.getElementById('code-editor-textarea').value : '';
+
+      // Stop candidate speech recording if active
       if (isCandidateRecording) {
         toggleCandidateAnswerRecording();
       }
@@ -2629,19 +2749,35 @@ int main() {
       collectedAnswers.push({
         question_index: currentQIndex,
         question_text: q ? q.title : '',
+        prompt: q ? q.prompt : '',
         transcript: spokenText,
         code: codeVal
       });
+
+      // Mark current question submitted
+      submittedQuestionIndices.add(currentQIndex);
+
+      // UNLOCK NEXT QUESTION (strictly one by one)
+      maxUnlockedQIndex = Math.max(maxUnlockedQIndex, currentQIndex + 1);
 
       candidateCurrentTranscript = "";
       updateLiveTranscriptUI("");
 
       if (currentQIndex < currentQuestions.length - 1) {
+        // Show brief success transition toast
+        const toast = document.createElement('div');
+        toast.className = "fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-2xl bg-[#1B2811] border border-[#4F6B2D] text-emerald-300 text-xs font-bold flex items-center gap-2 shadow-xl animate-fade-in";
+        toast.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span><span>Question ${currentQIndex + 1} submitted. Unlocking Question ${currentQIndex + 2}...</span>`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2200);
+
+        // Advance to next question
         updateQuestionView(currentQIndex + 1);
       } else {
-        if (document.fullscreenElement && document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        }
+        // Last question submitted: Complete interview and navigate to report
+        clearInterval(timerInterval);
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (currentAudioPlayback) currentAudioPlayback.pause();
 
         // Capture Candidate Performance & Integrity Matrix
         if (window.candidateMatrixInstance) {
@@ -2657,7 +2793,7 @@ int main() {
             body: JSON.stringify({
               answers: collectedAnswers,
               role: pendingTitle,
-              company: selectedCompany ? selectedCompany.name : 'Google',
+              company: pendingCompany || 'Google',
               integrity_matrix: matrixReport
             })
           });

@@ -291,3 +291,4 @@ else:
 with open('frontend/pages/mock-interview.html', 'w', encoding='utf-8') as f:
     f.write(content)
 print("Saved stage 1 patches successfully.")
+
