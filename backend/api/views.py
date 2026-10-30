@@ -41,6 +41,7 @@ _deterministic_scorer = DeterministicScorer()
 _timeline_engine = TimelineEngine()
 _gemini_eval_service = GeminiEvaluationService()
 
+from api.services.question_bank_service import get_interview_questions
 from api.services.gemini_service import (
     generate_interview_questions,
     evaluate_candidate_performance,
@@ -503,7 +504,7 @@ def generate_questions_api(request):
 
 @api_view(['POST'])
 def start_interview_session(request):
-    """Initialize a mock interview session and populate calibrated questions."""
+    """Initialize an interview using PostgreSQL questions with Gemini fallback."""
     role = request.data.get('role', 'Software Engineer')
     company = request.data.get('company', 'Google')
     track = request.data.get('track', 'Tech')
@@ -511,6 +512,7 @@ def start_interview_session(request):
     interviewer = request.data.get('interviewer_name', 'Kabir')
     accent = request.data.get('interviewer_accent', 'IN English (North)')
     language = request.data.get('language', 'python')
+    technology = request.data.get('technology', language).lower()
 
     session = InterviewSession.objects.create(
         role=role,
@@ -523,12 +525,54 @@ def start_interview_session(request):
         status="active"
     )
 
-    questions = generate_interview_questions(
-        role=role, company=company, track=track, level=level, language=language, count=4
-    )
+    questions = []
+
+    # Prefer questions stored in PostgreSQL.
+    bank_questions = get_interview_questions(technology=technology, count=4)
+
+    for bank_q in bank_questions:
+        answer = bank_q.answer or {}
+        sample_answer = answer.get('sampleAnswer') or answer.get('back', '')
+
+        import re
+        expected_points = [
+            point.strip()
+            for point in re.split(r'(?<=[.!?])\\s+', sample_answer)
+            if point.strip()
+        ]
+
+        questions.append({
+            'index': len(questions),
+            'title': bank_q.technology_name,
+            'text': bank_q.prompt,
+            'expected_concepts': expected_points,
+            'starter_code': '',
+            'source_id': bank_q.source_id,
+            'reference_answer': sample_answer,
+            'explanation': bank_q.explanation,
+            'source_metadata': bank_q.source_metadata
+        })
+
+    # Use Gemini only to fill any remaining slots.
+    if len(questions) < 4:
+        generated = generate_interview_questions(
+            role=role,
+            company=company,
+            track=track,
+            level=level,
+            language=language,
+            count=4 - len(questions)
+        )
+
+        for q in generated[:4 - len(questions)]:
+            q['index'] = len(questions)
+            questions.append(q)
 
     question_objects = []
+
     for q in questions:
+        is_bank_question = bool(q.get('source_id'))
+
         qr = QuestionRecord.objects.create(
             session=session,
             question_index=q.get('index', 0),
@@ -536,8 +580,16 @@ def start_interview_session(request):
             text=q.get('text', ''),
             expected_concepts=q.get('expected_concepts', []),
             starter_code=q.get('starter_code', ''),
-            candidate_code=q.get('starter_code', '')
+            candidate_code=q.get('starter_code', ''),
+            evaluation_details={
+                'source': 'question_bank',
+                'source_id': q.get('source_id'),
+                'reference_answer': q.get('reference_answer'),
+                'explanation': q.get('explanation'),
+                'source_metadata': q.get('source_metadata')
+            } if is_bank_question else {}
         )
+
         question_objects.append({
             'index': qr.question_index,
             'title': qr.title,
