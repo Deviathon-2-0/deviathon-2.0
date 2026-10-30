@@ -1,4 +1,15 @@
 try:
+    from evaluator.async_learner import dispatch_async_accent_mining
+    from evaluator.accent_normalizer import normalize_accent_transcript
+except ImportError:
+    try:
+        from backend.evaluator.async_learner import dispatch_async_accent_mining
+        from backend.evaluator.accent_normalizer import normalize_accent_transcript
+    except ImportError:
+        dispatch_async_accent_mining = lambda q, t: None
+        normalize_accent_transcript = lambda t: (t, [])
+
+try:
     from google import genai
     from google.genai import types
     GENAI_SDK_AVAILABLE = True
@@ -1007,6 +1018,12 @@ def submit_interview_session(request, session_id):
 
         # 1. Phonetic & Lexicon Normalizer
         normalized_transcript, corrections = _normalizer.normalize(transcript)
+        # Tier 3: Asynchronous accent discovery in daemon thread (zero candidate latency)
+        if transcript and len(transcript.strip().split()) >= 4:
+            try:
+                dispatch_async_accent_mining(q_title, transcript)
+            except Exception:
+                pass
 
         # 2. Determine Question ID & Rubric
         catalog_qid = ans.get('question_id') or _match_catalog_question_id(q_title, q_prompt)
@@ -1745,6 +1762,12 @@ def evaluate_session_pipeline(request):
 
     # 1. Phonetic & Lexicon Normalizer (RapidFuzz + Soundex)
     normalized_transcript, corrections = _normalizer.normalize(raw_transcript)
+    # Tier 3: Asynchronous accent discovery in background
+    if raw_transcript and len(raw_transcript.strip().split()) >= 4:
+        try:
+            dispatch_async_accent_mining(question_id, raw_transcript)
+        except Exception:
+            pass
 
     # 2. Deterministic Rubric Evaluator (Tier 1)
     deterministic_result = _deterministic_scorer.evaluate(

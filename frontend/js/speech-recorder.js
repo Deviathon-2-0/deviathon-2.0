@@ -263,10 +263,25 @@ class SpeechRecorder {
       questionIndex: targetQIndex
     };
 
-    // If we have audio data, send to backend for glossary analysis & genuine server transcription
+    // If client Web Speech API already captured candidate speech, complete instantly (0ms delay)
+    if (finalResult.transcript) {
+      if (audioBlob && audioBlob.size > 0 && this.api) {
+        this.api.transcribeAudio(audioBlob, {
+          language: this.language,
+          questionContext: options.questionContext || ""
+        }).then(serverResult => {
+          const candidates = serverResult?.correction_candidates || [];
+          if (candidates.length > 0) this.onCandidates(candidates, targetQIndex);
+        }).catch(err => console.debug("[SpeechRecorder] Background glossary notice:", err));
+      }
+      this.onStateChange({ isRecording: false, isProcessing: false, questionIndex: targetQIndex });
+      return finalResult;
+    }
+
+    // Fallback: If client Web Speech produced nothing, query server transcription
     if (audioBlob && audioBlob.size > 0 && this.api) {
       try {
-        console.log(`[SpeechRecorder] Sending ${(audioBlob.size / 1024).toFixed(1)}KB audio to backend for Question ${targetQIndex}...`);
+        console.log(`[SpeechRecorder] Fallback server transcription for Question ${targetQIndex}...`);
         const serverResult = await this.api.transcribeAudio(audioBlob, {
           language: this.language,
           questionContext: options.questionContext || ""
@@ -275,7 +290,6 @@ class SpeechRecorder {
         const candidates = serverResult.correction_candidates || [];
         this.onCandidates(candidates, targetQIndex);
 
-        // If client Web Speech produced nothing, check if server produced a GENUINE transcript (not mock)
         if (!finalResult.transcript && serverResult.transcript) {
           const isMockTranscript = typeof serverResult.transcript === "string" && (
             serverResult.transcript.startsWith("[Mock transcription]") ||
@@ -285,15 +299,13 @@ class SpeechRecorder {
             finalResult.transcript = serverResult.transcript.trim();
             this.finalTranscript = finalResult.transcript;
             this.onFinalResult(finalResult.transcript, targetQIndex);
-          } else {
-            console.log("[SpeechRecorder] Ignored mock server transcription to preserve candidate answer integrity.");
           }
         }
 
         finalResult.candidates = candidates;
         finalResult.serverMeta = serverResult._meta;
       } catch (err) {
-        console.warn("[SpeechRecorder] Server transcription fallback / glossary check:", err.message);
+        console.warn("[SpeechRecorder] Server transcription fallback notice:", err.message);
       }
     }
 

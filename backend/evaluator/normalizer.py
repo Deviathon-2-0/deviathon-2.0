@@ -1,3 +1,11 @@
+try:
+    from evaluator.accent_normalizer import normalize_accent_transcript
+except ImportError:
+    try:
+        from backend.evaluator.accent_normalizer import normalize_accent_transcript
+    except ImportError:
+        normalize_accent_transcript = None
+
 """
 Phonetic & Lexicon Normalizer (evaluator/normalizer.py)
 Implements Layer 2 (Phonemic & Lexicon Alignment):
@@ -175,6 +183,18 @@ class PhoneticNormalizer:
 
         corrections: List[Dict[str, Any]] = []
         normalized = text.strip()
+
+        # Step 0: Tier 2 N-Gram Sliding Window Accent Normalizer (<5ms)
+        if normalize_accent_transcript:
+            acc_norm, acc_repls = normalize_accent_transcript(normalized)
+            normalized = acc_norm
+            for r in acc_repls:
+                corrections.append({
+                    "original": r.get("original", ""),
+                    "canonical": r.get("canonical", ""),
+                    "confidence": 0.98 if "exact" in str(r.get("method", "")) else 0.88,
+                    "method": r.get("method", "accent_normalizer_ngram")
+                })
 
         # Step 1: Accent Substitution Matrix
         for pattern, replacement in ACCENT_SUBSTITUTION_RULES:
