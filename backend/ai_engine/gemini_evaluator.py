@@ -1,6 +1,6 @@
 import json
 import os
-
+import re
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -77,16 +77,30 @@ Do not include markdown or explanatory text outside the JSON.
 """
 
 def evaluate_with_gemini(question, expected_points, transcript):
+    """
+    Evaluate an interview answer using Gemini.
+    Uses concept IDs instead of matching paraphrased concept strings.
+    """
+
     if not transcript or not transcript.strip():
         raise ValueError("The transcript cannot be empty.")
 
     if not expected_points:
         raise ValueError("Expected evaluation points cannot be empty.")
 
+    concepts = [
+        {"concept_id": index, "description": point}
+        for index, point in enumerate(expected_points)
+    ]
+
     request_data = {
         "question": question,
-        "expected_points": expected_points,
+        "expected_concepts": concepts,
         "candidate_transcript": transcript,
+        "instructions": (
+            "Evaluate every expected concept. Return its original concept_id. "
+            "Judge meaning, not exact wording. Do not omit any concept."
+        ),
         "required_output": {
             "scores": {
                 "content": "integer 0-100",
@@ -95,24 +109,18 @@ def evaluate_with_gemini(question, expected_points, transcript):
             },
             "concept_analysis": [
                 {
-                    "concept": "string",
+                    "concept_id": 0,
                     "status": "covered, partial, missing, or incorrect",
-                    "evidence": "short transcript quotation or null",
-                    "explanation": "reason for the assessment"
+                    "evidence": "exact transcript quotation or null",
+                    "explanation": "brief explanation"
                 }
             ],
             "feedback": [
                 {
                     "category": "content, structure, or communication",
                     "observation": "specific observation",
-                    "suggestion": "actionable improvement",
+                    "suggestion": "actionable suggestion",
                     "timestamp_seconds": None
-                }
-            ],
-            "uncertainty_flags": [
-                {
-                    "issue": "description",
-                    "reason": "why verification is necessary"
                 }
             ],
             "summary": "short overall assessment"
@@ -136,9 +144,10 @@ def evaluate_with_gemini(question, expected_points, transcript):
         result = json.loads(response.text)
     except json.JSONDecodeError as exc:
         raise RuntimeError("Gemini returned invalid JSON.") from exc
+
+    # Validate scores
     scores = result.get("scores", {})
 
-    # 1. Validate the three evaluation scores.
     for name in ("content", "structure", "communication"):
         score = scores.get(name)
 
@@ -149,54 +158,40 @@ def evaluate_with_gemini(question, expected_points, transcript):
         ):
             raise ValueError(f"Invalid or missing score: {name}")
 
-    # 2. Validate concept analysis.
+    # Validate concept analysis using IDs
     concept_analysis = result.get("concept_analysis")
 
     if not isinstance(concept_analysis, list):
         raise ValueError("Missing or invalid concept_analysis.")
 
-    expected_concepts = {
-        concept.strip().lower() for concept in expected_points
-    }
-
-    assessed_concepts = set()
+    expected_ids = set(range(len(expected_points)))
+    assessed_ids = set()
     valid_statuses = {"covered", "partial", "missing", "incorrect"}
 
     for item in concept_analysis:
         if not isinstance(item, dict):
-            raise ValueError("Each concept analysis entry must be an object.")
+            raise ValueError("Invalid concept analysis entry.")
 
-        concept = item.get("concept")
+        concept_id = item.get("concept_id")
         status = item.get("status")
         evidence = item.get("evidence")
 
-        if not isinstance(concept, str) or not concept.strip():
-            raise ValueError("Concept analysis contains an invalid concept.")
+        if (
+            not isinstance(concept_id, int)
+            or isinstance(concept_id, bool)
+            or concept_id not in expected_ids
+        ):
+            raise ValueError(f"Invalid concept ID: {concept_id}")
+
+        if concept_id in assessed_ids:
+            raise ValueError(f"Duplicate concept ID: {concept_id}")
 
         if status not in valid_statuses:
             raise ValueError(f"Invalid concept status: {status}")
 
-        normalized_concept = concept.strip().lower()
-
-        if normalized_concept not in expected_concepts:
-            raise ValueError(
-                f"Unexpected concept in analysis: {concept}"
-            )
-
-        if normalized_concept in assessed_concepts:
-            raise ValueError(
-                f"Duplicate concept in analysis: {concept}"
-            )
-
-        assessed_concepts.add(normalized_concept)
-
-        # Evidence must come from the candidate's transcript.
-                # Evidence must be an exact quotation, ignoring whitespace differences.
         if evidence is not None:
             if not isinstance(evidence, str):
-                raise ValueError(
-                    f"Invalid evidence for concept: {concept}"
-                )
+                raise ValueError("Evidence must be a string or null.")
 
             if evidence.strip():
                 normalized_evidence = " ".join(evidence.split())
@@ -204,26 +199,28 @@ def evaluate_with_gemini(question, expected_points, transcript):
 
                 if normalized_evidence not in normalized_transcript:
                     raise ValueError(
-                        f"Evidence not found in transcript for: {concept}"
+                        f"Evidence is not present in transcript: {concept_id}"
                     )
 
-        # Covered concepts should have supporting evidence.
         if status == "covered" and not (
             isinstance(evidence, str) and evidence.strip()
         ):
             raise ValueError(
-                f"Covered concept has no evidence: {concept}"
+                f"Covered concept requires evidence: {concept_id}"
             )
 
-    missing_assessments = expected_concepts - assessed_concepts
+        assessed_ids.add(concept_id)
 
-    if missing_assessments:
-        raise ValueError(
-            "Missing concept assessments: "
-            + ", ".join(sorted(missing_assessments))
-        )
+        # Restore the original concept for the rest of the application.
+        item["concept"] = expected_points[concept_id]
+        item.pop("concept_id", None)
 
-    # 3. Validate feedback.
+    missing_ids = expected_ids - assessed_ids
+
+    if missing_ids:
+        raise ValueError(f"Missing concept assessments: {sorted(missing_ids)}")
+
+    # Validate feedback
     feedback = result.get("feedback")
 
     if not isinstance(feedback, list):
@@ -233,7 +230,7 @@ def evaluate_with_gemini(question, expected_points, transcript):
 
     for item in feedback:
         if not isinstance(item, dict):
-            raise ValueError("Each feedback item must be an object.")
+            raise ValueError("Invalid feedback entry.")
 
         if item.get("category") not in valid_categories:
             raise ValueError("Invalid feedback category.")
@@ -243,15 +240,6 @@ def evaluate_with_gemini(question, expected_points, transcript):
 
         if not isinstance(item.get("suggestion"), str) or not item["suggestion"].strip():
             raise ValueError("Feedback suggestion cannot be empty.")
-
-        timestamp = item.get("timestamp_seconds")
-
-        if timestamp is not None and (
-            not isinstance(timestamp, (int, float))
-            or isinstance(timestamp, bool)
-            or timestamp < 0
-        ):
-            raise ValueError("Invalid feedback timestamp.")
 
     result["transcript"] = transcript
 
