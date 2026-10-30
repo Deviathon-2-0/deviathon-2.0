@@ -1,7 +1,7 @@
 """
 Gemini Tier-2 Fallback & Executive Synthesizer (evaluator/gemini_service.py)
-Uses the official google-genai SDK to synthesize structured
-candidate coaching tips without inventing facts, with multi-model resiliency
+Uses the official google-genai SDK with modern high-rate-limit models:
+gemini-3.5-flash (primary deep analysis) with gemini-3.5-flash-lite (high RPM/low latency)
 and seamless in-memory deterministic fallback.
 """
 import os
@@ -22,8 +22,14 @@ except ImportError:
 
 
 class GeminiEvaluationService:
-    def __init__(self, model_name: str = "gemini-2.5-flash"):
-        self.model_candidates = [model_name, "gemini-2.0-flash", "gemini-1.5-flash"]
+    def __init__(self, model_name: str = "gemini-3.5-flash"):
+        # Prioritize modern high-rate-limit models (Gemini 3.5 Flash & Flash-Lite)
+        self.model_candidates = [
+            model_name,
+            "gemini-3.5-flash-lite",
+            "gemini-3-flash-preview",
+            "gemini-flash-latest"
+        ]
         self.client = None
         self._init_client()
 
@@ -50,7 +56,7 @@ class GeminiEvaluationService:
         timeline_moments: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """
-        Synthesizes executive evaluation and coaching scorecard using Gemini,
+        Synthesizes executive evaluation and coaching scorecard using Gemini 3.5 Flash / Flash-Lite,
         or gracefully falls back to deterministic template rendering.
         """
         if self.client:
@@ -60,7 +66,7 @@ class GeminiEvaluationService:
                     if gemini_output:
                         return {
                             **deterministic_results,
-                            "synthesis_tier": f"Tier-2 (Gemini {model})",
+                            "synthesis_tier": f"Tier-2 (Google GenAI {model})",
                             "executive_summary": gemini_output.get("executive_summary", ""),
                             "strengths": gemini_output.get("strengths", []),
                             "targeted_coaching_tips": gemini_output.get("targeted_coaching_tips", []),
@@ -68,7 +74,7 @@ class GeminiEvaluationService:
                             "timeline_moments": timeline_moments
                         }
                 except Exception as err:
-                    logger.info(f"Model {model} failed ({err}); evaluating next tier...")
+                    logger.info(f"Model {model} failed or rate-limited ({err}); evaluating next candidate...")
 
         # Tier-1 Deterministic Synthesis Fallback
         return self._deterministic_fallback_synthesis(session_data, deterministic_results, timeline_moments)
