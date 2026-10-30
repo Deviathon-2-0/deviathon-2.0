@@ -604,7 +604,7 @@
             const localSessionId = parsed.sessionId || parsed.report?.sessionId;
             if (urlSessionId) {
               // When a session ID is present in URL, strictly match it to avoid showing unrelated previous reports
-              if ((!localSessionId || localSessionId === urlSessionId || !reportEnvelope) && (parsed.scores || (parsed.report && parsed.report.scores))) {
+              if (localSessionId && localSessionId === urlSessionId && (parsed.scores || (parsed.report && parsed.report.scores))) {
                 reportEnvelope = parsed;
               }
             } else if (parsed && (parsed.scores || (parsed.report && parsed.report.scores))) {

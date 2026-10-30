@@ -179,16 +179,21 @@ def pcm_to_wav(pcm_bytes, sample_rate=24000, channels=1, sample_width=2):
 
 def sanitize_interview_text(text: str) -> str:
     """
-    Cleans raw problem prompts, stripping HTML tags, Markdown artifacts,
+    Cleans raw problem prompts, stripping XML/SSML declarations, HTML tags, Markdown artifacts,
     code blocks, editorial constraints, test cases, and symbol glitches so that
     the speech synthesis engine produces natural, conversational speech without reading
-    code tokens like '=', '<=', '<div>', 'Input:', or '.' as 'stop point'.
+    code tokens like '=', '<=', '<div>', 'Input:', or '.' as 'stop point' and without reading
+    SSML/XML headers aloud.
     """
     if not text:
         return ""
     
+    # 0. Strip XML/SSML declarations and speech tags completely
+    clean = re.sub(r'<\?xml[^>]*\?>', ' ', text, flags=re.IGNORECASE)
+    clean = re.sub(r'<\/?(?:speak|voice|prosody|mstts:[^>]+|audio|break|emphasis|lang|phoneme|say-as|sub|p|s)[^>]*>', ' ', clean, flags=re.IGNORECASE)
+    
     # 1. Strip HTML tags completely
-    clean = re.sub(r'<[^>]+>', ' ', text)
+    clean = re.sub(r'<[^>]+>', ' ', clean)
     
     # 2. Strip code blocks & inline code
     clean = re.sub(r'```[\s\S]*?```', ' ', clean)
@@ -282,9 +287,9 @@ def apply_submind_audio_mastering(raw_path, output_path):
     return False
 
 
-async def _generate_edge_tts(text_or_ssml, voice_name, output_path, rate_str="+0%"):
-    """Generate audio using Edge TTS neural human voice with SSML expressiveness."""
-    communicate = edge_tts.Communicate(text_or_ssml, voice_name, rate=rate_str)
+async def _generate_edge_tts(clean_text, voice_name, output_path, rate_str="+0%"):
+    """Generate audio using Edge TTS neural human voice with plain text (Edge TTS wraps SSML internally)."""
+    communicate = edge_tts.Communicate(clean_text, voice_name, rate=rate_str)
     await communicate.save(output_path)
 
 
@@ -333,13 +338,15 @@ def synthesize_interviewer_speech(text, interviewer_name="Kabir", pacing="1.0"):
             "cached": True,
         }
 
-    # 1. Primary: Neural Edge TTS with Emotion Multi-Pass SSML & Submind Audio DSP
+    # 1. Primary: Neural Edge TTS with Clean Sanitized Text & Submind Audio DSP
     if HAS_EDGE_TTS:
         try:
             voice_name = profile.get("neural_voice", "en-US-JennyNeural")
-            ssml = build_emotion_ssml(text, voice_name, profile["gender"], pacing_factor=pacing_factor)
+            clean_text = sanitize_interview_text(text)
+            if not clean_text:
+                clean_text = "Please walk me through your technical approach and how you would design an optimal solution."
             raw_tmp = cache_dir / f"raw_{mp3_filename}"
-            asyncio.run(_generate_edge_tts(ssml, voice_name, str(raw_tmp), rate_str=rate_str))
+            asyncio.run(_generate_edge_tts(clean_text, voice_name, str(raw_tmp), rate_str=rate_str))
             
             if raw_tmp.exists() and raw_tmp.stat().st_size > 500:
                 mastered = apply_submind_audio_mastering(raw_tmp, mp3_filepath)
