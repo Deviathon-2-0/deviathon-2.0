@@ -678,7 +678,7 @@
           <!-- Final START PRACTICE Action (Locked until all 8 are verified) -->
           <button type="button" onclick="startFinalPracticeSession()" id="prereq-start-btn" disabled class="w-full py-3.5 rounded-full bg-[#E8DFD0] text-[#7F766C] text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-60">
             <span class="material-symbols-outlined text-sm">lock</span>
-            <span id="prereq-start-text">COMPLETE ALL 8 CHECKS TO START (0/8)</span>
+            <span id="prereq-start-text">COMPLETE CHECKS TO START INTERVIEW (0/8)</span>
           </button>
         </div>
 
@@ -690,7 +690,7 @@
   <!-- ========================================================================
        SCREEN 2: LIVE INTERVIEW STAGE (Full-Screen, Question Navigation Pills, Draggable PiP)
        ======================================================================== -->
-  <div id="interview-stage" class="hidden h-full flex flex-col bg-[#0A0603] text-white overflow-hidden relative select-none">
+  <div id="interview-stage" class="hidden fixed inset-0 z-50 flex flex-col bg-[#0A0603] text-white overflow-hidden select-none">
     
     <!-- Top Header Bar: Status, Question Progress Pills with Strict Locking, Timer & Mode Switcher -->
     <header class="h-14 border-b border-[#2A1C0A] px-4 sm:px-6 flex items-center justify-between shrink-0 bg-[#0F0A05] z-30 shadow-md">
@@ -2175,7 +2175,7 @@
       if (startBtn) {
         startBtn.disabled = true;
         startBtn.className = "w-full py-3.5 rounded-full bg-[#E8DFD0] text-[#7F766C] text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-60";
-        startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">lock</span><span>COMPLETE ALL 8 CHECKS TO START (0/8)</span>';
+        startBtn.innerHTML = '<span class="material-symbols-outlined text-sm">lock</span><span>COMPLETE CHECKS TO START INTERVIEW (0/8)</span>';
       }
 
       // ====================================================================
@@ -2352,7 +2352,7 @@
       if (startBtn) {
         startBtn.disabled = false;
         startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/20";
-        startBtn.innerHTML = '<span>START PRACTICE</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
+        startBtn.innerHTML = '<span>START INTERVIEW</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
       }
 
       isCheckingPrerequisites = false;
@@ -2462,7 +2462,7 @@
         if (startBtn) {
           startBtn.disabled = false;
           startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/20";
-          startBtn.innerHTML = '<span>START PRACTICE</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
+          startBtn.innerHTML = '<span>START INTERVIEW</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
         }
       };
 
@@ -2515,7 +2515,7 @@
         if (startBtn) {
           startBtn.disabled = false;
           startBtn.className = "w-full py-3.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs sm:text-sm font-bold shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-500/30 animate-pulse";
-          startBtn.innerHTML = '<span>START PRACTICE</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
+          startBtn.innerHTML = '<span>START INTERVIEW</span><span class="material-symbols-outlined text-base">arrow_forward</span>';
         }
       } else {
         soundCheckPassed = false;
@@ -2525,6 +2525,21 @@
 
     // Start Practice Session (Failsafe: Auto-verifies Check 8 and starts)
     function startFinalPracticeSession() {
+      // 1. Immediately close modals & show interview stage FIRST
+      closePracticePrerequisite();
+      closeInterviewConfig();
+
+      const setupScreen = document.getElementById('setup-screen');
+      if (setupScreen) setupScreen.classList.add('hidden');
+
+      const stage = document.getElementById('interview-stage');
+      if (stage) {
+        stage.classList.remove('hidden');
+        stage.classList.add('flex');
+      }
+
+      window.location.hash = 'interview-active';
+
       try {
         soundCheckPassed = true;
         checklistProgress = 8;
@@ -2540,19 +2555,9 @@
           audioPlaybackTimeout = null;
         }
 
-        closePracticePrerequisite();
         confirmStartPractice();
       } catch (err) {
-        console.error("Error in startFinalPracticeSession:", err);
-        // Absolute fallback to transition candidate to stage
-        closePracticePrerequisite();
-        const setup = document.getElementById('setup-screen');
-        if (setup) setup.classList.add('hidden');
-        const stage = document.getElementById('interview-stage');
-        if (stage) {
-          stage.classList.remove('hidden');
-          stage.classList.add('flex');
-        }
+        console.error("Notice during startFinalPracticeSession:", err);
         switchStageView('video');
       }
     }
@@ -2841,139 +2846,144 @@
 
     // Confirm Start Practice Session
     function confirmStartPractice() {
-      try {
-      const termsEl = document.getElementById('setting-terms');
-      if (termsEl && !termsEl.checked) {
-        alert("Please accept the terms to proceed.");
-        return;
-      }
-
-      const langSelect = document.getElementById('modal-coding-language-select');
-      selectedCodingLanguage = langSelect ? langSelect.value : 'Python';
+      // 1. Instantly switch views to live interview stage
+      closePracticePrerequisite();
       closeInterviewConfig();
 
-      const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
+      const setup = document.getElementById('setup-screen');
+      if (setup) setup.classList.add('hidden');
 
-      // Reset Question Progression Lock
-      maxUnlockedQIndex = 0;
-      submittedQuestionIndices.clear();
-      collectedAnswers = [];
-
-      document.getElementById('stage-role-title').textContent = pendingTitle;
-      document.getElementById('stage-role-level').textContent = pendingLevel;
-
-      isCurrentSessionTech = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related' || selectedRound === 'Go All (Full Loop)'));
-
-      const langBadge = document.getElementById('stage-lang-badge');
-      if (isCurrentSessionTech) {
-        langBadge.textContent = selectedCodingLanguage.split(' ')[0];
-        langBadge.classList.remove('hidden');
-      } else {
-        langBadge.classList.add('hidden');
-      }
-
-      // Initialize Interviewer HD Videos
-      const vCall = document.getElementById('call-interviewer-video');
-      const vPip = document.getElementById('pip-interviewer-video');
-      if (vCall && chosen.videoListening) {
-        vCall.src = chosen.videoListening;
-        vCall.load();
-        vCall.play().catch(() => {});
-      }
-      if (vPip && chosen.videoListening) {
-        vPip.src = chosen.videoListening;
-        vPip.load();
-        vPip.play().catch(() => {});
-      }
-
-      document.getElementById('call-interviewer-name').textContent = chosen.name;
-      document.getElementById('call-interviewer-accent').textContent = chosen.accentLabel;
-      const pipName = document.getElementById('pip-interviewer-name');
-      if (pipName) pipName.textContent = chosen.name;
-
-      // Generate Authentic Question Bank
-      if (customInterviewQuestions && customInterviewQuestions.length > 0) {
-        currentQuestions = customInterviewQuestions;
-      } else {
-        currentQuestions = generateQuestionBank(pendingTitle, pendingCompany, pendingTrack, pendingLevel, selectedRound, selectedCodingLanguage);
-      }
-
-      currentQIndex = 0;
-      renderQuestionNavigationPills();
-      updateQuestionView(0);
-
-      // Start in Video Call Mode
-      switchStageView('video');
-
-      document.getElementById('setup-screen').classList.add('hidden');
       const stage = document.getElementById('interview-stage');
-      stage.classList.remove('hidden');
-      stage.classList.add('flex');
-
-      initHardwareMedia();
-
-      // Configure Dynamic Conference Panel Tiles (matching 4-tile video call strip)
-      const others = interviewers.filter((_, idx) => idx !== selectedInterviewerIdx);
-      if (others[0]) {
-        const v2 = document.getElementById('panel-video-2');
-        const n2 = document.getElementById('panel-name-2');
-        if (v2 && others[0].videoListening) { v2.src = others[0].videoListening; v2.load(); v2.play().catch(()=>{}); }
-        if (n2) n2.textContent = others[0].name;
-      }
-      if (others[1]) {
-        const v3 = document.getElementById('panel-video-3');
-        const n3 = document.getElementById('panel-name-3');
-        if (v3 && others[1].videoListening) { v3.src = others[1].videoListening; v3.load(); v3.play().catch(()=>{}); }
-        if (n3) n3.textContent = others[1].name;
-      }
-      if (others[2]) {
-        const v4 = document.getElementById('panel-video-4');
-        const n4 = document.getElementById('panel-name-4');
-        if (v4 && others[2].videoListening) { v4.src = others[2].videoListening; v4.load(); v4.play().catch(()=>{}); }
-        if (n4) n4.textContent = others[2].name;
+      if (stage) {
+        stage.classList.remove('hidden');
+        stage.classList.add('flex');
       }
 
-      // Start Live Session Timer
-      remainingSeconds = 0;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        remainingSeconds++;
-        const hrs = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
-        const mins = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
-        const secs = String(remainingSeconds % 60).padStart(2, '0');
-        const timerEl = document.getElementById('stage-session-timer');
-        if (timerEl) timerEl.textContent = mins + ":" + secs;
-        const callRecEl = document.getElementById('call-rec-timer');
-        if (callRecEl) callRecEl.textContent = hrs + ":" + mins + ":" + secs;
-      }, 1000);
+      window.location.hash = 'interview-active';
 
-      // Connect to Django backend session
-      tryApiFetch('/sessions/start/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          role: pendingTitle,
-          company: pendingCompany || 'Google',
-          track: pendingTrack,
-          level: pendingLevel,
-          interviewer_name: chosen.name,
-          interviewer_accent: chosen.accentLabel,
-          language: selectedCodingLanguage
-        })
-      }).then(data => {
-        if (data && data.session_id) {
-          activeSessionId = data.session_id;
+      try {
+        const termsEl = document.getElementById('setting-terms');
+        if (termsEl) termsEl.checked = true;
+
+        const langSelect = document.getElementById('modal-coding-language-select');
+        selectedCodingLanguage = langSelect ? langSelect.value : 'Python';
+
+        const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
+
+        // Reset Question Progression Lock
+        maxUnlockedQIndex = 0;
+        submittedQuestionIndices.clear();
+        collectedAnswers = [];
+
+        const titleEl = document.getElementById('stage-role-title');
+        if (titleEl) titleEl.textContent = pendingTitle || "Software Engineer";
+        const levelEl = document.getElementById('stage-role-level');
+        if (levelEl) levelEl.textContent = pendingLevel || "SDE 2";
+
+        isCurrentSessionTech = (pendingTrack === 'Tech' && (selectedRound === 'Coding' || selectedRound === 'Role Related' || selectedRound === 'Go All (Full Loop)'));
+
+        const langBadge = document.getElementById('stage-lang-badge');
+        if (langBadge) {
+          if (isCurrentSessionTech) {
+            langBadge.textContent = selectedCodingLanguage.split(' ')[0];
+            langBadge.classList.remove('hidden');
+          } else {
+            langBadge.classList.add('hidden');
+          }
         }
-      }).catch(() => {});
+
+        // Initialize Interviewer HD Videos
+        const vCall = document.getElementById('call-interviewer-video');
+        const vPip = document.getElementById('pip-interviewer-video');
+        if (vCall && chosen.videoListening) {
+          vCall.src = chosen.videoListening;
+          vCall.load();
+          vCall.play().catch(() => {});
+        }
+        if (vPip && chosen.videoListening) {
+          vPip.src = chosen.videoListening;
+          vPip.load();
+          vPip.play().catch(() => {});
+        }
+
+        const nameEl = document.getElementById('call-interviewer-name');
+        if (nameEl) nameEl.textContent = chosen.name;
+        const accentEl = document.getElementById('call-interviewer-accent');
+        if (accentEl) accentEl.textContent = chosen.accentLabel;
+        const pipName = document.getElementById('pip-interviewer-name');
+        if (pipName) pipName.textContent = chosen.name;
+
+        // Generate Authentic Question Bank
+        if (customInterviewQuestions && customInterviewQuestions.length > 0) {
+          currentQuestions = customInterviewQuestions;
+        } else {
+          currentQuestions = generateQuestionBank(pendingTitle, pendingCompany, pendingTrack, pendingLevel, selectedRound, selectedCodingLanguage);
+        }
+
+        currentQIndex = 0;
+        renderQuestionNavigationPills();
+        updateQuestionView(0);
+
+        // Start in Video Call Mode
+        switchStageView('video');
+
+        initHardwareMedia();
+
+        // Configure Dynamic Conference Panel Tiles (matching 4-tile video call strip)
+        const others = interviewers.filter((_, idx) => idx !== selectedInterviewerIdx);
+        if (others[0]) {
+          const v2 = document.getElementById('panel-video-2');
+          const n2 = document.getElementById('panel-name-2');
+          if (v2 && others[0].videoListening) { v2.src = others[0].videoListening; v2.load(); v2.play().catch(()=>{}); }
+          if (n2) n2.textContent = others[0].name;
+        }
+        if (others[1]) {
+          const v3 = document.getElementById('panel-video-3');
+          const n3 = document.getElementById('panel-name-3');
+          if (v3 && others[1].videoListening) { v3.src = others[1].videoListening; v3.load(); v3.play().catch(()=>{}); }
+          if (n3) n3.textContent = others[1].name;
+        }
+        if (others[2]) {
+          const v4 = document.getElementById('panel-video-4');
+          const n4 = document.getElementById('panel-name-4');
+          if (v4 && others[2].videoListening) { v4.src = others[2].videoListening; v4.load(); v4.play().catch(()=>{}); }
+          if (n4) n4.textContent = others[2].name;
+        }
+
+        // Start Live Session Timer
+        remainingSeconds = 0;
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          remainingSeconds++;
+          const hrs = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
+          const mins = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
+          const secs = String(remainingSeconds % 60).padStart(2, '0');
+          const timerEl = document.getElementById('stage-session-timer');
+          if (timerEl) timerEl.textContent = mins + ":" + secs;
+          const callRecEl = document.getElementById('call-rec-timer');
+          if (callRecEl) callRecEl.textContent = hrs + ":" + mins + ":" + secs;
+        }, 1000);
+
+        // Connect to Django backend session
+        tryApiFetch('/sessions/start/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            role: pendingTitle,
+            company: pendingCompany || 'Google',
+            track: pendingTrack,
+            level: pendingLevel,
+            interviewer_name: chosen.name,
+            interviewer_accent: chosen.accentLabel,
+            language: selectedCodingLanguage
+          })
+        }).then(data => {
+          if (data && data.session_id) {
+            activeSessionId = data.session_id;
+          }
+        }).catch(() => {});
       } catch (err) {
         console.error("Notice during confirmStartPractice:", err);
-        const setup = document.getElementById('setup-screen');
-        if (setup) setup.classList.add('hidden');
-        const stage = document.getElementById('interview-stage');
-        if (stage) {
-          stage.classList.remove('hidden');
-          stage.classList.add('flex');
-        }
         switchStageView('video');
       }
     }

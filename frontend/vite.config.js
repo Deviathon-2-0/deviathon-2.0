@@ -6,20 +6,32 @@ const routeRewritesPlugin = () => ({
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
       const parts = req.url.split('?');
-      const pathname = parts[0];
+      const pathname = parts[0].replace(/\/+$/, '') || '/';
       const search = parts[1] ? '?' + parts[1] : '';
 
       const routeMap = {
         '/mock-interview': '/pages/mock-interview.html',
         '/mock-interview.html': '/pages/mock-interview.html',
+        '/pages/mock-interview': '/pages/mock-interview.html',
         '/practice': '/pages/mock-interview.html',
         '/practice.html': '/pages/mock-interview.html',
+        '/pages/practice': '/pages/mock-interview.html',
         '/interview': '/pages/mock-interview.html',
+        '/interview.html': '/pages/mock-interview.html',
+        '/pages/interview': '/pages/mock-interview.html',
+        '/start-interview': '/pages/mock-interview.html',
+        '/start-interview.html': '/pages/mock-interview.html',
+        '/start': '/pages/mock-interview.html',
         '/dashboard': '/pages/dashboard.html',
+        '/dashboard.html': '/pages/dashboard.html',
+        '/pages/dashboard': '/pages/dashboard.html',
         '/auth': '/pages/auth.html',
         '/login': '/pages/auth.html',
+        '/pages/auth': '/pages/auth.html',
         '/resume': '/pages/resume.html',
+        '/pages/resume': '/pages/resume.html',
         '/assessment': '/pages/assessment.html',
+        '/pages/assessment': '/pages/assessment.html',
         '/history': '/pages/history.html',
         '/report': '/pages/report.html',
         '/prep-plan': '/pages/prep-plan.html',
@@ -44,15 +56,19 @@ const routeRewritesPlugin = () => ({
   configurePreviewServer(server) {
     server.middlewares.use((req, res, next) => {
       const parts = req.url.split('?');
-      const pathname = parts[0];
+      const pathname = parts[0].replace(/\/+$/, '') || '/';
       const search = parts[1] ? '?' + parts[1] : '';
 
       const routeMap = {
         '/mock-interview': '/pages/mock-interview.html',
         '/mock-interview.html': '/pages/mock-interview.html',
+        '/pages/mock-interview': '/pages/mock-interview.html',
         '/practice': '/pages/mock-interview.html',
         '/practice.html': '/pages/mock-interview.html',
         '/interview': '/pages/mock-interview.html',
+        '/interview.html': '/pages/mock-interview.html',
+        '/start-interview': '/pages/mock-interview.html',
+        '/start-interview.html': '/pages/mock-interview.html',
         '/dashboard': '/pages/dashboard.html',
         '/auth': '/pages/auth.html',
         '/login': '/pages/auth.html',
