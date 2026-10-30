@@ -119,8 +119,8 @@ def import_leetcode_dataset():
     total_catalog = CatalogQuestion.objects.count()
     total_interview = InterviewQuestion.objects.count()
     print(f"PostgreSQL Database Totals:")
-    print(f"  • CatalogQuestion: {total_catalog} records")
-    print(f"  • InterviewQuestion: {total_interview} records")
+    print(f"  * CatalogQuestion: {total_catalog} records")
+    print(f"  * InterviewQuestion: {total_interview} records")
 
 
 if __name__ == "__main__":

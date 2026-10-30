@@ -2799,8 +2799,10 @@
       if (codeTxt) codeTxt.textContent = text || "Listening to your verbal explanation...";
     }
 
-    function toggleCandidateAnswerRecording() {
-      isCandidateRecording = !isCandidateRecording;
+    function toggleCandidateAnswerRecording(forceState) {
+      if (forceState === true && isCandidateRecording) return;
+      if (forceState === false && !isCandidateRecording) return;
+      isCandidateRecording = (forceState !== undefined) ? forceState : !isCandidateRecording;
 
       const callBtn = document.getElementById('call-record-btn');
       const callBtnText = document.getElementById('call-record-btn-text');
@@ -3207,7 +3209,7 @@
       if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'evaluation-loading-overlay';
-        overlay.className = "fixed inset-0 z-50 bg-[#0F0B06]/95 backdrop-blur-2xl flex flex-col items-center justify-center text-white px-6";
+        overlay.className = "fixed inset-0 z-[9999] bg-[#0F0B06]/95 backdrop-blur-2xl flex flex-col items-center justify-center text-white px-6";
         overlay.innerHTML = `
           <div class="w-16 h-16 rounded-3xl bg-[#AA7000]/20 border border-[#AA7000]/40 flex items-center justify-center mb-6 shadow-2xl relative">
             <span class="material-symbols-outlined text-3xl text-[#E8A338] animate-spin">neurology</span>
@@ -3263,13 +3265,27 @@
       const isStarterOnly = rawCode.startsWith('// Problem:') && rawCode.split('\n').length <= 4;
       const cleanCode = isStarterOnly ? '' : rawCode;
 
-      // Stop speech recording if active
-      if (isCandidateRecording) {
-        toggleCandidateAnswerRecording();
+      // Stop speech recording if active and capture live transcription
+      if (speechRecognizer) {
+        try { speechRecognizer.stop(); } catch(e) {}
+      }
+      isCandidateRecording = false;
+      const callRecordBtn = document.getElementById('call-record-btn');
+      if (callRecordBtn) {
+        callRecordBtn.className = "px-4 py-2 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer";
+        const callBtnText = document.getElementById('call-record-btn-text');
+        if (callBtnText) callBtnText.textContent = "Start Spoken Answer";
       }
 
-      // No fake text: If user gave no verbal answer, record it honestly
-      const spokenText = candidateCurrentTranscript.trim() || "[No verbal response provided]";
+      const callTxtEl = document.getElementById('call-transcript-text');
+      const liveCaption = (callTxtEl ? callTxtEl.textContent : '').trim();
+      let spokenText = candidateCurrentTranscript.trim();
+      if (!spokenText && liveCaption && !liveCaption.startsWith('Listening to') && !liveCaption.startsWith('Speak your')) {
+        spokenText = liveCaption;
+      }
+      if (!spokenText) {
+        spokenText = "[No verbal response provided]";
+      }
 
       const qEndEpoch = Date.now();
       const qStartSec = parseFloat(((questionStartEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
@@ -3442,6 +3458,8 @@
 
       const onPlaybackEnded = () => {
         setInterviewerVideoState('listening');
+        // Auto-activate voice channel listening once interviewer finishes speaking
+        toggleCandidateAnswerRecording(true);
       };
 
       // 1. Try server neural TTS first (Edge TTS realistic human voices with distinct male/female timbre)

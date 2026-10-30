@@ -892,7 +892,15 @@
         const tNotes = document.getElementById('metric-tech-notes');
         if (tNotes && techMetrics) tNotes.textContent = techMetrics.notes || "";
         const tTip = document.getElementById('metric-tech-tip');
-        if (tTip && techMetrics) tTip.innerHTML = `<strong>Tip:</strong> ${escapeHtml(techMetrics.recommendation || "")}`;
+        if (tTip && techMetrics) tTip.innerHTML = `<strong>Tip:</strong> ${escapeHtml(techMetrics.recommendation || "State time and space complexity upfront.")}`;
+        
+        const tDetail = document.getElementById('metric-tech-detail');
+        if (tDetail) {
+          const firstGap = (report.feedbackSummary && Array.isArray(report.feedbackSummary.criticalGaps) && report.feedbackSummary.criticalGaps[0])
+            || (techMetrics && techMetrics.gap)
+            || (techScore === 0 ? "No code or technical explanations were submitted." : "Articulate asymptotic memory bounds and invariants upfront.");
+          tDetail.innerHTML = `<strong>Gap:</strong> ${escapeHtml(firstGap)}`;
+        }
       }
 
       // 8. Metric 3: Speech Clarity
@@ -907,6 +915,15 @@
         if (sPill && speechMetrics) sPill.textContent = speechMetrics.rating || "Clear";
         const sNotes = document.getElementById('metric-speech-notes');
         if (sNotes && speechMetrics) sNotes.textContent = speechMetrics.notes || "";
+        
+        const sDetail = document.getElementById('metric-speech-detail');
+        if (sDetail) {
+          sDetail.innerHTML = `<strong>Acoustics:</strong> Dialect-neutral engine scored conversational cadence without accent bias.`;
+        }
+        const sTip = document.getElementById('metric-speech-tip');
+        if (sTip && speechMetrics) {
+          sTip.innerHTML = `<strong>Tip:</strong> ${escapeHtml(speechMetrics.recommendation || "Use natural 1-second pauses when structuring trade-offs.")}`;
+        }
       }
 
       // 9. Replace Tab 1 (Overview) Critical Gaps & Missed Concepts

@@ -107,7 +107,7 @@ def seed_catalog_questions():
             question_key=q_key,
             defaults={
                 "title": q_data.get("title", ""),
-                "category": "Coding" if "parentheses" in q_data.get("title", "").lower() or "cache" in q_data.get("title", "").lower() else "System Design",
+                "category": "System Design" if (q_key.startswith("sd_") or q_key in ["q_rate_limiter"] or "rate limiter" in q_data.get("title", "").lower() or "system design" in q_data.get("title", "").lower()) else "Coding",
                 "difficulty": q_data.get("difficulty", "Medium"),
                 "prompt": q_data.get("title", ""),
                 "required_keywords": q_data.get("required_keywords", []),

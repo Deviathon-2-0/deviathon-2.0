@@ -687,6 +687,8 @@ def start_interview_session(request):
             'index': qr.question_index,
             'title': qr.title,
             'text': qr.text,
+            'prompt': qr.text,
+            'type': q.get('type') or ('Behavioral' if is_behavioral else ('System Design' if is_system_design else 'Coding')),
             'expected_concepts': qr.expected_concepts,
             'starter_code': qr.starter_code
         })
@@ -877,6 +879,21 @@ def _resolve_session(session_id, role="Software Engineer", company="Google", tra
         )
     return session
 
+def _is_code_stub(code_str: str) -> bool:
+    import re
+    stripped = (code_str or "").strip()
+    if not stripped:
+        return True
+    no_comments = re.sub(r'//.*|/\*[\s\S]*?\*/|#.*', '', stripped).strip()
+    clean = re.sub(r'^(#include|import|from|using\s+namespace).*$', '', no_comments, flags=re.MULTILINE).strip()
+    if not clean:
+        return True
+    if re.search(r'\{\s*(return\s*(\{\}|null|nullptr|false|0|""|-1)?;?)?\s*\}$', clean):
+        return True
+    if re.search(r':\s*(pass|return\s*(None|False|0|""|\[\]|\{\})?)?\s*$', clean):
+        return True
+    return False
+
 @api_view(['POST'])
 def submit_interview_session(request, session_id):
     """
@@ -919,21 +936,10 @@ def submit_interview_session(request, session_id):
         followup_resp = ans.get('followup_response', '')
 
         # Strict attempt check: Exclude placeholder comments, unmodified starters, or fake text
-        fake_markers = ['demonstrated systematic algorithm', '[no verbal', '[no follow-up', 'listening to your']
+        fake_markers = ['demonstrated systematic algorithm', '[no verbal', '[no follow-up', 'listening to your', 'speak your answer']
         is_fake_transcript = any(m in transcript.lower() for m in fake_markers)
         has_real_speech = bool(transcript and not is_fake_transcript and len(transcript.strip().split()) >= 3)
-
-        # Detect unmodified starter code (e.g. only return {}; or pass or empty comments)
-        stripped_code = code.strip()
-        is_starter_stub = (
-            not stripped_code or
-            stripped_code.startswith('// Problem:') and stripped_code.count('\n') <= 3 or
-            stripped_code.startswith('# Problem:') and stripped_code.count('\n') <= 3 or
-            'return {};' in stripped_code and len(stripped_code) < 160 or
-            stripped_code.endswith('pass') and len(stripped_code) < 120 or
-            stripped_code.endswith('return None') and len(stripped_code) < 120
-        )
-        has_real_code = bool(stripped_code and not is_starter_stub and len(stripped_code) > 25)
+        has_real_code = not _is_code_stub(code)
 
         if not has_real_speech and not has_real_code:
             q_breakdown_card = {
@@ -947,8 +953,10 @@ def submit_interview_session(request, session_id):
                     {'concept': 'Technical implementation omitted'},
                     {'concept': 'Verbal reasoning omitted'}
                 ],
-                'feedback': 'No spoken response or implementation was provided for this question. 0 points awarded.',
-                'flagged_moments': []
+                'feedback': 'No spoken response or code solution was provided for this question (0/100).',
+                'flagged_moments': [],
+                'followup_prompt': ans.get("followup_prompt", ""),
+                'followup_response': ans.get("followup_response", "")
             }
             per_question_breakdown.append(q_breakdown_card)
             continue
@@ -994,8 +1002,8 @@ def submit_interview_session(request, session_id):
         )
 
         # Decoupled Scoring: Technical Score is strictly semantic & algorithmic
-        det_tech = float(det_result.get("technical_score", 80.0))
-        gem_tech = float(scorecard.get("overall_score", 80.0))
+        det_tech = float(det_result.get("technical_score", 0.0))
+        gem_tech = float(scorecard.get("overall_score", 0.0))
         q_score = round(det_tech * 0.6 + gem_tech * 0.4, 1)
 
         prosody = det_result.get("acoustic_prosodic_analysis", {})
@@ -1088,42 +1096,47 @@ def submit_interview_session(request, session_id):
     else:
         grade = "D"
 
-    if not all_strengths:
+    unique_gaps = []
+    for g in all_critical_gaps:
+        g_clean = g.strip()
+        if not g_clean:
+            continue
+        if not any(g_clean.lower() in existing.lower() or existing.lower() in g_clean.lower() for existing in unique_gaps):
+            unique_gaps.append(g_clean)
+        if len(unique_gaps) >= 4:
+            break
+
+    if not unique_gaps:
         if avg_tech > 0:
-            all_strengths = [
-                "Preserved computational invariants and systematic logic breakdown.",
-                "Clear articulation of data structures and problem boundaries upfront.",
-                "Maintained composure and forward engagement throughout evaluation."
+            unique_gaps = [
+                "State Big-O time and space complexity constraints before implementing solutions.",
+                "Discuss memory layout and cache locality trade-offs for large input scale."
             ]
         else:
-            all_strengths = ["Candidate initialized the interview environment and established video/audio connectivity."]
+            unique_gaps = ["No spoken technical answers or code implementations were provided across questions."]
 
-    if not all_critical_gaps:
-        if avg_tech > 0:
-            all_critical_gaps = [
-                "Quantify partition rebalancing latencies in failure recovery modes.",
-                "Proactively mention CPU cache locality and memory fragmentation bounds."
-            ]
-        else:
-            all_critical_gaps = ["No spoken technical answers or code solutions were provided across interview topics."]
+    unique_recs = []
+    seen_titles = set()
+    for r in all_recommendations:
+        title = r.get("title", "") if isinstance(r, dict) else "Growth"
+        desc = r.get("description", "") if isinstance(r, dict) else str(r)
+        if title not in seen_titles and not any(desc.lower() == existing.get("description", "").lower() for existing in unique_recs):
+            seen_titles.add(title)
+            unique_recs.append({"title": title, "description": desc})
+        if len(unique_recs) >= 3:
+            break
 
-    if not all_recommendations:
-        all_recommendations = [
+    if not unique_recs:
+        unique_recs = [
             {"title": "Algorithmic Rigor", "description": "State time and space complexity constraints before writing code."},
-            {"title": "Distributed Resilience", "description": "Discuss thread-safety and race condition mitigation when using async routines."},
-            {"title": "Delivery Presence", "description": "Maintain direct webcam eye contact when addressing complex architectural questions."}
-        ]
-
-    if not all_diagnostic_events:
-        all_diagnostic_events = [
-            {"concept": "Forward Engagement", "observation": "Maintained steady gaze during algorithmic breakdown.", "evidence": "Eye focus > 85%", "timestamp": 4.2},
-            {"concept": "Inflection Analysis", "observation": "Clear conversational cadence when contrasting trade-offs.", "evidence": f"Pitch variance {pitch_var} Hz", "timestamp": 12.8}
+            {"title": "Architecture & Scale", "description": "Discuss thread-safety and latency bounds for concurrent workloads."},
+            {"title": "Delivery Presence", "description": "Maintain direct webcam eye contact when formulating complex trade-offs."}
         ]
 
     feedback_summary = {
-        "criticalGaps": all_critical_gaps,
-        "recommendations": all_recommendations,
-        "strengths": all_strengths
+        "criticalGaps": unique_gaps,
+        "recommendations": unique_recs,
+        "strengths": (all_strengths or ["Preserved computational invariants and systematic logic breakdown."])[:4]
     }
 
     metrics = {
