@@ -732,7 +732,7 @@
           <span class="material-symbols-outlined text-base" id="fullscreen-icon">fullscreen</span>
         </button>
 
-        <button type="button" onclick="exitToSetup()" class="px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-200 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+        <button type="button" id="btn-stage-exit" onclick="exitToSetup()" class="px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-200 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
           <span class="w-1.5 h-1.5 rounded-sm bg-red-500"></span>
           <span>Exit</span>
         </button>
@@ -3361,14 +3361,82 @@
     }
 
     function exitToSetup() {
+      // 1. Clear session timer
       clearInterval(timerInterval);
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+      // 2. Stop speech & audio playback
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (currentAudioPlayback) {
+        try { currentAudioPlayback.pause(); currentAudioPlayback.currentTime = 0; } catch (e) {}
+        currentAudioPlayback = null;
+      }
+      if (audioPlaybackTimeout) {
+        clearTimeout(audioPlaybackTimeout);
+        audioPlaybackTimeout = null;
+      }
+
+      // 3. Stop camera and microphone hardware tracks
+      if (localMediaStream) {
+        try {
+          localMediaStream.getTracks().forEach(track => track.stop());
+        } catch (e) {}
+        localMediaStream = null;
+      }
+      if (window.localMediaStream) {
+        try {
+          window.localMediaStream.getTracks().forEach(track => track.stop());
+        } catch (e) {}
+        window.localMediaStream = null;
+      }
+
+      const candVid = document.getElementById('call-candidate-video');
+      if (candVid) candVid.srcObject = null;
+      const vCall = document.getElementById('call-interviewer-video');
+      if (vCall) { vCall.pause(); }
+      const vPip = document.getElementById('pip-interviewer-video');
+      if (vPip) { vPip.pause(); }
+
+      // 4. Exit fullscreen if active
       if (document.fullscreenElement && document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
       }
-      document.getElementById('interview-stage').classList.add('hidden');
-      document.getElementById('interview-stage').classList.remove('flex');
-      document.getElementById('setup-screen').classList.remove('hidden');
+
+      // 5. Hide the live interview stage completely (clear inline styles)
+      const stage = document.getElementById('interview-stage');
+      if (stage) {
+        stage.classList.add('hidden');
+        stage.classList.remove('flex');
+        stage.style.removeProperty('display');
+        stage.style.removeProperty('visibility');
+        stage.style.removeProperty('pointer-events');
+        stage.style.removeProperty('z-index');
+        stage.style.setProperty('display', 'none', 'important');
+      }
+
+      // 6. Restore setup screen (clear inline display:none)
+      const setup = document.getElementById('setup-screen');
+      if (setup) {
+        setup.classList.remove('hidden');
+        setup.style.removeProperty('display');
+        setup.style.removeProperty('visibility');
+        setup.style.removeProperty('pointer-events');
+      }
+
+      // 7. Ensure prerequisite modal is closed
+      const prereqModal = document.getElementById('prerequisite-modal');
+      if (prereqModal) {
+        prereqModal.classList.add('hidden');
+        prereqModal.classList.remove('flex');
+        prereqModal.style.removeProperty('display');
+      }
+
+      // 8. Restore page scroll & location hash
+      document.body.style.overflow = 'auto';
+      if (window.location.hash === '#interview-active') {
+        history.replaceState(null, null, ' ');
+      }
     }
 
     function makePipDraggable(el) {
