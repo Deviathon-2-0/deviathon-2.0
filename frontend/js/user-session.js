@@ -122,6 +122,12 @@ class UserSessionManager {
   }
 
   mountTopRightProfile() {
+    // Don't mount floating profile on settings, report, or interview stage
+    const path = (window.location.pathname || '').toLowerCase();
+    if (path.includes('settings') || path.includes('report') || path.includes('interview')) {
+      return;
+    }
+
     // Find or create top-right header container
     const existing = document.getElementById('imaira-top-right-profile');
     if (existing) return;
@@ -151,7 +157,7 @@ class UserSessionManager {
         </div>
         <div class="hidden sm:block text-left pr-1">
           <div id="imaira-badge-name" class="text-xs font-bold text-[#2C1F0E] leading-tight group-hover:text-[#AA7000] transition-colors">${user.name}</div>
-          <div id="imaira-badge-company" class="text-[10px] text-[#7F766C] font-semibold">${user.company || 'Google'} Target</div>
+          <div id="imaira-badge-company" class="text-[10px] text-[#7F766C] font-semibold">${user.role || 'Candidate'}</div>
         </div>
         <span class="material-symbols-outlined text-sm text-[#7F766C] group-hover:text-[#2C1F0E] transition-transform" id="imaira-badge-caret">expand_more</span>
       </button>
@@ -167,22 +173,13 @@ class UserSessionManager {
           <div class="min-w-0 flex-1">
             <div class="flex items-center justify-between">
               <h3 id="imaira-modal-name" class="text-sm font-extrabold text-[#2C1F0E] truncate">${user.name}</h3>
-              <span id="imaira-modal-score" class="px-2 py-0.5 rounded-full bg-[#FAF3E0] text-[#AA7000] text-[10px] font-black border border-[#AA7000]/20">${user.score || 89.5} Pts</span>
             </div>
             <p id="imaira-modal-role" class="text-xs text-[#7F766C] font-medium truncate">${user.role}</p>
             <p id="imaira-modal-email" class="text-[11px] text-[#8C7B6B] truncate">${user.email}</p>
           </div>
         </div>
 
-        <!-- Google Benchmark Report Banner -->
-        <a href="report.html?sessionId=${user.benchmarkSessionId || '11111111-2222-3333-4444-555555555551'}" class="mt-3 p-3 rounded-xl bg-gradient-to-r from-[#FAF3E0] via-white to-[#FAF3E0] border border-[#AA7000]/30 hover:border-[#AA7000] transition-all flex items-center justify-between group block">
-          <div>
-            <div class="text-[10px] font-bold uppercase tracking-wider text-[#AA7000]">Benchmark Dossier</div>
-            <div class="text-xs font-extrabold text-[#2C1F0E] group-hover:text-[#AA7000]">Google SDE-2 Report (89.5 / 100)</div>
-            <div class="text-[10px] text-[#7F766C]">Calibrated Human Rubric &bull; Tri-Signal Biometrics</div>
-          </div>
-          <span class="material-symbols-outlined text-[#AA7000] text-lg group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
-        </a>
+
 
         <!-- Fast Mock User Switcher -->
         <div class="mt-3 pt-3 border-t border-[#E8DFD0]">
@@ -196,7 +193,7 @@ class UserSessionManager {
                   </div>
                   <div class="truncate">
                     <div class="text-xs font-bold text-[#2C1F0E] leading-tight">${u.name}</div>
-                    <div class="text-[10px] text-[#7F766C]">${u.company} &bull; ${u.score} pts</div>
+                    <div class="text-[10px] text-[#7F766C]">${u.role}</div>
                   </div>
                 </div>
                 ${u.id === user.id ? '<span class="material-symbols-outlined text-xs text-[#AA7000]">check_circle</span>' : ''}
@@ -291,7 +288,7 @@ class UserSessionManager {
       }
     }
     if (badgeName) badgeName.textContent = user.name;
-    if (badgeCompany) badgeCompany.textContent = (user.company || 'Google') + ' Target';
+    if (badgeCompany) badgeCompany.textContent = user.role || 'Candidate';
 
     // 2. Update modal details
     const modalName = document.getElementById('imaira-modal-name');
