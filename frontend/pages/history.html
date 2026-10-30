@@ -304,18 +304,49 @@
       });
     }
 
-    function deleteSession(btn) {
-      if (confirm("Are you sure you want to remove this interview session record?")) {
-        const row = btn.closest('tr');
-        row.remove();
+    async function deleteSession(btn, id) {
+      if (!confirm("Are you sure you want to remove this interview session record?")) return;
+      const row = btn.closest('tr');
+      if (row) row.remove();
+
+      // Remove from localStorage if matching
+      try {
+        const rawLocal = localStorage.getItem('imaira_session_report');
+        if (rawLocal) {
+          const parsed = JSON.parse(rawLocal);
+          const r = parsed.report || parsed;
+          const sid = r.sessionId || r.session_id || r.id;
+          if (sid === id || !id) {
+            localStorage.removeItem('imaira_session_report');
+          }
+        }
+      } catch (e) {}
+
+      // Delete from backend API
+      if (id) {
+        try {
+          const endpoints = [`/api/sessions/${encodeURIComponent(id)}/delete/`, `http://localhost:8000/api/sessions/${encodeURIComponent(id)}/delete/`];
+          for (const ep of endpoints) {
+            try {
+              const res = await fetch(ep, { method: 'DELETE' });
+              if (res.ok) break;
+            } catch (err) {}
+          }
+        } catch (e) {}
+      }
+
+      // Re-evaluate session counts & trend chart
+      const tbody = document.getElementById('history-table-body');
+      const rows = tbody ? tbody.querySelectorAll('tr') : [];
+      const countEl = document.getElementById('history-filter-count');
+      if (countEl) {
+        countEl.innerHTML = `Showing <strong>${rows.length}</strong> completed session${rows.length !== 1 ? 's' : ''}`;
       }
     }
   </script>
   <!-- Dynamic Session Loader & Chart Engine Script -->
   <script>
-    let sessionsTrend = [
-      { date: "Oct 28", title: "Google SDE-2 • Distributed Systems", depth: 86, logic: 84, speech: 85, composite: 85.0 }
-    ];
+    let sessionsTrend = [];
 
     let chartMode = 'spline';
     let visibleMetrics = { depth: true, logic: true, speech: true };
@@ -360,64 +391,60 @@
           const sid = report.sessionId || report.session_id;
           if (sid && !seenIds.has(sid) && report.scores) {
             seenIds.add(sid);
+            const scores = report.scores || {};
+            const numOrZero = (v) => (v !== undefined && v !== null && !isNaN(Number(v))) ? Number(v) : 0.0;
+            const tech = numOrZero(scores.technicalDepth !== undefined ? scores.technicalDepth : scores.technical_depth);
+            const logic = numOrZero(scores.structuralLogic !== undefined ? scores.structuralLogic : scores.structural_logic);
+            const speech = numOrZero(scores.speechClarity !== undefined ? scores.speechClarity : scores.speech_clarity);
+            const body = numOrZero(scores.bodyLanguage !== undefined ? scores.bodyLanguage : scores.body_language);
+            const overall = numOrZero(report.compositeScore !== undefined ? report.compositeScore : report.overall_score);
+
+            const qCount = (Array.isArray(report.perQuestionBreakdown) && report.perQuestionBreakdown.length) || (Array.isArray(report.questions) && report.questions.length) || 1;
+            const dur = report.duration || `${qCount * 2} mins`;
+
             sessions.unshift({
               id: sid,
-              role: report.role || 'Google SDE-2 • Distributed Systems',
+              role: report.role || 'Software Engineer',
               company: report.company || 'Google',
               track: report.track || 'Tech',
               seniority_level: report.seniority_level || 'SDE 2',
-              overall_score: report.compositeScore || report.overall_score || 85.0,
-              score_technical_depth: report.scores.technicalDepth || report.scores.technical_depth || 86.0,
-              score_structural_logic: report.scores.structuralLogic || report.scores.structural_logic || 84.0,
-              score_speech_clarity: report.scores.speechClarity || report.scores.speech_clarity || 85.0,
-              score_body_language: report.scores.bodyLanguage || report.scores.body_language || 85.0,
+              overall_score: overall,
+              score_technical_depth: tech,
+              score_structural_logic: logic,
+              score_speech_clarity: speech,
+              score_body_language: body,
               created_at: new Date(report.evaluatedAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-              duration: '28 mins'
+              duration: dur
             });
           }
         }
       } catch (e) {}
 
-      // 3. Fallback to JUST 1 Google interview where candidate scored 85%
-      if (!sessions || sessions.length === 0) {
-        sessions = [
-          {
-            id: "11111111-2222-3333-4444-555555555551",
-            role: "Google SDE-2 • Distributed Systems",
-            company: "Google",
-            track: "Tech",
-            seniority_level: "SDE 2",
-            score_technical_depth: 86.0,
-            score_structural_logic: 84.0,
-            score_speech_clarity: 85.0,
-            score_body_language: 85.0,
-            overall_score: 85.0,
-            created_at: "Oct 28, 2026",
-            duration: "28 mins"
-          }
-        ];
-      }
-
       // Update Filter Summary
       if (countEl) {
-        countEl.innerHTML = `Showing <strong>${sessions.length}</strong> completed session${sessions.length > 1 ? 's' : ''}`;
+        countEl.innerHTML = `Showing <strong>${sessions.length}</strong> completed session${sessions.length !== 1 ? 's' : ''}`;
       }
 
       // Update Chart Telemetry Label
       const trajEl = document.getElementById('chart-trajectory-label');
       if (trajEl) {
         const top = sessions[0];
-        trajEl.textContent = `${(top.overall_score || 85.0).toFixed(1)}% on ${top.role}`;
+        if (top) {
+          const topScore = top.overall_score !== undefined ? top.overall_score : 0;
+          trajEl.textContent = `${Number(topScore).toFixed(1)}% on ${top.role}`;
+        } else {
+          trajEl.textContent = "No completed sessions recorded yet";
+        }
       }
 
       // Update Trend Chart Data
       sessionsTrend = sessions.map((s, idx) => ({
         date: s.created_at ? s.created_at.replace(', 2026', '') : `Session ${idx+1}`,
         title: s.role || 'Interview Session',
-        depth: Math.round(s.score_technical_depth || 86),
-        logic: Math.round(s.score_structural_logic || 84),
-        speech: Math.round(s.score_speech_clarity || 85),
-        composite: parseFloat((s.overall_score || 85.0).toFixed(1))
+        depth: Math.round(s.score_technical_depth !== undefined ? s.score_technical_depth : 0),
+        logic: Math.round(s.score_structural_logic !== undefined ? s.score_structural_logic : 0),
+        speech: Math.round(s.score_speech_clarity !== undefined ? s.score_speech_clarity : 0),
+        composite: parseFloat((s.overall_score !== undefined ? Number(s.overall_score) : 0).toFixed(1))
       }));
 
       // Render Table Rows
@@ -425,14 +452,14 @@
       sessions.forEach(s => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-[#FAF6EE]/60 transition-colors";
-        const score = s.overall_score || 85.0;
+        const score = (s.overall_score !== undefined && s.overall_score !== null) ? Number(s.overall_score) : 0.0;
         const gradeLetter = score >= 90 ? 'S' : (score >= 80 ? 'A' : (score >= 70 ? 'B' : (score >= 55 ? 'C' : 'D')));
         const pillBg = score >= 80 ? 'bg-[#EFF4E8] text-[#4F6B2D]' : (score >= 55 ? 'bg-[#FBF3E0] text-[#AA7000]' : 'bg-rose-50 text-rose-700');
 
         tr.innerHTML = `
           <td class="py-4 px-6">
             <div class="font-bold text-[#2C1F0E] text-sm">${s.role} ${s.company ? '• ' + s.company : ''}</div>
-            <div class="text-[11px] text-[#7F766C] mt-0.5">${s.created_at} • ${s.duration || '28 mins'} • ${s.seniority_level || 'SDE 2'} • ID #${s.id.slice(0, 8)}</div>
+            <div class="text-[11px] text-[#7F766C] mt-0.5">${s.created_at} • ${s.duration || '5 mins'} • ${s.seniority_level || 'SDE 2'} • ID #${s.id.slice(0, 8)}</div>
           </td>
           <td class="py-4 px-6">
             <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold text-[11px]">${s.track || 'Tech'}</span>

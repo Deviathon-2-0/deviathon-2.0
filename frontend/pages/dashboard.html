@@ -113,21 +113,28 @@
 
       <!-- Metric Overview Row (Mean Evaluated Score & Accent Neutrality Check) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <!-- Mean Evaluated Score -->
+        <!-- Mean Evaluated Score (Dynamic from History) -->
         <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft hover:shadow-card transition-all">
           <div class="mb-4">
             <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Mean Evaluated Score</span>
           </div>
-          <div class="text-3xl font-black text-[#2C1F0E]">85.0 <span class="text-sm font-semibold text-[#7F766C]">/ 100</span></div>
+          <div class="text-3xl font-black text-[#2C1F0E]">
+            <span id="dash-mean-score">85.0</span> <span class="text-sm font-semibold text-[#7F766C]">/ 100</span>
+          </div>
+          <div id="dash-mean-subtitle" class="text-xs text-[#7F766C] mt-2 font-medium">
+            Calculated from completed interview history
+          </div>
         </div>
 
-        <!-- Accent Neutrality Check -->
+        <!-- Accent Neutrality Check (Dynamic from History) -->
         <div class="bg-white border border-[#E8DFD0] rounded-3xl p-6 shadow-soft hover:shadow-card transition-all">
           <div class="mb-4">
             <span class="text-xs font-bold uppercase tracking-wider text-[#7F766C]">Accent Bias Drift</span>
           </div>
-          <div class="text-3xl font-black text-[#AA7000]">0.00%</div>
-          <div class="text-xs text-[#4F6B2D] mt-2 flex items-center gap-1 font-bold">
+          <div class="text-3xl font-black text-[#AA7000]">
+            <span id="dash-accent-bias">0.00%</span>
+          </div>
+          <div id="dash-accent-subtitle" class="text-xs text-[#4F6B2D] mt-2 flex items-center gap-1 font-bold">
             <span class="material-symbols-outlined text-xs">verified</span>
             <span>Zero acoustic bias deduction applied</span>
           </div>
@@ -266,6 +273,56 @@
     // Synchronize User Profile, Target Role, and Settings Across Dashboard
     function syncDashboardUser() {
       try {
+        let settings = {};
+        try {
+          settings = JSON.parse(localStorage.getItem('imaira_settings') || '{}');
+        } catch(e) {}
+        let profile = {};
+        try {
+          profile = JSON.parse(localStorage.getItem('imaira_profile') || '{}');
+        } catch(e) {}
+        const pfp = localStorage.getItem('imaira_user_pfp') || settings.avatar || profile.avatar;
+
+        const name = settings.name || profile.name || "Alex Morgan";
+        const role = settings.targetRole || settings.role || profile.role || "Software Engineer";
+        const level = settings.level || profile.level || "SDE 2";
+        const headline = settings.headline || profile.headline || `${role} • High-Scale Systems`;
+
+        const nameEl = document.getElementById('dash-welcome-name');
+        if (nameEl) nameEl.textContent = name;
+
+        const roleEl = document.getElementById('dash-target-role');
+        if (roleEl) roleEl.textContent = role;
+        const roleElM = document.getElementById('dash-target-role-m');
+        if (roleElM) roleElM.textContent = role;
+
+        const levelEl = document.getElementById('dash-target-level');
+        if (levelEl) levelEl.textContent = level;
+        const levelElM = document.getElementById('dash-target-level-m');
+        if (levelElM) levelElM.textContent = level;
+
+        const headlineEl = document.getElementById('dash-profile-headline');
+        if (headlineEl) headlineEl.textContent = headline;
+
+        const heroDesc = document.getElementById('dash-hero-desc');
+        if (heroDesc) {
+          heroDesc.textContent = `Practice interview questions calibrated for ${role} (${level}) with objective, dialect-neutral scoring.`;
+        }
+
+        const initialsEl = document.getElementById('dash-avatar-initials');
+        const imgEl = document.getElementById('dash-avatar-img');
+        if (pfp && imgEl) {
+          imgEl.src = pfp;
+          imgEl.classList.remove('hidden');
+          if (initialsEl) initialsEl.classList.add('hidden');
+        } else if (initialsEl) {
+          const parts = name.split(' ').filter(Boolean);
+          const initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+          initialsEl.textContent = initials || 'AM';
+          initialsEl.classList.remove('hidden');
+          if (imgEl) imgEl.classList.add('hidden');
+        }
+
         if (window.userSession) {
           window.userSession.syncUI();
         }
@@ -309,31 +366,85 @@
         }
       } catch (e) {}
 
-      // Fallback to sample sessions if database has no records yet
-      if (!sessions || sessions.length === 0) {
-        sessions = [
-          {
-            id: "11111111-2222-3333-4444-555555555551",
-            role: "Google SDE-2 • Distributed Systems",
-            company: "Google",
-            track: "Tech",
-            seniority_level: "SDE 2",
-            score_technical_depth: 86.0,
-            score_structural_logic: 84.0,
-            score_speech_clarity: 85.0,
-            score_body_language: 85.0,
-            overall_score: 85.0,
-            created_at: "Oct 28, 2026"
+      // Check localStorage for active interview session if not already in backend list
+      const seenDashIds = new Set(sessions.map(s => s.id));
+      try {
+        const rawLocal = localStorage.getItem('imaira_session_report');
+        if (rawLocal) {
+          const parsed = JSON.parse(rawLocal);
+          const report = parsed.report || parsed;
+          const sid = report.sessionId || report.session_id;
+          if (sid && !seenDashIds.has(sid) && report.scores) {
+            seenDashIds.add(sid);
+            const scores = report.scores || {};
+            const numOrZero = (v) => (v !== undefined && v !== null && !isNaN(Number(v))) ? Number(v) : 0.0;
+            const tech = numOrZero(scores.technicalDepth !== undefined ? scores.technicalDepth : scores.technical_depth);
+            const logic = numOrZero(scores.structuralLogic !== undefined ? scores.structuralLogic : scores.structural_logic);
+            const speech = numOrZero(scores.speechClarity !== undefined ? scores.speechClarity : scores.speech_clarity);
+            const body = numOrZero(scores.bodyLanguage !== undefined ? scores.bodyLanguage : scores.body_language);
+            const overall = numOrZero(report.compositeScore !== undefined ? report.compositeScore : report.overall_score);
+
+            sessions.unshift({
+              id: sid,
+              role: report.role || 'Software Engineer',
+              company: report.company || 'Google',
+              track: report.track || 'Tech',
+              seniority_level: report.seniority_level || 'SDE 2',
+              overall_score: overall,
+              score_technical_depth: tech,
+              score_structural_logic: logic,
+              score_speech_clarity: speech,
+              score_body_language: body,
+              created_at: new Date(report.evaluatedAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              accent_bias_penalty: 0.0
+            });
           }
-        ];
+        }
+      } catch (e) {}
+
+      // Compute dynamic Mean Evaluated Score & Accent Bias Drift from history sessions
+      const meanScoreEl = document.getElementById('dash-mean-score');
+      const meanSubEl = document.getElementById('dash-mean-subtitle');
+      const accentBiasEl = document.getElementById('dash-accent-bias');
+      const accentSubEl = document.getElementById('dash-accent-subtitle');
+
+      if (sessions && sessions.length > 0) {
+        const totalScore = sessions.reduce((sum, s) => sum + (parseFloat(s.overall_score) || 0), 0);
+        const avgScore = (totalScore / sessions.length).toFixed(1);
+        if (meanScoreEl) meanScoreEl.textContent = avgScore;
+        if (meanSubEl) {
+          meanSubEl.textContent = `Calculated across ${sessions.length} completed session${sessions.length > 1 ? 's' : ''}`;
+        }
+
+        const totalDrift = sessions.reduce((sum, s) => sum + (parseFloat(s.accent_bias_penalty) || 0), 0);
+        const avgDrift = (totalDrift / sessions.length).toFixed(2);
+        if (accentBiasEl) accentBiasEl.textContent = `${avgDrift}%`;
+        if (accentSubEl) {
+          if (parseFloat(avgDrift) === 0) {
+            accentSubEl.innerHTML = `
+              <span class="material-symbols-outlined text-xs">verified</span>
+              <span>Zero acoustic bias deduction applied across ${sessions.length} session${sessions.length > 1 ? 's' : ''}</span>
+            `;
+          } else {
+            accentSubEl.innerHTML = `
+              <span class="material-symbols-outlined text-xs">info</span>
+              <span>Average acoustic bias drift: ${avgDrift}% across ${sessions.length} session${sessions.length > 1 ? 's' : ''}</span>
+            `;
+          }
+        }
+      } else {
+        if (meanScoreEl) meanScoreEl.textContent = '--';
+        if (meanSubEl) meanSubEl.textContent = 'No completed sessions recorded yet';
+        if (accentBiasEl) accentBiasEl.textContent = '0.00%';
       }
 
       tbody.innerHTML = '';
       sessions.slice(0, 5).forEach(s => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-[#FAF6EE]/60 transition-colors cursor-pointer group";
-        const gradeLetter = s.overall_score >= 90 ? 'S' : (s.overall_score >= 80 ? 'A' : (s.overall_score >= 70 ? 'B' : (s.overall_score >= 55 ? 'C' : 'D')));
-        const pillBg = s.overall_score >= 80 ? 'bg-[#EFF4E8] text-[#4F6B2D]' : (s.overall_score >= 55 ? 'bg-[#FBF3E0] text-[#AA7000]' : 'bg-rose-50 text-rose-700');
+        const score = (s.overall_score !== undefined && s.overall_score !== null) ? Number(s.overall_score) : 0.0;
+        const gradeLetter = score >= 90 ? 'S' : (score >= 80 ? 'A' : (score >= 70 ? 'B' : (score >= 55 ? 'C' : 'D')));
+        const pillBg = score >= 80 ? 'bg-[#EFF4E8] text-[#4F6B2D]' : (score >= 55 ? 'bg-[#FBF3E0] text-[#AA7000]' : 'bg-rose-50 text-rose-700');
 
         tr.innerHTML = `
           <td class="py-4 px-6">

@@ -56,6 +56,8 @@ urlpatterns = [
     path('sessions/<str:session_id>/submit/', views.submit_interview_session, name='api_sessions_submit'),
     path('sessions/<str:session_id>/report', views.get_session_report, name='api_sessions_report_raw'),
     path('sessions/<str:session_id>/report/', views.get_session_report, name='api_sessions_report'),
+    path('sessions/<str:session_id>/delete', views.delete_interview_session, name='api_sessions_delete_raw'),
+    path('sessions/<str:session_id>/delete/', views.delete_interview_session, name='api_sessions_delete'),
     path('sessions/<str:session_id>/telemetry', views.record_session_telemetry, name='api_session_telemetry_raw'),
     path('sessions/<str:session_id>/telemetry/', views.record_session_telemetry, name='api_session_telemetry'),
 

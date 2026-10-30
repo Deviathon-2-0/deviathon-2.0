@@ -234,8 +234,8 @@ class PhoneticNormalizer:
                 raw_token = words[i].lower()
                 cleaned_token = re.sub(r'[^a-zA-Z0-9]', '', raw_token)
 
-                # Skip stopwords and short common words from phonetic drift replacement
-                if cleaned_token in COMMON_STOPWORDS or len(cleaned_token) < 4:
+                # Skip already canonical terms (e.g. linked_list, open_addressing, fast_slow) or stopwords
+                if "_" in words[i] or words[i].lower() in self.canonical_vocab or cleaned_token in COMMON_STOPWORDS or len(cleaned_token) < 4:
                     new_words.append(words[i])
                     i += 1
                     continue
@@ -267,17 +267,17 @@ class PhoneticNormalizer:
                         best_score = score
                         best_term = term
 
-                # If phonetic match exceeds user threshold (> 0.82), substitute
+                # If phonetic match exceeds user threshold (> 0.82), substitute with canonical technical token
                 if best_term and best_score >= (self.fuzzy_threshold / 100.0):
-                    clean_best = best_term.replace("_", " ")
-                    if clean_best.lower() != raw_token:
+                    canonical_best = best_term
+                    if canonical_best.lower() != raw_token and canonical_best.replace("_", "").lower() != raw_token.replace("_", ""):
                         corrections.append({
                             "original": words[i],
-                            "canonical": clean_best,
+                            "canonical": canonical_best,
                             "confidence": round(best_score, 2),
                             "method": "metaphone_fuzzy_alignment"
                         })
-                        new_words.append(clean_best)
+                        new_words.append(canonical_best)
                         i += 1
                         matched = True
 

@@ -927,7 +927,7 @@ def list_interview_sessions(request):
     try:
         from api.models import InterviewSession
         # Completed sessions with valid score, ordered newest first
-        qs = InterviewSession.objects.filter(status='completed', overall_score__gte=50).exclude(
+        qs = InterviewSession.objects.filter(status='completed').exclude(
             id__in=['22222222-3333-4444-5555-666666666662', '33333333-4444-5555-6666-777777777773']
         ).order_by('-updated_at')
         
@@ -952,7 +952,8 @@ def list_interview_sessions(request):
                     'score_technical_depth': round(s.score_technical_depth if s.score_technical_depth is not None else 0.0, 1),
                     'score_structural_logic': round(s.score_structural_logic if s.score_structural_logic is not None else 0.0, 1),
                     'score_speech_clarity': round(s.score_speech_clarity if s.score_speech_clarity is not None else 0.0, 1),
-                    'score_body_language': round(s.score_body_language if s.score_body_language is not None else 85.0, 1),
+                    'score_body_language': round(s.score_body_language if s.score_body_language is not None else 0.0, 1),
+                    'accent_bias_penalty': float((s.feedback_summary or {}).get('accentBiasPenalty', 0.0)),
                     'created_at': s.created_at.strftime('%b %d, %Y') if s.created_at else 'Oct 28, 2026',
                     'questions_count': len(s.concept_breakdown or []) or 3
                 })
@@ -969,15 +970,40 @@ def list_interview_sessions(request):
                 'score_technical_depth': round(benchmark_session.score_technical_depth, 1),
                 'score_structural_logic': round(benchmark_session.score_structural_logic, 1),
                 'score_speech_clarity': round(benchmark_session.score_speech_clarity, 1),
-                'score_body_language': round(benchmark_session.score_body_language or 85.0, 1),
+                'score_body_language': round(benchmark_session.score_body_language if benchmark_session.score_body_language is not None else 0.0, 1),
+                'accent_bias_penalty': float((benchmark_session.feedback_summary or {}).get('accentBiasPenalty', 0.0)),
                 'created_at': benchmark_session.created_at.strftime('%b %d, %Y') if benchmark_session.created_at else 'Oct 28, 2026',
                 'questions_count': len(benchmark_session.concept_breakdown or []) or 3
             })
 
-        return Response({'sessions': results, 'count': len(results)})
+        mean_eval_score = round(sum(r['overall_score'] for r in results) / len(results), 1) if results else 0.0
+        mean_accent_drift = round(sum(r.get('accent_bias_penalty', 0.0) for r in results) / len(results), 2) if results else 0.0
+
+        return Response({
+            'sessions': results,
+            'count': len(results),
+            'mean_evaluated_score': mean_eval_score,
+            'mean_accent_bias_drift': mean_accent_drift
+        })
     except Exception as e:
         return Response({'sessions': [], 'count': 0, 'error': str(e)})
 
+
+
+
+@api_view(['DELETE'])
+@permission_classes([AllowAny])
+def delete_interview_session(request, session_id):
+    """Deletes an interview session record by session_id."""
+    try:
+        from api.models import InterviewSession
+        session = InterviewSession.objects.filter(id=session_id).first()
+        if session:
+            session.delete()
+            return Response({'status': 'deleted', 'id': session_id})
+        return Response({'status': 'not_found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 def submit_interview_session(request, session_id):
     """
@@ -1266,7 +1292,31 @@ def submit_interview_session(request, session_id):
             {"title": "Algorithmic Implementation", "description": "Write a complete functional solution with optimal time and space complexity."}
         ]
 
+    if not has_any_spoken_answer and avg_tech == 0:
+        exec_summary = (
+            f"Candidate completed the {role} evaluation session with a composite score of {composite_score}/100. "
+            "Neither verbal explanations nor algorithmic code implementations were submitted for the questions. "
+            "To receive a qualified technical rating, ensure audio recording is active and submit working solutions in the code editor."
+        )
+    elif composite_score >= 80:
+        exec_summary = (
+            f"Candidate demonstrated strong technical depth and structured problem-solving throughout this {company} {role} evaluation, "
+            f"earning an overall score of {composite_score}/100. Core algorithmic implementations and system constraints were articulated with high proficiency."
+        )
+    elif composite_score >= 55:
+        exec_summary = (
+            f"Candidate achieved an overall score of {composite_score}/100 in the {company} {role} evaluation. "
+            "Initial problem framing was established, but responses would benefit from deeper analysis of edge cases and operational trade-offs."
+        )
+    else:
+        exec_summary = (
+            f"Candidate achieved an overall score of {composite_score}/100 in the {company} {role} evaluation. "
+            "Several key algorithmic requirements or architectural invariants were omitted across the questions."
+        )
+
     feedback_summary = {
+        "executiveSummary": exec_summary,
+        "executive_summary": exec_summary,
         "criticalGaps": unique_gaps,
         "recommendations": unique_recs,
         "strengths": fallback_strengths[:4]
@@ -1382,6 +1432,8 @@ def submit_interview_session(request, session_id):
         "metrics": metrics,
         "feedbackSummary": feedback_summary,
         "feedback_summary": feedback_summary,
+        "executiveSummary": exec_summary,
+        "executive_summary": exec_summary,
         "perQuestionBreakdown": per_question_breakdown,
         "evaluated_questions": per_question_breakdown,
         "questions": per_question_breakdown,

@@ -265,13 +265,46 @@ class DeterministicScorer:
             "edge_cases": round((rubric.get("edge_cases", 20) / 100.0) * technical_depth_score, 1)
         }
 
-        # Calibrated channel feedback descriptions (Preserve modulation_feedback already set above)
+        if technical_depth_score >= 90.0:
+            grade = "S"
+        elif technical_depth_score >= 80.0:
+            grade = "A"
+        elif technical_depth_score >= 70.0:
+            grade = "B"
+        elif technical_depth_score >= 55.0:
+            grade = "C"
+        else:
+            grade = "D"
+
+        delivery_penalties = []
+        total_penalty = 0.0
+
+        if max_consecutive_gaze_loss >= 4.0:
+            ded = min(14.0, (max_consecutive_gaze_loss - 3.0) * 2.5)
+            delivery_penalties.append({"type": "GAZE_DROP", "duration_sec": max_consecutive_gaze_loss, "deduction": ded})
+            total_penalty += ded
+
+        if posture_drop_pct > 20.0:
+            ded = min(10.0, (posture_drop_pct - 20.0) * 0.4)
+            delivery_penalties.append({"type": "POSTURE_COLLAPSE", "drop_percentage": posture_drop_pct, "deduction": ded})
+            total_penalty += ded
+
+        if (modulation_feedback and "monotone" in modulation_feedback.lower()) or (current_pitch_std < (user_baseline_std * 0.35) and len(pitches) > 10):
+            delivery_penalties.append({"type": "MONOTONE_PITCH", "deduction": 5.0})
+            total_penalty += 5.0
+
+        if reading_saccade_flags >= 2:
+            delivery_penalties.append({"type": "READING_SACCADE", "deduction": 8.0})
+            total_penalty += 8.0
 
         return {
             "question_id": question.get("id", question_id),
             "question_title": question.get("title", "Technical Problem Solving"),
             "technical_score": technical_depth_score,
             "overall_score": technical_depth_score,  # Decoupled
+            "grade": grade,
+            "delivery_penalties": delivery_penalties,
+            "total_penalty_deduction": round(total_penalty, 1),
             "rubric_breakdown": rubric_scores,
             "keyword_coverage": {
                 "found_required": found_required,
