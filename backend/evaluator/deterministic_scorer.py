@@ -221,20 +221,38 @@ class DeterministicScorer:
             posture = frame.get("neck_ratio", frame.get("posture_score", 1.0))
             posture_scores.append(float(posture))
 
-        gaze_ratio = (gaze_hits / max(len(telemetry_stream), 1)) if telemetry_stream else 0.88
-        baseline_posture = max(posture_scores) if posture_scores else 1.0
-        lowest_posture = min(posture_scores) if posture_scores else baseline_posture
-        posture_drop_pct = (((baseline_posture - lowest_posture) / baseline_posture) * 100.0) if baseline_posture > 0 else 0.0
+        has_video_telemetry = bool(telemetry_stream and any("eye_contact" in f or "neck_ratio" in f or "gaze_score" in f for f in telemetry_stream))
 
-        base_delivery = 90.0
-        if max_consecutive_gaze_loss >= 4.0:
-            base_delivery -= min(14.0, (max_consecutive_gaze_loss - 3.0) * 2.5)
-        if posture_drop_pct > 20.0:
-            base_delivery -= min(10.0, (posture_drop_pct - 20.0) * 0.4)
-        if reading_saccade_flags >= 3:
-            base_delivery -= 8.0
+        if has_video_telemetry:
+            gaze_ratio = (gaze_hits / max(len(telemetry_stream), 1))
+            baseline_posture = max(posture_scores) if posture_scores else 1.0
+            lowest_posture = min(posture_scores) if posture_scores else baseline_posture
+            posture_drop_pct = (((baseline_posture - lowest_posture) / baseline_posture) * 100.0) if baseline_posture > 0 else 0.0
 
-        body_language_score = round(max(55.0, min(98.0, base_delivery)), 1)
+            base_delivery = 88.0
+            # Factor in overall gaze ratio
+            if gaze_ratio < 0.80:
+                base_delivery -= min(25.0, (0.80 - gaze_ratio) * 50.0)
+            elif gaze_ratio >= 0.88:
+                base_delivery += min(8.0, (gaze_ratio - 0.88) * 35.0)
+
+            # Factor in consecutive gaze loss duration
+            if max_consecutive_gaze_loss >= 3.5:
+                base_delivery -= min(16.0, (max_consecutive_gaze_loss - 3.0) * 2.5)
+
+            # Factor in posture stability
+            if posture_drop_pct > 15.0:
+                base_delivery -= min(14.0, (posture_drop_pct - 15.0) * 0.5)
+
+            # Penalize reading saccades (reading off notes/screen)
+            if reading_saccade_flags >= 2:
+                base_delivery -= min(12.0, reading_saccade_flags * 3.5)
+
+            body_language_score = round(max(40.0, min(98.0, base_delivery)), 1)
+        else:
+            gaze_ratio = 0.85
+            posture_drop_pct = 0.0
+            body_language_score = None
 
         # ===================================================================
         # 4. Construct Calibrated Evaluation Envelope

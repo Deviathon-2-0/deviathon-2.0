@@ -1184,17 +1184,21 @@ def submit_interview_session(request, session_id):
     avg_delivery = round(min(100.0, total_delivery_score / count), 1)
 
     # Telemetry extraction from matrix_input
-    telemetry_data = matrix_input.get("integrity_telemetry") if isinstance(matrix_input, dict) else {}
-    gaze_pct = telemetry_data.get("gaze_centered_percentage") if telemetry_data else 88
-    posture_pct = telemetry_data.get("posture_poise_percentage") if telemetry_data else 85
-    pitch_var = telemetry_data.get("average_pitch_variance_hz") if telemetry_data else 13.4
+    telemetry_data = (matrix_input.get("integrity_telemetry") if isinstance(matrix_input, dict) else None) or {}
+    has_camera = telemetry_data.get("camera_active")
+    if has_camera is None:
+        has_camera = bool(telemetry_data.get("gaze_centered_percentage") is not None)
 
-    if gaze_pct and posture_pct:
+    gaze_pct = telemetry_data.get("gaze_centered_percentage")
+    posture_pct = telemetry_data.get("posture_poise_percentage")
+    pitch_var = telemetry_data.get("average_pitch_variance_hz") or 13.4
+
+    if has_camera and gaze_pct is not None and posture_pct is not None:
         calculated_body = round((float(gaze_pct) * 0.55 + float(posture_pct) * 0.45), 1)
+        composite_score = round(avg_tech * 0.45 + avg_struct * 0.25 + avg_speech * 0.15 + calculated_body * 0.15, 1)
     else:
-        calculated_body = avg_delivery
-
-    composite_score = round(avg_tech * 0.45 + avg_struct * 0.25 + avg_speech * 0.15 + calculated_body * 0.15, 1)
+        calculated_body = None
+        composite_score = round(avg_tech * 0.55 + avg_struct * 0.25 + avg_speech * 0.20, 1)
 
     if composite_score >= 90:
         grade = "S"
@@ -1268,11 +1272,33 @@ def submit_interview_session(request, session_id):
         "strengths": fallback_strengths[:4]
     }
 
+    if calculated_body is not None and gaze_pct is not None and posture_pct is not None:
+        if calculated_body >= 85:
+            body_rating = "Poised & Focused"
+            body_notes = f"Maintained {int(gaze_pct)}% eye contact with poised, upright posture ({int(posture_pct)}%). Excellent interview composure."
+            body_tip = "Outstanding visual presence. Continue maintaining natural eye-level engagement."
+        elif calculated_body >= 70:
+            body_rating = "Good Presence"
+            body_notes = f"Consistent forward eye contact ({int(gaze_pct)}%) with slight gaze drift. Posture stability scored {int(posture_pct)}%."
+            body_tip = "Position camera at exact eye level to minimize looking down during code explanations."
+        elif calculated_body >= 50:
+            body_rating = "Developing Composure"
+            body_notes = f"Periodic downward gaze ({int(gaze_pct)}%) or slouching ({int(posture_pct)}%) detected."
+            body_tip = "Avoid looking down at notes or keyboard for prolonged stretches; speak directly to the interviewer."
+        else:
+            body_rating = "Needs Composure Focus"
+            body_notes = f"Frequent eye drift away from camera ({int(gaze_pct)}%) and posture instability ({int(posture_pct)}%)."
+            body_tip = "Elevate laptop or webcam and practice speaking while keeping focus on the upper screen half."
+    else:
+        body_rating = "Telemetry Inactive"
+        body_notes = "Video camera was inactive for this interview session. Visual delivery was omitted from the composite score."
+        body_tip = "Enable webcam in pre-interview checks to receive delivery, posture, and eye contact scoring."
+
     metrics = {
         "bodyLanguage": {
-            "rating": "Poised & Centered" if calculated_body >= 80 else "Developing Presence",
-            "notes": f"Maintained {int(gaze_pct)}% eye contact with poised, upright posture.",
-            "recommendation": "Keep camera at natural eye level and maintain steady webcam focus."
+            "rating": body_rating,
+            "notes": body_notes,
+            "recommendation": body_tip
         },
         "technicalDepth": {
             "rating": ("Proficient" if avg_tech >= 80 else ("Adequate" if avg_tech > 0 else "Unattempted")),
@@ -1408,11 +1434,17 @@ def get_session_report(request, session_id):
         "strengths": ["Demonstrated systematic structural logic decomposition."]
     }
 
-    delivery_score = session.score_body_language if session.score_body_language is not None else 85.0
+    delivery_score = session.score_body_language
     tech_score = session.score_technical_depth if session.score_technical_depth is not None else 0.0
     speech_score = session.score_speech_clarity if session.score_speech_clarity is not None else 0.0
     struct_score = session.score_structural_logic if session.score_structural_logic is not None else 0.0
-    comp_score = session.overall_score if session.overall_score is not None else round(tech_score * 0.45 + struct_score * 0.25 + speech_score * 0.15 + delivery_score * 0.15, 1)
+    
+    if session.overall_score is not None:
+        comp_score = session.overall_score
+    elif delivery_score is not None:
+        comp_score = round(tech_score * 0.45 + struct_score * 0.25 + speech_score * 0.15 + delivery_score * 0.15, 1)
+    else:
+        comp_score = round(tech_score * 0.55 + struct_score * 0.25 + speech_score * 0.20, 1)
 
     if comp_score >= 90:
         grade = "S"
@@ -1425,10 +1457,10 @@ def get_session_report(request, session_id):
     else:
         grade = "D"
 
-    telemetry_data = session.telemetry_matrix.get("integrity_telemetry") if isinstance(session.telemetry_matrix, dict) else {}
-    gaze_pct = telemetry_data.get("gaze_centered_percentage") if telemetry_data else 88
-    posture_pct = telemetry_data.get("posture_poise_percentage") if telemetry_data else 85
-    pitch_var = telemetry_data.get("average_pitch_variance_hz") if telemetry_data else 13.4
+    telemetry_data = (session.telemetry_matrix.get("integrity_telemetry") if isinstance(session.telemetry_matrix, dict) else None) or {}
+    gaze_pct = telemetry_data.get("gaze_centered_percentage")
+    posture_pct = telemetry_data.get("posture_poise_percentage")
+    pitch_var = telemetry_data.get("average_pitch_variance_hz") or 13.4
 
     scores = {
         "bodyLanguage": delivery_score,
@@ -1441,11 +1473,33 @@ def get_session_report(request, session_id):
         "structural_logic": struct_score
     }
 
+    if delivery_score is not None and gaze_pct is not None and posture_pct is not None:
+        if delivery_score >= 85:
+            body_rep_rating = "Poised & Focused"
+            body_rep_notes = f"Maintained {int(gaze_pct)}% eye contact with poised, upright posture ({int(posture_pct)}%). Excellent interview composure."
+            body_rep_tip = "Outstanding visual presence. Continue maintaining natural eye-level engagement."
+        elif delivery_score >= 70:
+            body_rep_rating = "Good Presence"
+            body_rep_notes = f"Consistent forward eye contact ({int(gaze_pct)}%) with slight gaze drift. Posture stability scored {int(posture_pct)}%."
+            body_rep_tip = "Position camera at exact eye level to minimize looking down during code explanations."
+        elif delivery_score >= 50:
+            body_rep_rating = "Developing Composure"
+            body_rep_notes = f"Periodic downward gaze ({int(gaze_pct)}%) or slouching ({int(posture_pct)}%) detected."
+            body_rep_tip = "Avoid looking down at notes or keyboard for prolonged stretches; speak directly to the interviewer."
+        else:
+            body_rep_rating = "Needs Composure Focus"
+            body_rep_notes = f"Frequent eye drift away from camera ({int(gaze_pct)}%) and posture instability ({int(posture_pct)}%)."
+            body_rep_tip = "Elevate laptop or webcam and practice speaking while keeping focus on the upper screen half."
+    else:
+        body_rep_rating = "Telemetry Inactive"
+        body_rep_notes = "Video camera was inactive for this interview session. Visual delivery was omitted from the composite score."
+        body_rep_tip = "Enable webcam in pre-interview checks to receive delivery, posture, and eye contact scoring."
+
     metrics = {
         "bodyLanguage": {
-            "rating": "Poised & Centered" if delivery_score >= 80 else ("Developing Presence" if delivery_score > 0 else "No Camera Activity"),
-            "notes": f"Maintained {int(gaze_pct)}% eye contact with poised, upright posture." if delivery_score > 0 else "Camera activity was minimal or unrecorded.",
-            "recommendation": "Keep camera at natural eye level and maintain steady webcam focus."
+            "rating": body_rep_rating,
+            "notes": body_rep_notes,
+            "recommendation": body_rep_tip
         },
         "technicalDepth": {
             "rating": "Proficient" if tech_score >= 80 else ("Adequate" if tech_score > 0 else "Unattempted"),
@@ -1479,14 +1533,16 @@ def get_session_report(request, session_id):
         "evaluated_questions": per_q,
         "questions": per_q,
         "diagnosticEvents": [
-            {"concept": "Forward Engagement", "observation": "Maintained steady gaze during interview session.", "evidence": f"Eye focus {int(gaze_pct)}%", "timestamp": 4.2},
+            ({"concept": "Forward Engagement", "observation": "Maintained steady gaze during interview session.", "evidence": f"Eye focus {int(gaze_pct)}%", "timestamp": 4.2}
+             if gaze_pct is not None else
+             {"concept": "Visual Stream", "observation": "Webcam was inactive for this session.", "evidence": "Audio-only session", "timestamp": 0.0}),
             ({"concept": "Inflection Analysis", "observation": "Clear conversational cadence when contrasting trade-offs.", "evidence": f"Pitch variance {pitch_var} Hz", "timestamp": 12.8}
              if speech_score > 0 else
              {"concept": "Audio Stream", "observation": "Microphone audio was silent or unrecorded.", "evidence": "0 dB vocal energy", "timestamp": 0.0})
         ],
         "integrity_telemetry": {
-            "gaze_centered_percentage": int(gaze_pct),
-            "posture_poise_percentage": int(posture_pct),
+            "gaze_centered_percentage": int(gaze_pct) if gaze_pct is not None else None,
+            "posture_poise_percentage": int(posture_pct) if posture_pct is not None else None,
             "average_pitch_variance_hz": float(pitch_var),
             "reading_saccades_detected": 0,
             "lip_sync_mismatch_frames": 0,

@@ -118,6 +118,7 @@ class CandidateMatrixEngine {
   async initialize(videoEl, stream) {
     this.videoElement = videoEl || this.videoElement;
     this.mediaStream = stream || this.mediaStream;
+    this.hasVideo = Boolean(this.mediaStream && this.mediaStream.getVideoTracks().some(t => t.enabled));
 
     if (!this.videoElement || !this.mediaStream) {
       throw new Error("CandidateMatrixEngine requires video element and media stream.");
@@ -439,11 +440,11 @@ class CandidateMatrixEngine {
   // =========================================================================
   aggregateMatrixScores() {
     // 1. Delivery & Presence Score (0-100)
-    const gazeTotal = this.gazeSamples.total || 1;
-    const eyeRatio = (this.gazeSamples.centered / gazeTotal);
-    const postureTotal = this.postureSamples.total || 1;
-    const postureRatio = (this.postureSamples.poised / postureTotal);
-    const deliveryScore = Math.min(100, Math.round((eyeRatio * 55 + postureRatio * 45) * 100));
+    const gazeTotal = this.gazeSamples.total || 0;
+    const eyeRatio = gazeTotal > 0 ? (this.gazeSamples.centered / gazeTotal) : 0.85;
+    const postureTotal = this.postureSamples.total || 0;
+    const postureRatio = postureTotal > 0 ? (this.postureSamples.poised / postureTotal) : 0.85;
+    const deliveryScore = Math.max(30, Math.min(100, Math.round(eyeRatio * 55 + postureRatio * 45)));
 
     // 2. Vocal Engagement Score (0-100)
     const varianceHz = this.currentMetrics.pitchVarianceHz || 12;
@@ -492,22 +493,39 @@ class CandidateMatrixEngine {
     const delivery = this.currentMetrics.deliveryScore;
     const vocal = this.currentMetrics.vocalScore;
     const spont = this.currentMetrics.spontaneityScore;
+    const hasActiveVideo = Boolean(this.hasVideo && this.gazeSamples.total >= 5);
+
+    const gazePct = hasActiveVideo
+      ? Math.round((this.gazeSamples.centered / Math.max(1, this.gazeSamples.total)) * 100)
+      : null;
+    const posturePct = hasActiveVideo
+      ? Math.round((this.postureSamples.poised / Math.max(1, this.postureSamples.total)) * 100)
+      : null;
 
     return {
       summary: {
-        overall_delivery: Math.round((delivery * 0.4 + vocal * 0.4 + spont * 0.2)),
-        integrity_status: spont >= 75 ? "Verified (Organic)" : "Audit Recommended"
+        overall_delivery: hasActiveVideo
+          ? Math.round(delivery * 0.45 + vocal * 0.35 + spont * 0.20)
+          : Math.round(vocal * 0.65 + spont * 0.35),
+        integrity_status: spont >= 75 ? "Verified (Organic)" : "Audit Recommended",
+        camera_active: hasActiveVideo
       },
       matrix: [
         {
           dimension: "Delivery & Presence",
-          tracked_signals: "Eye focus ratio + Upright posture baseline",
-          score_percentage: delivery,
-          ui_status: delivery >= 80 ? `${delivery}% (Strong)` : `${delivery}% (Needs Improvement)`,
-          status_type: delivery >= 80 ? "ok" : "warn",
-          constructive_feedback: delivery >= 80
-            ? "Solid eye engagement with steady forward posture. Maintained composure during complex system walkthroughs."
-            : "Watch for a slight slouch during extended explanations. Maintain upright posture to project confidence."
+          tracked_signals: hasActiveVideo
+            ? "Eye focus ratio + Upright posture baseline"
+            : "Video camera inactive (Audio-only session)",
+          score_percentage: hasActiveVideo ? delivery : null,
+          ui_status: hasActiveVideo
+            ? (delivery >= 80 ? `${delivery}% (Strong)` : (delivery >= 65 ? `${delivery}% (Developing)` : `${delivery}% (Needs Focus)`))
+            : "Audio Only",
+          status_type: hasActiveVideo ? (delivery >= 80 ? "ok" : "warn") : "neutral",
+          constructive_feedback: hasActiveVideo
+            ? (delivery >= 80
+              ? `Maintained ${gazePct}% forward eye contact with ${posturePct}% poised upright posture throughout technical explanations.`
+              : `Observed downward/away gaze drift (${100 - gazePct}% non-forward) or posture shifts. Position camera at eye level.`)
+            : "Video camera was inactive for this session; visual delivery was omitted from scoring."
         },
         {
           dimension: "Vocal Engagement",
@@ -531,8 +549,9 @@ class CandidateMatrixEngine {
         }
       ],
       integrity_telemetry: {
-        gaze_centered_percentage: Math.round(((this.gazeSamples.centered / (this.gazeSamples.total || 1)) * 100)) || 88,
-        posture_poise_percentage: Math.round(((this.postureSamples.poised / (this.postureSamples.total || 1)) * 100)) || 85,
+        camera_active: hasActiveVideo,
+        gaze_centered_percentage: gazePct,
+        posture_poise_percentage: posturePct,
         average_pitch_variance_hz: this.currentMetrics.pitchVarianceHz || 12.4,
         reading_saccades_detected: this.readingSaccadeEvents,
         lip_sync_mismatch_frames: this.syncSamples.mismatch,
