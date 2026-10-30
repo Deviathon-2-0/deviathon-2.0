@@ -746,46 +746,53 @@
     <main class="flex-1 relative w-full h-full overflow-hidden bg-[#0A0603]" id="stage-main-workspace">
       
       <!-- --------------------------------------------------------------------
-           VIEW A: FULL IMMERSIVE VIDEO CALL VIEW (Google Meet / Zoom Layout)
+           VIEW A: FULL IMMERSIVE VIDEO CALL VIEW (1-on-1 Google Meet / Zoom Layout)
            -------------------------------------------------------------------- -->
-      <div id="workspace-videocall-view" class="w-full h-full flex flex-col p-3 sm:p-5 relative overflow-hidden transition-all duration-300 gap-3">
+      <div id="workspace-videocall-view" class="w-full h-full flex flex-col p-3 sm:p-5 relative overflow-hidden transition-all duration-300">
         
-        <!-- TOP 75%: ACTIVE SPEAKER MAIN VIDEO (Matching Reference Image) -->
-        <div class="relative flex-1 rounded-2xl sm:rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center min-h-[360px]">
+        <!-- 100% VIEWPORT FILL: ACTIVE SPEAKER MAIN VIDEO & 1-ON-1 INTERVIEW STAGE -->
+        <div class="relative flex-1 w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
           
           <!-- 1. MAIN INTERVIEWER VIDEO (100% Real Video, No Static Images, No Glitch) -->
           <video id="call-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
           
-          <!-- Top-Left Recording Timer Pill (Matching Reference Screenshot: ● 24:01:45) -->
-          <div class="absolute top-4 left-4 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-mono font-bold text-white flex items-center gap-2 z-20 shadow-lg">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
-            <span id="call-rec-timer">00:00:00</span>
+          <!-- 2. CANDIDATE PICTURE-IN-PICTURE (Top-Right Floating 1-on-1 Persona Tile) -->
+          <div id="call-candidate-tile" class="absolute top-4 right-4 w-36 sm:w-44 md:w-52 aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-white/20 shadow-2xl z-20 group bg-[#1A1208] backdrop-blur-sm">
+            <video id="call-candidate-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
+            <canvas id="call-candidate-canvas" class="w-full h-full object-cover hidden"></canvas>
+            
+            <!-- Persona Tag -->
+            <div class="absolute bottom-1.5 left-2 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-bold text-white z-10 flex items-center gap-1 shadow-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span>You (Candidate)</span>
+            </div>
+
+            <!-- Mic Status Badge (Blue if active, Red if muted) -->
+            <div id="candidate-tile-mic-badge" class="absolute bottom-1.5 right-2 w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors">
+              <span class="material-symbols-outlined text-[11px]" id="candidate-tile-mic-icon">mic</span>
+            </div>
           </div>
 
-          <!-- Top-Right Fullscreen / Expand Button (Matching Reference Screenshot) -->
-          <button type="button" onclick="toggleStageFullscreen()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-all cursor-pointer z-20 shadow-lg" title="Toggle Fullscreen">
-            <span class="material-symbols-outlined text-lg">fullscreen</span>
-          </button>
-
-          <!-- Bottom-Left Primary Speaker Name Tag (Matching Reference Screenshot: 'Adam Joseph') -->
+          <!-- Bottom-Left Primary Speaker Name Tag -->
           <div class="absolute bottom-4 left-4 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-semibold text-white flex items-center gap-2 z-20 shadow-lg">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="call-interviewer-name" class="font-bold">Kabir</span>
             <span class="text-slate-300 text-[11px] font-normal" id="call-interviewer-accent">Indian English (North)</span>
           </div>
 
-          <!-- Bottom-Right Live Audio Waveform Visualizer (Matching Reference Screenshot: ||||) -->
+          <!-- Bottom-Right Live Audio Waveform Visualizer -->
           <div class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center gap-1.5 z-20 shadow-lg">
             <div class="flex items-center gap-0.5">
-              <span class="w-1 h-3.5 bg-white/90 rounded-full animate-pulse"></span>
-              <span class="w-1 h-5 bg-white/90 rounded-full animate-pulse" style="animation-delay: 0.15s"></span>
-              <span class="w-1 h-4 bg-white/90 rounded-full animate-pulse" style="animation-delay: 0.3s"></span>
-              <span class="w-1 h-2 bg-white/90 rounded-full animate-pulse" style="animation-delay: 0.45s"></span>
+              <span class="w-1 h-3.5 bg-amber-400 rounded-full animate-pulse"></span>
+              <span class="w-1 h-5 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.15s"></span>
+              <span class="w-1 h-4 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.3s"></span>
+              <span class="w-1 h-2 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.45s"></span>
             </div>
+            <span class="text-[10px] font-mono text-amber-200/90 font-bold ml-1">LIVE AUDIO</span>
           </div>
 
           <!-- TRANSLUCENT FLOATING QUESTION OVERLAY (Hovering over the Video Box) -->
-          <div id="call-question-overlay" class="absolute bottom-16 sm:bottom-16 left-4 right-4 max-w-2xl mx-auto bg-black/80 backdrop-blur-2xl border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl z-20 transition-all">
+          <div id="call-question-overlay" class="absolute bottom-14 sm:bottom-14 left-4 right-4 max-w-xl mx-auto bg-black/80 backdrop-blur-2xl border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl z-20 transition-all">
             
             <!-- Top Row: Question Pill & Mode Actions -->
             <div class="flex items-center justify-between text-xs mb-2">
@@ -797,10 +804,6 @@
                 <button type="button" onclick="repeatCurrentQuestion()" class="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-sm">
                   <span class="material-symbols-outlined text-sm">replay</span>
                   <span>Repeat</span>
-                </button>
-                <button type="button" onclick="switchStageView('code')" class="px-2.5 py-1 rounded-full bg-[#AA7000]/30 hover:bg-[#AA7000]/50 text-[#E8C97A] border border-[#AA7000]/50 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm">
-                  <span class="material-symbols-outlined text-sm">terminal</span>
-                  <span>Open Compiler</span>
                 </button>
               </div>
             </div>
@@ -854,72 +857,6 @@
             <button type="button" id="dock-btn-cam" onclick="toggleCam()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md" title="Turn Camera On / Off">
               <span class="material-symbols-outlined text-base" id="dock-icon-cam">videocam</span>
             </button>
-
-            <!-- Switch to Code Editor Button -->
-            <button type="button" onclick="switchStageView('code')" class="px-3.5 py-1.5 rounded-full bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md" title="Open Code Editor & Compiler">
-              <span class="material-symbols-outlined text-sm">terminal</span>
-              <span>Compiler</span>
-            </button>
-          </div>
-
-        </div>
-
-        <!-- BOTTOM 25%: ROW OF 4 PARTICIPANT TILES (Exact Match to User Reference Screenshot) -->
-        <div class="h-28 sm:h-36 grid grid-cols-4 gap-2.5 sm:gap-4 shrink-0">
-          
-          <!-- Participant Tile 1: Candidate (You) -->
-          <div id="call-candidate-tile" class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-lg group">
-            <video id="call-candidate-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform: scaleX(-1);"></video>
-            <canvas id="call-candidate-canvas" class="w-full h-full object-cover hidden"></canvas>
-            
-            <!-- Persona Tag -->
-            <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1">
-              <span>You (Candidate)</span>
-            </div>
-
-            <!-- Mic Status Badge (Blue if active, Red if muted) -->
-            <div id="candidate-tile-mic-badge" class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10 transition-colors">
-              <span class="material-symbols-outlined text-[11px] sm:text-xs" id="candidate-tile-mic-icon">mic</span>
-            </div>
-          </div>
-
-          <!-- Participant Tile 2: Sarah Jenkins (AI Technical Architecture Lead) -->
-          <div class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-lg">
-            <video id="panel-video-2" src="/assets/interviewers/sarah_listening.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
-            
-            <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1">
-              <span id="panel-name-2">Sarah Jenkins</span>
-            </div>
-
-            <div class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md z-10">
-              <span class="material-symbols-outlined text-[11px] sm:text-xs">mic</span>
-            </div>
-          </div>
-
-          <!-- Participant Tile 3: Kenji Sato (AI Systems & Concurrency Lead) -->
-          <div class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-lg">
-            <video id="panel-video-3" src="/assets/interviewers/kenji_listening.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
-            
-            <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1">
-              <span id="panel-name-3">Kenji Sato</span>
-            </div>
-
-            <div class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-lg z-10">
-              <span class="material-symbols-outlined text-[11px] sm:text-xs">mic</span>
-            </div>
-          </div>
-
-          <!-- Participant Tile 4: Charlotte Dubois (AI Distributed Infra Lead) -->
-          <div class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-lg">
-            <video id="panel-video-4" src="/assets/interviewers/charlotte_listening.mp4" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
-            
-            <div class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-[10px] font-bold text-white z-10 flex items-center gap-1">
-              <span id="panel-name-4">Charlotte Dubois</span>
-            </div>
-
-            <div class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs shadow-lg z-10">
-              <span class="material-symbols-outlined text-[11px] sm:text-xs">mic_off</span>
-            </div>
           </div>
 
         </div>
@@ -927,7 +864,7 @@
       </div>
 
 
-      <!-- --------------------------------------------------------------------
+<!-- --------------------------------------------------------------------
            VIEW B: SPLIT CODE EXECUTION & COMPILER VIEW (Full IDE Workspace)
            -------------------------------------------------------------------- -->
       <div id="workspace-compiler-view" class="hidden w-full h-full flex overflow-hidden transition-all duration-300">
@@ -3002,27 +2939,6 @@
         switchStageView('video');
 
         initHardwareMedia();
-
-        // Configure Dynamic Conference Panel Tiles (matching 4-tile video call strip)
-        const others = interviewers.filter((_, idx) => idx !== selectedInterviewerIdx);
-        if (others[0]) {
-          const v2 = document.getElementById('panel-video-2');
-          const n2 = document.getElementById('panel-name-2');
-          if (v2 && others[0].videoListening) { v2.src = others[0].videoListening; v2.load(); v2.play().catch(()=>{}); }
-          if (n2) n2.textContent = others[0].name;
-        }
-        if (others[1]) {
-          const v3 = document.getElementById('panel-video-3');
-          const n3 = document.getElementById('panel-name-3');
-          if (v3 && others[1].videoListening) { v3.src = others[1].videoListening; v3.load(); v3.play().catch(()=>{}); }
-          if (n3) n3.textContent = others[1].name;
-        }
-        if (others[2]) {
-          const v4 = document.getElementById('panel-video-4');
-          const n4 = document.getElementById('panel-name-4');
-          if (v4 && others[2].videoListening) { v4.src = others[2].videoListening; v4.load(); v4.play().catch(()=>{}); }
-          if (n4) n4.textContent = others[2].name;
-        }
 
         // Start Live Session Timer
         remainingSeconds = 0;
