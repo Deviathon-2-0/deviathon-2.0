@@ -42,6 +42,8 @@ __pycache__/
 # Whitelist ONLY essential UI illustration assets used in code
 !frontend/assets/images/boy_sketch_aligned.png
 !frontend/assets/images/boy_color_aligned.png
+!frontend/assets/interviewers/*.jpg
+!frontend/assets/interviewers/*.png
 
 # Unwanted reference drafts & test dumps
 stitch_imaira_ai_mock_interviews/
