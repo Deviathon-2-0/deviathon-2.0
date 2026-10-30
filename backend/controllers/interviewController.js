@@ -6,6 +6,10 @@
 
 const fs = require("fs");
 const path = require("path");
+const evaluationService = require("../services/evaluationService");
+
+// In-memory cache for evaluated interview session reports
+const sessionReports = new Map();
 
 // Load roles and companies data from storage
 const rolesPath = path.join(__dirname, "../data/roles.json");
@@ -326,19 +330,36 @@ exports.startSession = (req, res) => {
 // 7. POST /api/sessions/:id/submit - Submit answers & calculate scores
 exports.submitSession = (req, res) => {
   const { id } = req.params;
-  const { answers, code } = req.body;
+  const { answers, code, role, company, integrity_matrix } = req.body || {};
+
+  // Normalize answers payload if passed as raw list or single answer
+  let answersList = Array.isArray(answers) ? answers : [];
+  if (answersList.length === 0 && code) {
+    answersList = [{ question_index: 0, question_text: "Coding Assessment", transcript: "", code }];
+  }
+
+  // Execute deterministic multi-signal evaluation
+  const evaluatedReport = evaluationService.evaluateSession({
+    answers: answersList,
+    role: role || "Software Engineer",
+    company: company || "General",
+    integrity_matrix: integrity_matrix || null
+  });
+
+  evaluatedReport.sessionId = id;
+
+  // Cache report by session ID for subsequent retrieval
+  sessionReports.set(id, evaluatedReport);
 
   res.status(200).json({
     success: true,
     sessionId: id,
     message: "Session evaluated successfully.",
     reportUrl: "/pages/report.html",
-    scores: {
-      overall: 91.6,
-      bodyLanguage: 78,
-      technicalDepth: 92,
-      speechClarity: 95
-    }
+    report: evaluatedReport,
+    scores: evaluatedReport.scores,
+    grade: evaluatedReport.grade,
+    compositeScore: evaluatedReport.compositeScore
   });
 };
 
@@ -346,36 +367,18 @@ exports.submitSession = (req, res) => {
 exports.getSessionReport = (req, res) => {
   const { id } = req.params;
 
-  res.status(200).json({
-    success: true,
-    sessionId: id,
-    grade: "A",
-    compositeScore: 91.6,
-    metrics: {
-      bodyLanguage: {
-        score: 78,
-        rating: "Good Presence",
-        eyeContactPercentage: 78,
-        postureStability: 92,
-        notes: "Eye contact maintained for 78% of session. Slight downward gaze detected during Q2 and Q4 synthesis.",
-        recommendation: "Maintain direct gaze into the camera lens during architectural trade-offs."
-      },
-      technicalDepth: {
-        score: 92,
-        rating: "Staff Level",
-        layersCovered: "4 of 6",
-        notes: "Excellent mastery of Write-Ahead Logs (WAL) and consensus state machines under network partitions.",
-        recommendation: "Mention Raft pre-vote check during reconnect recovery."
-      },
-      speechClarity: {
-        score: 95,
-        rating: "Exemplary",
-        wpm: 142,
-        fillerWordRate: "2.1%",
-        sentenceCompletionRate: "96%",
-        notes: "Pacing was steady at 142 words/minute with zero dialect-phoneme deduction.",
-        recommendation: "Use deliberate 1-second pauses instead of vocal fillers."
-      }
-    }
+  if (sessionReports.has(id)) {
+    const report = sessionReports.get(id);
+    return res.status(200).json({
+      success: true,
+      ...report
+    });
+  }
+
+  // If no session report exists for this ID, return 404 without fabricating data
+  return res.status(404).json({
+    success: false,
+    error: "NotFound",
+    message: `No evaluation report found for session ID "${id}". Please complete an interview session first.`
   });
 };
