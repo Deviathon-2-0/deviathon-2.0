@@ -948,11 +948,11 @@
               <span id="code-record-btn-text">Record Voice</span>
             </button>
             <div class="flex items-center gap-2">
-              <button onclick="executeCurrentCode()" class="px-3.5 py-1.5 rounded-lg bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 font-bold flex items-center gap-1 shadow-sm transition-all cursor-pointer">
+              <button type="button" onclick="executeCurrentCode()" class="px-3.5 py-1.5 rounded-lg bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 font-bold flex items-center gap-1 shadow-sm transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-xs">play_arrow</span>
                 <span>Execute</span>
               </button>
-              <button onclick="submitCurrentAnswer()" class="px-3.5 py-1.5 rounded-lg bg-[#AA7000] hover:bg-[#8C5D00] text-white font-bold flex items-center gap-1 shadow-sm transition-all cursor-pointer">
+              <button type="button" id="code-submit-btn" onclick="submitCurrentAnswer()" class="px-3.5 py-1.5 rounded-lg bg-[#AA7000] hover:bg-[#8C5D00] text-white font-bold flex items-center gap-1 shadow-sm transition-all cursor-pointer">
                 <span>Submit Code</span>
                 <span class="material-symbols-outlined text-xs">arrow_forward</span>
               </button>
@@ -1118,22 +1118,136 @@
     ];
 
     // Backend API Integration Configuration
-    const API_BASE = 'http://localhost:8000/api';
+    // Primary: Django AI Engine (8000), Fallback: Node.js Express Engine (5000)
+    const API_BASE_CANDIDATES = [
+      'http://localhost:8000/api',
+      'http://localhost:5000/api'
+    ];
+    let activeBackendBase = null;
 
     async function tryApiFetch(endpoint, options = {}) {
       const cleanEndpoint = endpoint.startsWith('/') ? endpoint : ('/' + endpoint);
-      const url = cleanEndpoint.startsWith('/api/') ? `http://localhost:8000${cleanEndpoint}` : `${API_BASE}${cleanEndpoint}`;
-      try {
-        const res = await fetch(url, options);
-        if (!res.ok) {
-          console.warn(`[IMAIRA+ API] Endpoint ${url} returned status ${res.status}`);
-          return null;
+      const path = cleanEndpoint.startsWith('/api/') ? cleanEndpoint.substring(4) : cleanEndpoint;
+
+      const targets = activeBackendBase 
+        ? [activeBackendBase, ...API_BASE_CANDIDATES.filter(b => b !== activeBackendBase)]
+        : API_BASE_CANDIDATES;
+
+      for (const base of targets) {
+        const url = `${base}${path.startsWith('/') ? path : '/' + path}`;
+        try {
+          const res = await fetch(url, options);
+          if (!res.ok) {
+            console.warn(`[IMAIRA+ API] Endpoint ${url} returned status ${res.status}`);
+            return null;
+          }
+          activeBackendBase = base;
+          return await res.json();
+        } catch (err) {
+          // Network connection error - try next backend candidate
+          console.warn(`[IMAIRA+ API] Network call to ${url} failed, checking alternate backend:`, err);
         }
-        return await res.json();
-      } catch (err) {
-        console.warn(`[IMAIRA+ API] Network call to ${url} failed:`, err);
-        return null;
       }
+      return null;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function showSubmissionError(message) {
+      const existing = document.getElementById('submission-error-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.id = 'submission-error-toast';
+      toast.className = "fixed top-20 left-1/2 -translate-x-1/2 z-50 px-5 py-3.5 rounded-2xl bg-[#2A1010] border border-[#E05252] text-[#FFD6D6] text-xs font-medium flex items-center gap-3 shadow-2xl animate-fade-in max-w-lg";
+      toast.innerHTML = `
+        <span class="material-symbols-outlined text-rose-400 text-xl flex-shrink-0">error</span>
+        <div class="flex-1">
+          <div class="font-bold text-white text-xs">Interview Submission Failed</div>
+          <div class="text-rose-200 text-[11px] mt-0.5 leading-relaxed">${escapeHtml(message)}</div>
+        </div>
+        <button type="button" onclick="this.closest('#submission-error-toast').remove()" class="text-rose-300 hover:text-white text-xs ml-2 font-bold cursor-pointer px-2 py-1 rounded hover:bg-rose-900/50">
+          Dismiss
+        </button>
+      `;
+      document.body.appendChild(toast);
+    }
+
+    async function dispatchInterviewSubmission(sessionId, submissionPayload) {
+      const candidateBases = [
+        'http://localhost:8000/api',
+        'http://localhost:5000/api'
+      ];
+
+      const orderedBases = activeBackendBase
+        ? [activeBackendBase, ...candidateBases.filter(b => b !== activeBackendBase)]
+        : candidateBases;
+
+      let lastNetworkError = null;
+
+      for (let i = 0; i < orderedBases.length; i++) {
+        const base = orderedBases[i];
+        const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+        const submitUrl = `${cleanBase}/sessions/${encodeURIComponent(sessionId || 'general')}/submit/`;
+        
+        try {
+          const res = await fetch(submitUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(submissionPayload)
+          });
+
+          if (res.ok) {
+            const reportData = await res.json();
+            activeBackendBase = base;
+            return {
+              success: true,
+              data: reportData,
+              backendBase: base,
+              endpoint: submitUrl
+            };
+          }
+
+          // Server was reached and responded with an unsuccessful HTTP code (4xx / 5xx)
+          // Do NOT blindly retry against another backend: the request arrived and was processed.
+          let errorDetail = `Server responded with status ${res.status} (${res.statusText || 'Error'})`;
+          try {
+            const errJson = await res.json();
+            if (errJson && (errJson.message || errJson.error || errJson.detail)) {
+              errorDetail = errJson.message || errJson.error || errJson.detail;
+            }
+          } catch (_) {}
+
+          return {
+            success: false,
+            errorType: 'HTTP_ERROR',
+            status: res.status,
+            message: `Evaluation rejected by server: ${errorDetail}`,
+            endpoint: submitUrl
+          };
+        } catch (netErr) {
+          // Network connection refused or failed before connecting.
+          // This backend never received the submission, so it is safe to test the next candidate.
+          console.warn(`[IMAIRA+ Submission] Network error contacting ${base}:`, netErr.message);
+          lastNetworkError = netErr;
+        }
+      }
+
+      // If all candidate backends failed with network errors
+      return {
+        success: false,
+        errorType: 'NETWORK_ERROR',
+        message: 'Could not connect to evaluation server on port 8000 or port 5000. Please ensure a backend service is running and retry.',
+        error: lastNetworkError
+      };
     }
 
     let currentAudioPlayback = null;
@@ -2891,6 +3005,9 @@
         maxUnlockedQIndex = 0;
         submittedQuestionIndices.clear();
         collectedAnswers = [];
+        activeSessionId = "ses_" + Date.now();
+        isSubmittingInterview = false;
+        isSubmittingAnswer = false;
 
         const titleEl = document.getElementById('stage-role-title');
         if (titleEl) titleEl.textContent = pendingTitle || "Software Engineer";
@@ -2974,8 +3091,8 @@
             language: selectedCodingLanguage
           })
         }).then(data => {
-          if (data && data.session_id) {
-            activeSessionId = data.session_id;
+          if (data && (data.session_id || data.session?.sessionId || data.sessionId)) {
+            activeSessionId = data.session_id || data.session?.sessionId || data.sessionId;
           }
         }).catch(() => {});
       } catch (err) {
@@ -3132,14 +3249,28 @@
       }
     }
 
+    let isSubmittingInterview = false;
+    let isSubmittingAnswer = false;
+
     // SUBMIT CURRENT ANSWER: STRICTLY UNLOCKS NEXT QUESTION
     async function submitCurrentAnswer() {
-      const q = currentQuestions[currentQIndex];
+      // Prevent duplicate submission triggers if currently submitting an answer or interview
+      if (isSubmittingAnswer || isSubmittingInterview) return;
+      isSubmittingAnswer = true;
+
+      const callSubmitBtn = document.getElementById('call-submit-btn');
+      const codeSubmitBtn = document.getElementById('code-submit-btn');
+      if (callSubmitBtn) callSubmitBtn.disabled = true;
+      if (codeSubmitBtn) codeSubmitBtn.disabled = true;
+
+      const targetQIndex = currentQIndex;
+      const q = currentQuestions[targetQIndex];
       const codeVal = document.getElementById('code-editor-textarea') ? document.getElementById('code-editor-textarea').value : '';
 
-      // Stop candidate speech recording if active
+      // Stop candidate speech recording if active and allow speech packets to settle
       if (isCandidateRecording) {
         toggleCandidateAnswerRecording();
+        await new Promise(resolve => setTimeout(resolve, 250));
       }
 
       const spokenText = candidateCurrentTranscript.trim() || 
@@ -3149,8 +3280,9 @@
       const qStartSec = parseFloat(((questionStartEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
       const qEndSec = parseFloat(((qEndEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
       const qTelemetry = window.candidateMatrixInstance ? window.candidateMatrixInstance.getTelemetryTimeline(qStartSec, qEndSec) : [];
-      collectedAnswers.push({
-        question_index: currentQIndex,
+      
+      const currentAnswerEntry = {
+        question_index: targetQIndex,
         question_text: q ? q.title : '',
         question_id: q ? (q.id || q.title) : '',
         prompt: q ? q.prompt : '',
@@ -3160,71 +3292,106 @@
         timestamp_end: qEndSec,
         duration_sec: Math.max(1, Math.round(qEndSec - qStartSec)),
         telemetry: qTelemetry
-      });
+      };
+
+      // Prevent duplicate answer entries for the same question index
+      const existingAnswerIdx = collectedAnswers.findIndex(a => a.question_index === targetQIndex);
+      if (existingAnswerIdx >= 0) {
+        collectedAnswers[existingAnswerIdx] = currentAnswerEntry;
+      } else {
+        collectedAnswers.push(currentAnswerEntry);
+      }
 
       // Mark current question submitted
-      submittedQuestionIndices.add(currentQIndex);
+      submittedQuestionIndices.add(targetQIndex);
 
       // UNLOCK NEXT QUESTION (strictly one by one)
-      maxUnlockedQIndex = Math.max(maxUnlockedQIndex, currentQIndex + 1);
+      maxUnlockedQIndex = Math.max(maxUnlockedQIndex, targetQIndex + 1);
 
       candidateCurrentTranscript = "";
       updateLiveTranscriptUI("");
 
-      if (currentQIndex < currentQuestions.length - 1) {
+      if (targetQIndex < currentQuestions.length - 1) {
         // Show brief success transition toast
         const toast = document.createElement('div');
         toast.className = "fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-2xl bg-[#1B2811] border border-[#4F6B2D] text-emerald-300 text-xs font-bold flex items-center gap-2 shadow-xl animate-fade-in";
-        toast.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span><span>Question ${currentQIndex + 1} submitted. Unlocking Question ${currentQIndex + 2}...</span>`;
+        toast.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span><span>Question ${targetQIndex + 1} submitted. Unlocking Question ${targetQIndex + 2}...</span>`;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2200);
 
         // Advance to next question
-        updateQuestionView(currentQIndex + 1);
+        updateQuestionView(targetQIndex + 1);
+
+        // Re-enable submission buttons for next question
+        if (callSubmitBtn) callSubmitBtn.disabled = false;
+        if (codeSubmitBtn) codeSubmitBtn.disabled = false;
+        isSubmittingAnswer = false;
       } else {
         // Last question submitted: Complete interview and navigate to report
         clearInterval(timerInterval);
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         if (currentAudioPlayback) currentAudioPlayback.pause();
 
+        // Lock submission to prevent concurrent duplicate requests
+        isSubmittingInterview = true;
+
+        const origCallBtnHtml = callSubmitBtn ? callSubmitBtn.innerHTML : '';
+        const origCodeBtnHtml = codeSubmitBtn ? codeSubmitBtn.innerHTML : '';
+
+        if (callSubmitBtn) {
+          callSubmitBtn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> <span>Evaluating...</span>';
+        }
+        if (codeSubmitBtn) {
+          codeSubmitBtn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> <span>Evaluating...</span>';
+        }
+
         // Capture Candidate Performance & Integrity Matrix
+        let matrixReport = null;
+        let fullTimeline = [];
         if (window.candidateMatrixInstance) {
-          const matrixReport = window.candidateMatrixInstance.getMatrixReport();
+          matrixReport = window.candidateMatrixInstance.getMatrixReport();
+          fullTimeline = window.candidateMatrixInstance.getTelemetryTimeline(0, 99999);
           localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
         }
 
-        let evalResult = null;
-        try {
-          const matrixReport = window.candidateMatrixInstance ? window.candidateMatrixInstance.getMatrixReport() : null;
-          const fullTimeline = window.candidateMatrixInstance ? window.candidateMatrixInstance.getTelemetryTimeline(0, 99999) : [];
-          const submissionPayload = {
-            session_id: activeSessionId,
-            answers: collectedAnswers,
-            role: pendingTitle,
-            company: pendingCompany || 'Google',
-            track: pendingTrack,
-            seniority_level: pendingLevel,
-            integrity_matrix: matrixReport,
-            telemetry_matrix: matrixReport,
-            timeline_telemetry: fullTimeline
-          };
-          evalResult = await tryApiFetch(`/sessions/${activeSessionId || 'general'}/submit/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(submissionPayload)
-          });
-          if (evalResult) {
-            localStorage.setItem('imaira_session_report', JSON.stringify(evalResult));
-          }
+        const submissionPayload = {
+          session_id: activeSessionId,
+          answers: collectedAnswers,
+          role: pendingTitle,
+          company: pendingCompany || 'Google',
+          track: pendingTrack,
+          seniority_level: pendingLevel,
+          integrity_matrix: matrixReport,
+          telemetry_matrix: matrixReport,
+          timeline_telemetry: fullTimeline
+        };
+
+        const result = await dispatchInterviewSubmission(activeSessionId, submissionPayload);
+
+        if (result.success && result.data) {
+          // Success: Store report in localStorage and navigate to report.html
+          localStorage.setItem('imaira_session_report', JSON.stringify(result.data));
           if (matrixReport) {
             localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));
           }
-        } catch (e) {
-          console.warn("Session submit notice:", e);
-        }
 
-        const targetSessionId = (evalResult && (evalResult.sessionId || evalResult.session_id)) || activeSessionId || 'general';
-        window.location.href = `report.html?sessionId=${encodeURIComponent(targetSessionId)}`;
+          const targetSessionId = (result.data && (result.data.sessionId || result.data.session_id)) || activeSessionId || 'general';
+          window.location.href = `report.html?sessionId=${encodeURIComponent(targetSessionId)}`;
+        } else {
+          // Failure: Do NOT navigate away. Re-enable submission buttons and show explicit error message.
+          isSubmittingInterview = false;
+          isSubmittingAnswer = false;
+          if (callSubmitBtn) {
+            callSubmitBtn.disabled = false;
+            callSubmitBtn.innerHTML = origCallBtnHtml;
+          }
+          if (codeSubmitBtn) {
+            codeSubmitBtn.disabled = false;
+            codeSubmitBtn.innerHTML = origCodeBtnHtml;
+          }
+
+          showSubmissionError(result.message || 'Submission failed. Please check backend connection and retry.');
+        }
       }
     }
 
