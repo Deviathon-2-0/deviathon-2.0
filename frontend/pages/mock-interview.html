@@ -486,22 +486,33 @@
             <span class="text-xs font-bold uppercase tracking-wider text-[#AA7000]">Interview Instructions</span>
           </div>
 
-          <!-- Interviewer Card: Authentic Image of Selected Evaluator -->
-          <div class="relative w-full h-56 rounded-2xl overflow-hidden bg-[#1E293B] border border-[#E8DFD0] shadow-md mb-4 flex items-center justify-center group">
-            <img id="prereq-interviewer-img" src="" alt="Selected Evaluator" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
+          <!-- Interviewer Card: 16:9 Properly Framed AI Video of Selected Evaluator -->
+          <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#120B04] border border-[#E8DFD0] shadow-md mb-4 flex items-center justify-center group">
+            <video id="prereq-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
+            <img id="prereq-interviewer-img" src="" alt="Selected Evaluator" class="w-full h-full object-cover object-center hidden" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none"></div>
             
             <!-- Persona Tag -->
-            <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-xs font-bold flex items-center gap-2 border border-white/10 z-10">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span id="prereq-interviewer-name">Kabir</span>
-              <span class="text-slate-300 text-[10px] font-normal" id="prereq-interviewer-sublabel">IN English (North)</span>
+            <div class="absolute top-3 left-3 px-3.5 py-1.5 rounded-full bg-black/65 backdrop-blur-md text-white text-xs font-bold flex items-center gap-2 border border-white/10 z-10">
+              <span id="prereq-status-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span id="prereq-interviewer-name" class="font-bold">Kabir</span>
+              <span class="text-slate-300 text-[11px] font-normal" id="prereq-interviewer-sublabel">Senior Systems Architect • Indian English (North)</span>
             </div>
 
             <!-- Start Answer Floating Pill (Matching User Screenshot) -->
-            <div class="absolute bottom-3.5 px-4 py-1.5 rounded-full bg-[#4F6B2D] text-white text-xs font-bold flex items-center gap-1.5 shadow-lg z-10 pointer-events-none">
+            <div id="prereq-mic-pill" class="absolute bottom-3.5 px-4 py-1.5 rounded-full bg-[#4F6B2D] text-white text-xs font-bold flex items-center gap-1.5 shadow-lg z-10 pointer-events-none">
               <span class="material-symbols-outlined text-sm">mic</span>
               <span>START ANSWER</span>
+            </div>
+
+            <!-- Realtime Evaluator Voiceover & Lip-Sync Subtitles Overlay -->
+            <div id="prereq-speech-indicator" class="hidden absolute bottom-3 left-3 right-3 bg-black/85 backdrop-blur-md border border-white/15 rounded-xl p-2.5 z-20 flex items-center gap-3">
+              <div class="flex items-center gap-1 shrink-0">
+                <div class="stage-wave-bar"></div>
+                <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
+                <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+              </div>
+              <p id="prereq-subtitle-text" class="text-xs text-emerald-300 font-medium italic truncate flex-1"></p>
             </div>
           </div>
 
@@ -717,6 +728,17 @@
                 </div>
               </div>
             </div>
+
+            <!-- Live Spoken Transcript for Think-Out-Loud in Code Pane -->
+            <div id="code-transcript-wrap" class="p-3 rounded-xl bg-[#1B1207] border border-[#2E200E] text-xs font-mono hidden">
+              <div class="flex items-center justify-between text-[10px] text-[#AA7000] font-bold mb-1">
+                <span>THINK-OUT-LOUD LIVE TRANSCRIPT</span>
+                <span class="text-emerald-400 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live STT
+                </span>
+              </div>
+              <p id="code-transcript-text" class="text-slate-200 italic">Listening to your verbal explanation...</p>
+            </div>
           </div>
 
           <!-- Tab Content 2: Instructions & Rubrics -->
@@ -735,18 +757,23 @@
             </div>
           </div>
 
-          <!-- Left Pane Footer: Audio Wave + Execute Button -->
-          <div class="p-3 border-t border-[#2A1C0A] bg-[#100A03] flex items-center justify-between text-[11px] text-slate-400">
-            <div class="flex items-center gap-1.5">
-              <div class="stage-wave-bar"></div>
-              <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-              <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
-              <span class="text-[11px] text-slate-400 ml-1">Live Audio Channel</span>
-            </div>
-            <button onclick="executeCurrentCode()" class="px-3.5 py-1.5 rounded-lg bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 font-bold flex items-center gap-1 shadow-sm transition-all">
-              <span class="material-symbols-outlined text-xs">play_arrow</span>
-              <span>Execute</span>
+          <!-- Left Pane Footer: Audio Wave + Voice Recording + Execute Button -->
+          <div class="p-3 border-t border-[#2A1C0A] bg-[#100A03] flex items-center justify-between text-[11px] text-slate-400 gap-2">
+            <button type="button" id="code-record-answer-btn" onclick="toggleCandidateAnswerRecording()" class="px-3 py-1.5 rounded-lg bg-[#4F6B2D] hover:bg-[#3E5423] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer">
+              <span class="material-symbols-outlined text-sm">mic</span>
+              <span id="code-record-btn-text">Record Voice</span>
             </button>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1">
+                <div class="stage-wave-bar"></div>
+                <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
+                <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+              </div>
+              <button onclick="executeCurrentCode()" class="px-3.5 py-1.5 rounded-lg bg-[#2A1D0B] hover:bg-[#3D2B12] text-[#E8A338] border border-[#AA7000]/50 font-bold flex items-center gap-1 shadow-sm transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-xs">play_arrow</span>
+                <span>Execute</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -776,11 +803,12 @@
       <!-- 2. FULL-SCREEN 1-ON-1 VIDEO CALL PANE (Interviewer or Candidate Spotlight) -->
       <div id="workspace-spotlight-pane" class="hidden flex-1 relative bg-[#120B04] flex items-center justify-center overflow-hidden p-3 sm:p-6">
         
-        <!-- Video Container: Takes maximum comfortable viewport space -->
+        <!-- Video Container: Takes maximum comfortable viewport space with 16:9 Proper Framing -->
         <div id="spotlight-frame-container" class="relative w-full max-w-5xl h-full max-h-[82vh] rounded-3xl overflow-hidden bg-[#1A1208] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
           
-          <img id="spotlight-img" src="" alt="Spotlight" class="w-full h-full object-cover object-top natural-face-anim" />
-          <video id="spotlight-video" autoplay muted playsinline class="w-full h-full object-cover hidden"></video>
+          <video id="spotlight-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center"></video>
+          <img id="spotlight-img" src="" alt="Spotlight" class="w-full h-full object-cover object-center hidden" />
+          <video id="spotlight-video" autoplay muted playsinline class="w-full h-full object-cover object-center hidden"></video>
           
           <div id="spotlight-video-fallback" class="hidden w-full h-full flex flex-col items-center justify-center text-slate-400 bg-[#140D05]">
             <span class="material-symbols-outlined text-6xl mb-3 text-slate-500">account_circle</span>
@@ -810,18 +838,35 @@
               "Tell me about a challenging distributed system failure you diagnosed and resolved."
             </p>
             <div class="flex items-center justify-between text-xs text-slate-300 pt-2 border-t border-white/10">
-              <div class="flex items-center gap-1.5">
-                <div class="stage-wave-bar"></div>
-                <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
-                <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
-                <span class="text-[11px] ml-1 text-slate-300">Voice channel active • Zero pronunciation bias</span>
+              <div class="flex items-center gap-3">
+                <button type="button" id="spotlight-record-answer-btn" onclick="toggleCandidateAnswerRecording()" class="px-3.5 py-1.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">mic</span>
+                  <span id="spotlight-record-btn-text">Start Spoken Answer</span>
+                </button>
+                <div class="flex items-center gap-1.5">
+                  <div class="stage-wave-bar"></div>
+                  <div class="stage-wave-bar" style="animation-delay: 0.2s"></div>
+                  <div class="stage-wave-bar" style="animation-delay: 0.4s"></div>
+                  <span class="text-[11px] ml-1 text-slate-300">Voice channel active</span>
+                </div>
               </div>
               <div id="spotlight-switch-code-cta" class="hidden">
-                <button onclick="setFocus('code')" class="text-xs font-bold text-[#AA7000] hover:text-white flex items-center gap-1">
+                <button onclick="setFocus('code')" class="text-xs font-bold text-[#AA7000] hover:text-white flex items-center gap-1 cursor-pointer">
                   <span>Open Code Editor</span>
                   <span class="material-symbols-outlined text-xs">arrow_forward</span>
                 </button>
               </div>
+            </div>
+
+            <!-- Real-time Candidate Speech-to-Text Transcript Box in Spotlight Call -->
+            <div id="spotlight-transcript-wrap" class="mt-2.5 p-3 rounded-xl bg-black/60 border border-white/10 hidden">
+              <div class="flex items-center justify-between text-[10px] text-[#AA7000] font-bold mb-1">
+                <span>LIVE CANDIDATE TRANSCRIPT</span>
+                <span id="spotlight-recog-status" class="text-emerald-400 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Recording candidate speech...
+                </span>
+              </div>
+              <p id="spotlight-transcript-text" class="text-xs text-slate-200 italic font-mono leading-relaxed">Listening to your response...</p>
             </div>
           </div>
         </div>
@@ -838,7 +883,8 @@
           <span class="font-bold tracking-tight">Interviewer</span>
           <span class="material-symbols-outlined text-xs text-slate-400">drag_indicator</span>
         </div>
-        <img id="dock-interviewer-img" src="" alt="Interviewer" class="w-full h-full object-cover object-top natural-face-anim pointer-events-none" />
+        <video id="dock-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center pointer-events-none"></video>
+        <img id="dock-interviewer-img" src="" alt="Interviewer" class="w-full h-full object-cover object-center hidden pointer-events-none" />
         <div class="absolute inset-0 bg-black/15 group-hover:bg-transparent transition-colors pointer-events-none"></div>
         
         <div class="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] text-white flex items-center justify-between z-10">
@@ -908,7 +954,10 @@
         pitch: 0.90,
         rate: 1.0,
         sampleIntro: "Hello! I am Kabir. Let's delve into your technical architecture and problem-solving strategy.",
-        avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=400&auto=format&fit=crop&q=80"
+        avatar: "../assets/interviewers/kabir.jpg",
+        videoListening: "../assets/interviewers/kabir_listening.mp4",
+        videoTalking: "../assets/interviewers/kabir_talking.mp4",
+        introAudio: "../assets/interviewers/kabir_intro.mp3"
       },
       {
         id: "payal",
@@ -922,7 +971,10 @@
         pitch: 1.18,
         rate: 1.02,
         sampleIntro: "Hi there! I am Payal. I look forward to exploring your distributed systems and algorithmic trade-offs.",
-        avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80"
+        avatar: "../assets/interviewers/payal.jpg",
+        videoListening: "../assets/interviewers/payal_listening.mp4",
+        videoTalking: "../assets/interviewers/payal_talking.mp4",
+        introAudio: "../assets/interviewers/payal_intro.mp3"
       },
       {
         id: "charlotte",
@@ -935,8 +987,11 @@
         bcp47: "en-GB",
         pitch: 1.14,
         rate: 0.98,
-        sampleIntro: "Good day. I am Charlotte. We shall be exploring system constraints, latency guarantees, and failure modes.",
-        avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80"
+        sampleIntro: "Good day. I am Charlotte. We shall explore system constraints, latency guarantees, and failure modes.",
+        avatar: "../assets/interviewers/charlotte.jpg",
+        videoListening: "../assets/interviewers/charlotte_listening.mp4",
+        videoTalking: "../assets/interviewers/charlotte_talking.mp4",
+        introAudio: "../assets/interviewers/charlotte_intro.mp3"
       },
       {
         id: "john",
@@ -950,7 +1005,10 @@
         pitch: 0.92,
         rate: 1.04,
         sampleIntro: "Hey there! I am John. Excited to chat through your approach and see how you tackle scaling bottlenecks.",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80"
+        avatar: "../assets/interviewers/john.jpg",
+        videoListening: "../assets/interviewers/john_listening.mp4",
+        videoTalking: "../assets/interviewers/john_talking.mp4",
+        introAudio: "../assets/interviewers/john_intro.mp3"
       },
       {
         id: "sarah",
@@ -963,8 +1021,11 @@
         bcp47: "en-US",
         pitch: 1.16,
         rate: 1.00,
-        sampleIntro: "Welcome! I am Sarah. We will examine your architectural tradeoffs, data structures, and edge case mitigation.",
-        avatar: "https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=400&auto=format&fit=crop&q=80"
+        sampleIntro: "Welcome. I am Sarah. Let's walk through your engineering background and architectural decisions.",
+        avatar: "../assets/interviewers/sarah.jpg",
+        videoListening: "../assets/interviewers/sarah_listening.mp4",
+        videoTalking: "../assets/interviewers/sarah_talking.mp4",
+        introAudio: "../assets/interviewers/sarah_intro.mp3"
       },
       {
         id: "kenji",
@@ -974,11 +1035,14 @@
         regionFlag: "🇯🇵",
         accentLabel: "Japanese English (Tokyo)",
         subLabel: "Robotics & Backend Lead",
-        bcp47: "ja-JP",
+        bcp47: "en-US",
         pitch: 0.88,
-        rate: 0.95,
-        sampleIntro: "Konnichiwa. I am Kenji. Please walk through your architectural assumptions step-by-step with clarity.",
-        avatar: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=400&auto=format&fit=crop&q=80"
+        rate: 0.98,
+        sampleIntro: "Hello, I am Kenji. We will focus on data consensus, partitioning, and resilience today.",
+        avatar: "../assets/interviewers/kenji.jpg",
+        videoListening: "../assets/interviewers/kenji_listening.mp4",
+        videoTalking: "../assets/interviewers/kenji_talking.mp4",
+        introAudio: "../assets/interviewers/kenji_intro.mp3"
       }
     ];
 
@@ -1870,13 +1934,27 @@
       }
 
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
+      const vid = document.getElementById('prereq-interviewer-video');
       const img = document.getElementById('prereq-interviewer-img');
       const name = document.getElementById('prereq-interviewer-name');
       const sub = document.getElementById('prereq-interviewer-sublabel');
+      const indicator = document.getElementById('prereq-speech-indicator');
 
-      if (img) img.src = chosen.avatar;
+      if (indicator) indicator.classList.add('hidden');
       if (name) name.textContent = chosen.name;
-      if (sub) sub.textContent = chosen.subLabel + " • " + chosen.accentLabel;
+      if (sub) sub.textContent = (chosen.subLabel || '') + " • " + chosen.accentLabel;
+
+      if (vid && chosen.videoListening) {
+        vid.src = chosen.videoListening;
+        vid.classList.remove('hidden');
+        if (img) img.classList.add('hidden');
+        vid.load();
+        vid.play().catch(() => {});
+      } else if (img) {
+        img.src = chosen.avatar;
+        img.classList.remove('hidden');
+        if (vid) vid.classList.add('hidden');
+      }
 
       runSystemPrerequisiteChecks();
     }
@@ -1918,22 +1996,188 @@
     function testSystemAudio() {
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
       const btn = document.getElementById('play-sound-btn');
-      btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Playing Audio Sample...</span>';
+      const vid = document.getElementById('prereq-interviewer-video');
+      const indicator = document.getElementById('prereq-speech-indicator');
+      const subText = document.getElementById('prereq-subtitle-text');
 
-      speakQuestion(`Hello, I am ${chosen.name}. My system audio is verified and ready for your interview.`);
+      btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Playing Evaluator Audio...</span>';
 
-      setTimeout(() => {
+      // Switch Prerequisite Video to Talking Loop
+      if (vid && chosen.videoTalking) {
+        vid.src = chosen.videoTalking;
+        vid.load();
+        vid.play().catch(() => {});
+      }
+
+      if (indicator) indicator.classList.remove('hidden');
+      if (subText) subText.textContent = chosen.sampleIntro || `Hello, I am ${chosen.name}. System audio is fully verified.`;
+
+      if (currentAudioPlayback) {
+        currentAudioPlayback.pause();
+        currentAudioPlayback = null;
+      }
+
+      const onAudioFinished = () => {
         soundCheckPassed = true;
+        if (vid && chosen.videoListening) {
+          vid.src = chosen.videoListening;
+          vid.load();
+          vid.play().catch(() => {});
+        }
+        if (indicator) indicator.classList.add('hidden');
         btn.innerHTML = '<span class="material-symbols-outlined text-sm text-[#4F6B2D]">check</span><span>Evaluator Audio Verified</span>';
         btn.className = "w-full py-2 rounded-lg bg-[#EFF4E8] text-[#4F6B2D] border border-[#4F6B2D]/40 text-xs font-bold flex items-center justify-center gap-1.5";
         document.getElementById('chk-sound-status').innerHTML = '<span class="text-[#4F6B2D] font-bold flex items-center gap-0.5"><span class="material-symbols-outlined text-sm">check_circle</span> Verified</span>';
         document.getElementById('prereq-checklist-counter').textContent = "8/8 Verified";
-      }, 1500);
+      };
+
+      if (chosen.introAudio) {
+        const audio = new Audio(chosen.introAudio);
+        currentAudioPlayback = audio;
+        audio.onended = onAudioFinished;
+        audio.onerror = () => {
+          speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. My system audio is verified.`);
+          setTimeout(onAudioFinished, 3500);
+        };
+        audio.play().catch(() => {
+          speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. My system audio is verified.`);
+          setTimeout(onAudioFinished, 3500);
+        });
+      } else {
+        speakQuestion(chosen.sampleIntro || `Hello, I am ${chosen.name}. My system audio is verified.`);
+        setTimeout(onAudioFinished, 3500);
+      }
     }
 
     function startFinalPracticeSession() {
       closePracticePrerequisite();
       confirmStartPractice();
+    }
+
+
+    // Realtime AI Evaluator Video & Lip-Sync State Manager
+    function setInterviewerVideoState(state) {
+      const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
+      const spotlightVid = document.getElementById('spotlight-interviewer-video');
+      const dockVid = document.getElementById('dock-interviewer-video');
+      
+      const targetSrc = (state === 'talking') ? chosen.videoTalking : chosen.videoListening;
+      if (!targetSrc) return;
+
+      if (spotlightVid && !spotlightVid.classList.contains('hidden')) {
+        const curSrc = spotlightVid.getAttribute('src') || '';
+        if (!curSrc.includes(targetSrc)) {
+          spotlightVid.src = targetSrc;
+          spotlightVid.play().catch(() => {});
+        }
+      }
+      if (dockVid) {
+        const curSrc = dockVid.getAttribute('src') || '';
+        if (!curSrc.includes(targetSrc)) {
+          dockVid.src = targetSrc;
+          dockVid.play().catch(() => {});
+        }
+      }
+    }
+
+    // Candidate Speech-to-Text & Spoken Answer Handler
+    let speechRecognizer = null;
+    let isCandidateRecording = false;
+    let candidateCurrentTranscript = "";
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return null;
+      try {
+        const rec = new SpeechRecognition();
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.lang = 'en-US';
+
+        rec.onresult = (e) => {
+          let interim = '';
+          for (let i = e.resultIndex; i < e.results.length; ++i) {
+            if (e.results[i].isFinal) {
+              candidateCurrentTranscript += e.results[i][0].transcript + ' ';
+            } else {
+              interim += e.results[i][0].transcript;
+            }
+          }
+          const fullText = (candidateCurrentTranscript + (interim ? ' ' + interim : '')).trim();
+          updateLiveTranscriptUI(fullText);
+        };
+
+        rec.onerror = (e) => {
+          console.log("Speech recognition notice:", e.error);
+        };
+
+        rec.onend = () => {
+          if (isCandidateRecording) {
+            try { rec.start(); } catch(err) {}
+          }
+        };
+
+        return rec;
+      } catch(err) {
+        return null;
+      }
+    }
+
+    function updateLiveTranscriptUI(text) {
+      const spotTxt = document.getElementById('spotlight-transcript-text');
+      const codeTxt = document.getElementById('code-transcript-text');
+      if (spotTxt) spotTxt.textContent = text || "Listening to your spoken answer...";
+      if (codeTxt) codeTxt.textContent = text || "Listening to your verbal explanation...";
+    }
+
+    function toggleCandidateAnswerRecording() {
+      isCandidateRecording = !isCandidateRecording;
+
+      const spotBtn = document.getElementById('spotlight-record-answer-btn');
+      const spotBtnText = document.getElementById('spotlight-record-btn-text');
+      const spotWrap = document.getElementById('spotlight-transcript-wrap');
+
+      const codeBtn = document.getElementById('code-record-answer-btn');
+      const codeBtnText = document.getElementById('code-record-btn-text');
+      const codeWrap = document.getElementById('code-transcript-wrap');
+
+      if (isCandidateRecording) {
+        candidateCurrentTranscript = "";
+        updateLiveTranscriptUI("Listening to your spoken answer...");
+
+        if (spotBtn) {
+          spotBtn.className = "px-3.5 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer animate-pulse";
+        }
+        if (spotBtnText) spotBtnText.textContent = "Stop & Save Recording";
+        if (spotWrap) spotWrap.classList.remove('hidden');
+
+        if (codeBtn) {
+          codeBtn.className = "px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer animate-pulse";
+        }
+        if (codeBtnText) codeBtnText.textContent = "Stop Recording";
+        if (codeWrap) codeWrap.classList.remove('hidden');
+
+        if (!speechRecognizer) {
+          speechRecognizer = initSpeechRecognition();
+        }
+        if (speechRecognizer) {
+          try { speechRecognizer.start(); } catch(e) {}
+        }
+      } else {
+        if (spotBtn) {
+          spotBtn.className = "px-3.5 py-1.5 rounded-full bg-[#4F6B2D] hover:bg-[#3E5423] text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer";
+        }
+        if (spotBtnText) spotBtnText.textContent = "Start Spoken Answer";
+
+        if (codeBtn) {
+          codeBtn.className = "px-3 py-1.5 rounded-lg bg-[#4F6B2D] hover:bg-[#3E5423] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer";
+        }
+        if (codeBtnText) codeBtnText.textContent = "Record Voice";
+
+        if (speechRecognizer) {
+          try { speechRecognizer.stop(); } catch(e) {}
+        }
+      }
     }
 
     function confirmStartPractice() {
@@ -1970,11 +2214,42 @@
         if (submitBtnText) submitBtnText.textContent = "Submit Answer";
       }
 
-      // Populate Interviewer and Candidate in PiP Tiles & Spotlight
+      // Populate Interviewer and Candidate in 16:9 Video Call & PiP
+      const spotVid = document.getElementById('spotlight-interviewer-video');
+      const dockVid = document.getElementById('dock-interviewer-video');
+      if (spotVid && chosenInterviewer.videoListening) {
+        spotVid.src = chosenInterviewer.videoListening;
+        spotVid.load();
+        spotVid.play().catch(() => {});
+      }
+      if (dockVid && chosenInterviewer.videoListening) {
+        dockVid.src = chosenInterviewer.videoListening;
+        dockVid.load();
+        dockVid.play().catch(() => {});
+      }
       document.getElementById('dock-interviewer-img').src = chosenInterviewer.avatar;
       document.getElementById('dock-interviewer-name').textContent = chosenInterviewer.name;
       document.getElementById('spotlight-img').src = chosenInterviewer.avatar;
       document.getElementById('spotlight-name-tag').textContent = chosenInterviewer.name + " (" + chosenInterviewer.accentLabel + ")";
+
+      // Initialize live backend session if connected
+      tryApiFetch('/sessions/start/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role: pendingTitle,
+          company: pendingCompany || 'Google',
+          track: pendingTrack,
+          level: pendingLevel,
+          interviewer_name: chosenInterviewer.name,
+          interviewer_accent: chosenInterviewer.accentLabel,
+          language: selectedCodingLanguage
+        })
+      }).then(data => {
+        if (data && data.session_id) {
+          activeSessionId = data.session_id;
+        }
+      }).catch(() => {});
 
       // GENERATE AUTHENTIC QUESTIONS FOR THIS ROLE & COMPANY
       if (customInterviewQuestions && customInterviewQuestions.length > 0) {
@@ -2343,12 +2618,23 @@ int main() {
       const q = currentQuestions[currentQIndex];
       const codeVal = document.getElementById('code-editor-textarea').value;
       
+      // Stop speech recording if active
+      if (isCandidateRecording) {
+        toggleCandidateAnswerRecording();
+      }
+
+      const spokenText = candidateCurrentTranscript.trim() || 
+        "Demonstrated systematic algorithm breakdown, stating data structures, invariants, and edge case mitigation upfront.";
+
       collectedAnswers.push({
         question_index: currentQIndex,
         question_text: q ? q.title : '',
-        transcript: "Demonstrated systematic algorithm breakdown, stating data structures and invariants upfront.",
+        transcript: spokenText,
         code: codeVal
       });
+
+      candidateCurrentTranscript = "";
+      updateLiveTranscriptUI("");
 
       if (currentQIndex < currentQuestions.length - 1) {
         updateQuestionView(currentQIndex + 1);
@@ -2401,6 +2687,13 @@ int main() {
         window.speechSynthesis.cancel();
       }
 
+      // Switch Interviewer Video to Talking Loop
+      setInterviewerVideoState('talking');
+
+      const onPlaybackEnded = () => {
+        setInterviewerVideoState('listening');
+      };
+
       // 1. Try server neural TTS first (Edge TTS realistic human voices with distinct male/female timbre)
       try {
         const data = await tryApiFetch('/tts/generate/', {
@@ -2415,6 +2708,8 @@ int main() {
         if (data && data.audio_url) {
           const audioSrc = data.audio_url.startsWith('http') ? data.audio_url : ('http://localhost:8000' + data.audio_url);
           currentAudioPlayback = new Audio(audioSrc);
+          currentAudioPlayback.onended = onPlaybackEnded;
+          currentAudioPlayback.onerror = onPlaybackEnded;
           await currentAudioPlayback.play();
           return;
         }
@@ -2429,6 +2724,8 @@ int main() {
         // Female voices: higher pitch and melodic cadence for clear, articulate female leader
         utterance.pitch = isMale ? (0.88 * (chosen.pitch || 0.90)) : (1.18 * (chosen.pitch || 1.15));
         utterance.rate = (chosen.rate || 1.0) * pacingVal;
+        utterance.onend = onPlaybackEnded;
+        utterance.onerror = onPlaybackEnded;
 
         const voices = window.speechSynthesis.getVoices();
         if (voices && voices.length > 0) {
