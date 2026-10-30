@@ -190,6 +190,48 @@
           </button>
         </form>
 
+        <!-- Mock Demo Accounts for Hackathon Judges & Evaluators -->
+        <div class="mt-6 pt-5 border-t border-[#E8DFD0]">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[#7F766C]">Mock Demo Accounts (One-Click Sign In)</span>
+            <span class="text-[10px] text-[#AA7000] font-bold">Judge / Evaluator</span>
+          </div>
+          <div class="grid grid-cols-1 gap-2">
+            <button type="button" onclick="quickLoginAs('ravi-kisan')" class="p-2.5 rounded-xl border border-[#E8DFD0] hover:border-[#AA7000] hover:bg-[#FAF6EE] text-left flex items-center justify-between transition-all group bg-white shadow-xs">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs shrink-0">RK</div>
+                <div class="truncate">
+                  <div class="text-xs font-bold text-[#2C1F0E] group-hover:text-[#AA7000]">Ravi Kisan</div>
+                  <div class="text-[10px] text-[#7F766C]">Google &bull; Distributed Systems (ravi.kisan@gmail.com)</div>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold text-[#AA7000] bg-[#FAF6EE] px-2 py-1 rounded-full group-hover:bg-[#AA7000] group-hover:text-white transition-colors">Sign In &rarr;</span>
+            </button>
+
+            <button type="button" onclick="quickLoginAs('priya-sharma')" class="p-2.5 rounded-xl border border-[#E8DFD0] hover:border-[#AA7000] hover:bg-[#FAF6EE] text-left flex items-center justify-between transition-all group bg-white shadow-xs">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs shrink-0">PS</div>
+                <div class="truncate">
+                  <div class="text-xs font-bold text-[#2C1F0E] group-hover:text-[#AA7000]">Priya Sharma</div>
+                  <div class="text-[10px] text-[#7F766C]">Meta &bull; Staff Full Stack (priya.sharma@meta.com)</div>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold text-[#AA7000] bg-[#FAF6EE] px-2 py-1 rounded-full group-hover:bg-[#AA7000] group-hover:text-white transition-colors">Sign In &rarr;</span>
+            </button>
+
+            <button type="button" onclick="quickLoginAs('arjun-mehta')" class="p-2.5 rounded-xl border border-[#E8DFD0] hover:border-[#AA7000] hover:bg-[#FAF6EE] text-left flex items-center justify-between transition-all group bg-white shadow-xs">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs shrink-0">AM</div>
+                <div class="truncate">
+                  <div class="text-xs font-bold text-[#2C1F0E] group-hover:text-[#AA7000]">Arjun Mehta</div>
+                  <div class="text-[10px] text-[#7F766C]">Amazon &bull; Cloud Infrastructure (arjun.mehta@aws.com)</div>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold text-[#AA7000] bg-[#FAF6EE] px-2 py-1 rounded-full group-hover:bg-[#AA7000] group-hover:text-white transition-colors">Sign In &rarr;</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Mode Toggle Text -->
         <div class="mt-6 text-center text-xs text-slate-500">
           <span id="toggle-prompt">Don't have an account?</span>
@@ -269,6 +311,19 @@
         togglePrompt.innerText = "Don't have an account?";
         toggleAction.innerText = "Create account";
       }
+    }
+
+        function quickLoginAs(id) {
+      const users = {
+        'ravi-kisan': { id: 'ravi-kisan', name: 'Ravi Kisan', email: 'ravi.kisan@gmail.com', password: 'Ravi@Google2026', role: 'Senior Distributed Systems Architect', company: 'Google', targetTrack: 'Distributed Systems & High-Throughput APIs', bio: 'Principal backend & systems architect specializing in Raft consensus, zero-loss Kafka streaming, and sub-10ms gRPC microservices.', initials: 'RK', score: 89.5, benchmarkSessionId: '11111111-2222-3333-4444-555555555551' },
+        'priya-sharma': { id: 'priya-sharma', name: 'Priya Sharma', email: 'priya.sharma@meta.com', password: 'Priya@Meta2026', role: 'Staff Full Stack & Product Lead', company: 'Meta', targetTrack: 'End-to-End Modern Web Architecture & Micro-Frontends', bio: 'Product-minded staff engineer scaling React core, WebAssembly interactive rendering, and GraphQL federation layers.', initials: 'PS', score: 88.0, benchmarkSessionId: '11111111-2222-3333-4444-555555555551' },
+        'arjun-mehta': { id: 'arjun-mehta', name: 'Arjun Mehta', email: 'arjun.mehta@aws.com', password: 'Arjun@Amazon2026', role: 'Principal Cloud Infrastructure Lead', company: 'Amazon', targetTrack: 'Multi-Region Cloud Topologies & Kubernetes Reliability', bio: 'Cloud infrastructure architect optimizing multi-region AWS topologies, chaos engineering, and zero-trust service meshes.', initials: 'AM', score: 87.5, benchmarkSessionId: '11111111-2222-3333-4444-555555555551' }
+      };
+      const u = users[id] || users['ravi-kisan'];
+      localStorage.setItem('imaira_profile', JSON.stringify(u));
+      localStorage.setItem('imaira_user', JSON.stringify({ name: u.name, email: u.email, role: u.role }));
+      localStorage.setItem('imaira_token', 'mock_jwt_token_' + id);
+      window.location.href = 'dashboard.html';
     }
 
     function toggleAuthMode() {

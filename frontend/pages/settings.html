@@ -87,33 +87,7 @@
           <span>Prep Plan</span>
         </a>
 
-        <div class="pt-4 pb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">
-          Account
-        </div>
-
-        <a href="settings.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full bg-[#FBF3E0] text-[#AA7000] font-bold text-sm transition-all shadow-sm">
-          <span class="material-symbols-outlined text-xl">settings</span>
-          <span>Settings</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Candidate Footer Profile -->
-    <div class="p-4 border-t border-[#E8DFD0]">
-      <div class="flex items-center justify-between px-1">
-        <div class="flex items-center gap-2.5">
-          <div id="sidebar-avatar-initials" class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
-            AM
-          </div>
-          <div>
-            <div id="sidebar-user-name" class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
-            <div id="sidebar-user-role" class="text-[11px] text-[#7F766C]">Staff Candidate</div>
-          </div>
-        </div>
-        <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
-          <span class="material-symbols-outlined text-lg">logout</span>
-        </a>
-      </div>
+              </nav>
     </div>
   </aside>
 
@@ -379,28 +353,30 @@
 
   <!-- Profile & Settings Logic -->
   <script>
-    // 1. Load Stored Profile
+    // 1. Load Stored Profile with Active User Integration
     function loadProfile() {
+      const user = window.userSession ? window.userSession.getActiveUser() : null;
       const saved = localStorage.getItem('imaira_profile');
-      if (saved) {
-        try {
-          const p = JSON.parse(saved);
-          if (p.name) document.getElementById('prof-name').value = p.name;
-          if (p.age) document.getElementById('prof-age').value = p.age;
-          if (p.headline) document.getElementById('prof-headline').value = p.headline;
-          if (p.bio) document.getElementById('prof-bio').value = p.bio;
-          if (p.interests) document.getElementById('prof-interests').value = p.interests;
-          if (p.targetRole) document.getElementById('prof-target-role').value = p.targetRole;
-          if (p.level) document.getElementById('prof-level').value = p.level;
-          if (p.accomplishment) document.getElementById('prof-accomplishment').value = p.accomplishment;
-          if (p.evaluator) document.getElementById('pref-evaluator').value = p.evaluator;
-          if (p.lang) document.getElementById('pref-lang').value = p.lang;
+      let p = {};
+      try {
+        if (saved) p = JSON.parse(saved);
+      } catch (e) {}
 
-          updateSidebarProfile(p.name, p.targetRole || p.level);
-        } catch (e) {
-          console.log("Error loading profile", e);
-        }
-      }
+      const name = p.name || (user ? user.name : "Ravi Kisan");
+      const targetRole = p.targetRole || p.role || (user ? user.role : "Senior Distributed Systems Architect");
+      const company = p.company || (user ? user.company : "Google");
+      const bio = p.bio || (user ? user.bio : "");
+
+      if (document.getElementById('prof-name')) document.getElementById('prof-name').value = name;
+      if (document.getElementById('prof-age') && p.age) document.getElementById('prof-age').value = p.age;
+      if (document.getElementById('prof-headline')) document.getElementById('prof-headline').value = p.headline || (targetRole + " at " + company);
+      if (document.getElementById('prof-bio')) document.getElementById('prof-bio').value = bio;
+      if (document.getElementById('prof-interests') && p.interests) document.getElementById('prof-interests').value = p.interests;
+      if (document.getElementById('prof-target-role')) document.getElementById('prof-target-role').value = targetRole;
+      if (document.getElementById('prof-level') && p.level) document.getElementById('prof-level').value = p.level;
+      if (document.getElementById('prof-accomplishment') && p.accomplishment) document.getElementById('prof-accomplishment').value = p.accomplishment;
+      if (document.getElementById('pref-evaluator') && p.evaluator) document.getElementById('pref-evaluator').value = p.evaluator;
+      if (document.getElementById('pref-lang') && p.lang) document.getElementById('pref-lang').value = p.lang;
     }
 
     // 2. Save Profile
@@ -430,7 +406,14 @@
       };
 
       localStorage.setItem('imaira_profile', JSON.stringify(profileData));
-      updateSidebarProfile(name, targetRole);
+      if (window.userSession) {
+        window.userSession.updateProfile({
+          name: name,
+          role: targetRole,
+          bio: bio,
+          headline: headline
+        });
+      }
 
       const toast = document.getElementById('save-toast');
       toast.classList.remove('hidden');
@@ -556,6 +539,7 @@
     // Initialize
     loadProfile();
   </script>
+  <script src="../js/user-session.js"></script>
 </body>
 </html>
 

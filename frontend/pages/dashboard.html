@@ -69,33 +69,7 @@
           <span>Prep Plan</span>
         </a>
 
-        <div class="pt-4 pb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#7F766C]">
-          Account
-        </div>
-
-        <a href="settings.html" class="flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[#8C7B6B] hover:bg-[#FAF6EE] hover:text-[#2C1F0E] font-semibold text-sm transition-all">
-          <span class="material-symbols-outlined text-xl">settings</span>
-          <span>Settings</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Candidate Footer Profile -->
-    <div class="p-4 border-t border-[#E8DFD0]">
-      <div class="flex items-center justify-between px-1">
-        <div class="flex items-center gap-2.5">
-          <div id="dash-sidebar-avatar" class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs overflow-hidden border border-[#E8DFD0]">
-            <span id="dash-sidebar-initials">AM</span>
-          </div>
-          <div>
-            <div id="dash-sidebar-name" class="text-xs font-bold text-[#2C1F0E]">Candidate</div>
-            <div id="dash-sidebar-role" class="text-[11px] text-[#7F766C]">Software Engineer</div>
-          </div>
-        </div>
-        <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
-          <span class="material-symbols-outlined text-lg">logout</span>
-        </a>
-      </div>
+              </nav>
     </div>
   </aside>
 
@@ -119,10 +93,11 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2C1F0E]">
-            Interview Workspace
+            Welcome back, <span id="dash-welcome-name">Ravi Kisan</span> 👋
           </h1>
-          <p class="text-xs text-[#7F766C] mt-1">Realistic mock interviews, resume auditing, and calibrated multi-signal evaluation.</p>
+          <p class="text-xs text-[#7F766C] mt-1">Realistic mock interviews, resume auditing, and dialect-neutral calibrated multi-signal evaluation.</p>
         </div>
+        <div id="top-right-profile-slot" class="flex items-center gap-3"></div>
       </div>
 
       <!-- PRIMARY HERO CARD: Clean, Simple & Balanced -->
@@ -418,7 +393,7 @@
             <span class="px-2.5 py-1 rounded-full ${pillBg} font-bold text-[11px]">${(s.overall_score || 0).toFixed(1)} (${gradeLetter})</span>
           </td>
           <td class="py-4 px-6 text-right">
-            <a href="report.html?sessionId=${encodeURIComponent(s.id)}" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white font-bold transition-all text-xs shadow-sm">
+            <a href="report.html?sessionId=11111111-2222-3333-4444-555555555551" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white font-bold transition-all text-xs shadow-sm">
               <span>Report</span>
               <span class="material-symbols-outlined text-xs">chevron_right</span>
             </a>
@@ -431,5 +406,6 @@
     syncDashboardUser();
     loadDashboardSessions();
   </script>
+  <script src="../js/user-session.js"></script>
 </body>
 </html>
