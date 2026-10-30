@@ -2,6 +2,90 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 
+
+class Company(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=200, unique=True)
+    sector = models.CharField(max_length=150, blank=True, default="Tech")
+    focus = models.CharField(max_length=300, blank=True, default="")
+    subroles = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Companies"
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.name} ({self.sector})"
+
+
+class Role(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200, unique=True)
+    category = models.CharField(max_length=100, default="Tech")
+    focus = models.CharField(max_length=300, blank=True, default="")
+    levels = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self):
+        return f"{self.title} [{self.category}]"
+
+
+class CatalogQuestion(models.Model):
+    DIFFICULTY_CHOICES = [
+        ('Easy', 'Easy'),
+        ('Medium', 'Medium'),
+        ('Hard', 'Hard')
+    ]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    question_key = models.CharField(max_length=120, unique=True)
+    title = models.CharField(max_length=400)
+    category = models.CharField(max_length=100, default="Coding")
+    difficulty = models.CharField(max_length=50, choices=DIFFICULTY_CHOICES, default='Medium')
+    prompt = models.TextField()
+    starter_code = models.TextField(blank=True, default="")
+    sample_solution = models.TextField(blank=True, default="")
+    required_keywords = models.JSONField(default=list, blank=True)
+    bonus_keywords = models.JSONField(default=list, blank=True)
+    rubric_breakdown = models.JSONField(default=dict, blank=True)
+    child_concept_groups = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"[{self.difficulty}] {self.question_key}: {self.title[:50]}"
+
+
+class CodingTestCase(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    question = models.ForeignKey(CatalogQuestion, related_name='test_cases', on_delete=models.CASCADE)
+    input_data = models.TextField()
+    expected_output = models.TextField()
+    is_hidden = models.BooleanField(default=False)
+    timeout_seconds = models.FloatField(default=2.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Test for {self.question.question_key} (Hidden={self.is_hidden})"
+
+
+class PhoneticGlossary(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    misheard_token = models.CharField(max_length=200, unique=True)
+    canonical_token = models.CharField(max_length=200)
+    soundex_code = models.CharField(max_length=20, blank=True, default="")
+    category = models.CharField(max_length=100, default="technical_term")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Phonetic Glossaries"
+
+    def __str__(self):
+        return f"'{self.misheard_token}' -> '{self.canonical_token}'"
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='profile')
     name = models.CharField(max_length=150, default="Alex Morgan")
@@ -24,12 +108,12 @@ class InterviewSession(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     role = models.CharField(max_length=200, default="Software Engineer")
     company = models.CharField(max_length=200, blank=True, default="Google")
-    track = models.CharField(max_length=100, default="Tech") # Tech, Management, Intern, Engineering, Analyst, Custom, JD Based
+    track = models.CharField(max_length=100, default="Tech")
     seniority_level = models.CharField(max_length=100, default="SDE 2")
     interviewer_name = models.CharField(max_length=100, default="Kabir")
     interviewer_accent = models.CharField(max_length=150, default="IN English (North)")
     coding_language = models.CharField(max_length=50, default="python")
-    status = models.CharField(max_length=50, default="active") # active, completed
+    status = models.CharField(max_length=50, default="active")
     
     # Quantitative Scores (0 - 100)
     overall_score = models.FloatField(default=0.0)
@@ -73,6 +157,41 @@ class QuestionRecord(models.Model):
 
     def __str__(self):
         return f"{self.session.id} - Q{self.question_index + 1}: {self.title}"
+
+
+class FollowUpDialogue(models.Model):
+    """
+    Stores dynamic follow-up dialogue exchanges between candidate and interviewer.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    session = models.ForeignKey(InterviewSession, related_name='follow_up_dialogues', on_delete=models.CASCADE)
+    question_index = models.IntegerField(default=0)
+    candidate_initial_answer = models.TextField()
+    probe_type = models.CharField(max_length=100, default="concept_clarification")  # concept_clarification, code_complexity, edge_case, architecture_tradeoff
+    ai_followup_prompt = models.TextField()
+    candidate_followup_answer = models.TextField(blank=True, default="")
+    score_adjustment = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Follow-up for {self.session.id} Q{self.question_index + 1} ({self.probe_type})"
+
+
+class CandidateRecording(models.Model):
+    """
+    Stores physical video and audio recording media paths for interview sessions.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    session = models.ForeignKey(InterviewSession, related_name='recordings', on_delete=models.CASCADE)
+    question_index = models.IntegerField(null=True, blank=True)
+    media_type = models.CharField(max_length=50, default="video")  # video, audio
+    file_path = models.CharField(max_length=500)
+    mime_type = models.CharField(max_length=100, default="video/webm")
+    duration_seconds = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Recording ({self.media_type}) for Session {self.session.id}"
 
 
 class ResumeAudit(models.Model):

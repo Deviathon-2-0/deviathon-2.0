@@ -712,14 +712,11 @@
         </div>
       </div>
 
-      <!-- Center: Question Progress Pills (Strictly Locked: Cannot Skip Uncompleted Questions) -->
+      <!-- Center: Active Topic Badge (Dynamic Follow-Up & Adaptive Flow) -->
       <div class="flex items-center gap-3">
-        <div class="flex items-center gap-1.5">
-          <span id="stage-progress-label" class="text-[11px] font-mono font-bold text-slate-400 mr-1 hidden md:inline">0/4 SUBMITTED</span>
-          <div class="flex items-center gap-1" id="stage-question-pills">
-            <!-- Dynamic locked/unlocked navigation pills -->
-          </div>
-          <span id="stage-current-pill" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#AA7000] text-white shadow-sm ml-1">Q1 Current</span>
+        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-[#1F1408] border border-[#3D280F] text-xs font-semibold text-[#E8A338] shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="interview-stage-indicator">TECHNICAL EVALUATION ROUND</span>
         </div>
       </div>
 
@@ -801,7 +798,7 @@
             <div class="flex items-center justify-between text-xs mb-2">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-[#AA7000]"></span>
-                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="call-q-badge">QUESTION 1 OF 4 &bull; TECH CODING</span>
+                <span class="font-bold text-[#AA7000] uppercase tracking-wider text-[11px]" id="call-q-badge">&bull; TECHNICAL PROBLEM SOLVING &bull;</span>
               </div>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="repeatCurrentQuestion()" class="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-sm">
@@ -878,7 +875,7 @@
           <!-- Header with Question Title & Repeat Button -->
           <div class="p-4 border-b border-[#2A1C0A] flex items-center justify-between">
             <div>
-              <div class="text-[10px] uppercase font-bold text-[#AA7000] tracking-wider" id="code-pane-q-number">QUESTION 1 OF 4</div>
+              <div class="text-[10px] uppercase font-bold text-[#AA7000] tracking-wider" id="code-pane-q-number">&bull; CODE IMPLEMENTATION &bull;</div>
               <h2 class="text-xs sm:text-sm font-bold text-white mt-0.5" id="code-pane-instruction-title">Write a code solution for the situation described below.</h2>
             </div>
             <div class="flex items-center gap-1.5">
@@ -2984,52 +2981,12 @@
       }
     }
 
-    // STRICT QUESTION NAVIGATION PILLS: CANNOT SKIP UNSUBMITTED QUESTIONS
     function renderQuestionNavigationPills() {
-      const container = document.getElementById('stage-question-pills');
-      if (!container) return;
-      container.innerHTML = '';
-      const total = currentQuestions.length;
-
-      currentQuestions.forEach((q, idx) => {
-        const pill = document.createElement('button');
-        pill.type = 'button';
-        const isCurrent = (idx === currentQIndex);
-        const isUnlocked = (idx <= maxUnlockedQIndex);
-        const isSubmitted = submittedQuestionIndices.has(idx);
-
-        if (isCurrent) {
-          pill.className = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all bg-[#AA7000] text-white shadow-md ring-2 ring-[#AA7000]/60 cursor-pointer";
-          pill.textContent = idx + 1;
-        } else if (isSubmitted) {
-          pill.className = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all bg-[#4F6B2D] text-white shadow-sm cursor-pointer";
-          pill.innerHTML = `${idx + 1}<span class="text-[9px] ml-0.5">✓</span>`;
-        } else if (isUnlocked) {
-          pill.className = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all bg-[#1F160A] hover:bg-[#2C1F0E] text-slate-300 border border-[#3D2E15] cursor-pointer";
-          pill.textContent = idx + 1;
-        } else {
-          // Locked State: Cannot skip to this question!
-          pill.className = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all bg-[#140D05] text-slate-600 border border-[#221609] cursor-not-allowed opacity-50";
-          pill.innerHTML = '<span class="material-symbols-outlined text-[12px]">lock</span>';
-          pill.title = `Locked: Submit Question ${maxUnlockedQIndex + 1} first`;
-        }
-
-        pill.onclick = () => {
-          if (idx <= maxUnlockedQIndex) {
-            updateQuestionView(idx);
-          } else {
-            showLockedNotice(idx);
-          }
-        };
-
-        container.appendChild(pill);
-      });
-
-      const progLabel = document.getElementById('stage-progress-label');
-      if (progLabel) progLabel.textContent = `${submittedQuestionIndices.size}/${total} SUBMITTED`;
-
-      const curPill = document.getElementById('stage-current-pill');
-      if (curPill) curPill.textContent = `Q${currentQIndex + 1} of ${total} • ${currentQuestions[currentQIndex]?.type || 'Active'}`;
+      const stageInd = document.getElementById('interview-stage-indicator');
+      if (stageInd && currentQuestions && currentQuestions[currentQIndex]) {
+        const q = currentQuestions[currentQIndex];
+        stageInd.textContent = q.type ? `${q.type.toUpperCase()} EVALUATION ROUND` : "LIVE EVALUATION ROUND";
+      }
     }
 
     function showLockedNotice(targetIdx) {
@@ -3069,14 +3026,14 @@
       const total = currentQuestions.length;
       renderQuestionNavigationPills();
 
-      const qNumText = "QUESTION " + (idx + 1) + " OF " + total;
+      const qCategoryText = (q.type ? q.type.toUpperCase() : "TECHNICAL PROBLEM SOLVING");
 
       // 1. Update Video Call Overlay
       const callQBadge = document.getElementById('call-q-badge');
       const callQPrompt = document.getElementById('call-question-prompt');
       const callSubmitText = document.getElementById('call-submit-btn-text');
 
-      if (callQBadge) callQBadge.textContent = qNumText + " • " + (q.type ? q.type.toUpperCase() : "QUESTION");
+      if (callQBadge) callQBadge.textContent = "• " + qCategoryText + " •";
       if (callQPrompt) callQPrompt.textContent = `"${q.prompt}"`;
       if (callSubmitText) {
         callSubmitText.textContent = (idx === total - 1) ? "Submit & Finalize Interview" : "Submit Answer & Proceed";
@@ -3091,7 +3048,7 @@
       const techConstraints = document.getElementById('tech-problem-constraints');
       const techInstructionsText = document.getElementById('tech-instructions-text');
 
-      if (codeQNum) codeQNum.textContent = qNumText;
+      if (codeQNum) codeQNum.textContent = "• " + qCategoryText + " •";
       if (techInstructionTitle) techInstructionTitle.textContent = q.title || "Write a code solution for the situation described below.";
       if (techDesc) techDesc.textContent = q.prompt;
       if (techInput) techInput.textContent = q.input || "Standard I/O stream";
@@ -3132,62 +3089,185 @@
       }
     }
 
-    // SUBMIT CURRENT ANSWER: STRICTLY UNLOCKS NEXT QUESTION
+    // Adaptive Follow-Up & Dynamic Interview Progression
+    let isFollowUpActive = false;
+    let currentInitialAnswer = null;
+
+    function showEvaluationLoadingOverlay() {
+      let overlay = document.getElementById('evaluation-loading-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'evaluation-loading-overlay';
+        overlay.className = "fixed inset-0 z-50 bg-[#0F0B06]/95 backdrop-blur-2xl flex flex-col items-center justify-center text-white px-6";
+        overlay.innerHTML = `
+          <div class="w-16 h-16 rounded-3xl bg-[#AA7000]/20 border border-[#AA7000]/40 flex items-center justify-center mb-6 shadow-2xl relative">
+            <span class="material-symbols-outlined text-3xl text-[#E8A338] animate-spin">neurology</span>
+            <span class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-ping"></span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">Analyzing Interview Performance</h2>
+          <p id="eval-loading-status" class="text-xs sm:text-sm text-[#E8A338] font-mono mb-6 animate-pulse">
+            Synthesizing multi-signal biometric telemetry &amp; code complexity...
+          </p>
+          <div class="w-64 sm:w-80 h-2 bg-white/10 rounded-full overflow-hidden mb-8">
+            <div id="eval-progress-bar" class="h-full bg-gradient-to-r from-[#AA7000] via-amber-400 to-emerald-400 w-1/4 transition-all duration-700"></div>
+          </div>
+          <div class="space-y-2.5 text-center text-xs font-mono text-slate-400 max-w-sm">
+            <div id="eval-step-1" class="text-emerald-400 flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">check_circle</span> Multi-signal telemetry captured</div>
+            <div id="eval-step-2" class="text-[#E8A338] flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm animate-spin">sync</span> Evaluating rubric concept coverage &amp; complexity</div>
+            <div id="eval-step-3" class="text-slate-500 flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">radio_button_unchecked</span> Generating executive scorecard</div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const bar = document.getElementById('eval-progress-bar');
+        const statusText = document.getElementById('eval-loading-status');
+        const step2 = document.getElementById('eval-step-2');
+        const step3 = document.getElementById('eval-step-3');
+
+        setTimeout(() => {
+          if (bar) bar.style.width = '60%';
+          if (statusText) statusText.textContent = "Processing speech-to-text transcript & concept synergies...";
+        }, 800);
+
+        setTimeout(() => {
+          if (bar) bar.style.width = '90%';
+          if (statusText) statusText.textContent = "Synthesizing executive AI feedback & hiring recommendations...";
+          if (step2) {
+            step2.className = "text-emerald-400 flex items-center justify-center gap-2";
+            step2.innerHTML = '<span class="material-symbols-outlined text-sm">check_circle</span> Concept coverage &amp; complexity evaluated';
+          }
+          if (step3) {
+            step3.className = "text-[#E8A338] flex items-center justify-center gap-2";
+            step3.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Generating executive scorecard...';
+          }
+        }, 1800);
+      }
+      overlay.classList.remove('hidden');
+    }
+
     async function submitCurrentAnswer() {
       const q = currentQuestions[currentQIndex];
-      const codeVal = document.getElementById('code-editor-textarea') ? document.getElementById('code-editor-textarea').value : '';
+      const codeEditor = document.getElementById('code-editor-textarea');
+      const rawCode = codeEditor ? codeEditor.value.trim() : '';
+      const isStarterOnly = rawCode.startsWith('// Problem:') && rawCode.split('\n').length <= 4;
+      const cleanCode = isStarterOnly ? '' : rawCode;
 
-      // Stop candidate speech recording if active
+      // Stop speech recording if active
       if (isCandidateRecording) {
         toggleCandidateAnswerRecording();
       }
 
-      const spokenText = candidateCurrentTranscript.trim() || 
-        "Demonstrated systematic algorithm breakdown, stating data structures, invariants, and edge case mitigation upfront.";
+      // No fake text: If user gave no verbal answer, record it honestly
+      const spokenText = candidateCurrentTranscript.trim() || "[No verbal response provided]";
 
       const qEndEpoch = Date.now();
       const qStartSec = parseFloat(((questionStartEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
       const qEndSec = parseFloat(((qEndEpoch - sessionStartEpoch) / 1000.0).toFixed(1));
       const qTelemetry = window.candidateMatrixInstance ? window.candidateMatrixInstance.getTelemetryTimeline(qStartSec, qEndSec) : [];
-      collectedAnswers.push({
-        question_index: currentQIndex,
-        question_text: q ? q.title : '',
-        question_id: q ? (q.id || q.title) : '',
-        prompt: q ? q.prompt : '',
-        transcript: spokenText,
-        code: codeVal,
-        timestamp_start: qStartSec,
-        timestamp_end: qEndSec,
-        duration_sec: Math.max(1, Math.round(qEndSec - qStartSec)),
-        telemetry: qTelemetry
-      });
 
-      // Mark current question submitted
+      if (!isFollowUpActive) {
+        // --- STAGE 1: INITIAL ATTEMPT COMPLETE -> PROMPT DYNAMIC FOLLOW-UP ---
+        currentInitialAnswer = {
+          question_index: currentQIndex,
+          question_text: q ? q.title : '',
+          question_id: q ? (q.id || q.title) : '',
+          prompt: q ? q.prompt : '',
+          transcript: spokenText,
+          code: cleanCode,
+          timestamp_start: qStartSec,
+          timestamp_end: qEndSec,
+          duration_sec: Math.max(1, Math.round(qEndSec - qStartSec)),
+          telemetry: qTelemetry
+        };
+
+        const submitBtn = document.getElementById('call-submit-btn');
+        const submitText = document.getElementById('call-submit-btn-text');
+        if (submitText) submitText.textContent = "Interviewer evaluating...";
+        if (submitBtn) submitBtn.classList.add('opacity-75', 'cursor-wait');
+
+        let followupPrompt = "";
+        try {
+          const probeRes = await tryApiFetch('/sessions/followup-probe/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              session_id: activeSessionId,
+              question_index: currentQIndex,
+              question_title: q ? q.title : '',
+              question_prompt: q ? q.prompt : '',
+              transcript: spokenText,
+              code: cleanCode,
+              role: pendingTitle
+            })
+          });
+          if (probeRes && probeRes.followup_prompt) {
+            followupPrompt = probeRes.followup_prompt;
+          }
+        } catch (e) {
+          console.log("Follow-up probe notice:", e);
+        }
+
+        if (!followupPrompt) {
+          if (cleanCode) {
+            followupPrompt = "Looking at your code solution, what is the worst-case asymptotic time complexity, and how would you optimize this if memory were severely constrained?";
+          } else if (spokenText && !spokenText.startsWith('[No')) {
+            followupPrompt = "You articulated the high-level intuition. What specific edge cases or failure modes would break this approach in production?";
+          } else {
+            followupPrompt = "To help us get started, could you share your initial first-principles intuition on what data structure would best model this problem?";
+          }
+        }
+
+        isFollowUpActive = true;
+        currentInitialAnswer.followup_prompt = followupPrompt;
+
+        // Update Call Overlay with Follow-Up Banner
+        const callBadge = document.getElementById('call-q-badge');
+        if (callBadge) {
+          callBadge.innerHTML = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/25 text-amber-300 font-bold border border-amber-500/50 animate-pulse text-[10px] tracking-wider uppercase">FOLLOW-UP &bull; CROSS-EXAMINATION</span>`;
+        }
+        const callPrompt = document.getElementById('call-question-prompt');
+        if (callPrompt) {
+          callPrompt.textContent = `"${followupPrompt}"`;
+        }
+        if (submitText) {
+          submitText.textContent = (currentQIndex === currentQuestions.length - 1) ? "Submit Follow-Up & Finalize" : "Submit Follow-Up & Next Topic";
+        }
+        if (submitBtn) {
+          submitBtn.classList.remove('opacity-75', 'cursor-wait');
+        }
+
+        // Reset live transcription for follow-up response
+        candidateCurrentTranscript = "";
+        updateLiveTranscriptUI("Listening for your follow-up explanation...");
+
+        // Interviewer speaks the follow-up question
+        speakQuestion(followupPrompt);
+        return;
+      }
+
+      // --- STAGE 2: FOLLOW-UP COMPLETE -> RECORD & ADVANCE TO NEXT TOPIC ---
+      isFollowUpActive = false;
+      const followUpSpoken = candidateCurrentTranscript.trim() || "[No follow-up response provided]";
+      currentInitialAnswer.followup_response = followUpSpoken;
+      collectedAnswers.push(currentInitialAnswer);
+      currentInitialAnswer = null;
+
       submittedQuestionIndices.add(currentQIndex);
-
-      // UNLOCK NEXT QUESTION (strictly one by one)
       maxUnlockedQIndex = Math.max(maxUnlockedQIndex, currentQIndex + 1);
-
       candidateCurrentTranscript = "";
       updateLiveTranscriptUI("");
 
       if (currentQIndex < currentQuestions.length - 1) {
-        // Show brief success transition toast
-        const toast = document.createElement('div');
-        toast.className = "fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-2xl bg-[#1B2811] border border-[#4F6B2D] text-emerald-300 text-xs font-bold flex items-center gap-2 shadow-xl animate-fade-in";
-        toast.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span><span>Question ${currentQIndex + 1} submitted. Unlocking Question ${currentQIndex + 2}...</span>`;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2200);
-
         // Advance to next question
         updateQuestionView(currentQIndex + 1);
       } else {
-        // Last question submitted: Complete interview and navigate to report
+        // Last question submitted: Complete interview and navigate to report with instant loading overlay
+        showEvaluationLoadingOverlay();
+
         clearInterval(timerInterval);
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         if (currentAudioPlayback) currentAudioPlayback.pause();
 
-        // Capture Candidate Performance & Integrity Matrix
         if (window.candidateMatrixInstance) {
           const matrixReport = window.candidateMatrixInstance.getMatrixReport();
           localStorage.setItem('imaira_integrity_matrix', JSON.stringify(matrixReport));

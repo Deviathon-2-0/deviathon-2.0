@@ -1,3 +1,10 @@
+try:
+    from google import genai
+    from google.genai import types
+    GENAI_SDK_AVAILABLE = True
+except ImportError:
+    GENAI_SDK_AVAILABLE = False
+
 import json
 import os
 from datetime import datetime, timezone
@@ -555,6 +562,108 @@ def start_interview_session(request):
 
 
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def generate_followup_probe(request):
+    """
+    Dynamically generates an adaptive interviewer follow-up probe based on
+    the candidate's exact spoken explanation and/or written code solution.
+    """
+    session_id = request.data.get('session_id', '')
+    q_index = int(request.data.get('question_index', 0))
+    q_title = request.data.get('question_title', 'Technical Problem')
+    q_prompt = request.data.get('question_prompt', '')
+    transcript = request.data.get('transcript', '').strip()
+    code = request.data.get('code', '').strip()
+    role = request.data.get('role', 'Software Engineer')
+
+    session = _resolve_session(session_id, role=role)
+
+    has_code = bool(code and len(code) > 25 and not code.startswith('// Problem:'))
+    has_speech = bool(transcript and not transcript.startswith('[No'))
+
+    followup_prompt = ''
+    probe_type = 'concept_clarification'
+
+    client = None
+    api_key = getattr(settings, 'GEMINI_API_KEY', None) or os.getenv('GEMINI_API_KEY')
+    if api_key and GENAI_SDK_AVAILABLE:
+        try:
+            client = genai.Client(api_key=api_key)
+        except Exception:
+            client = None
+
+    if client:
+        try:
+            sys_inst = (
+                "You are an elite, realistic technical interviewer at Google or Meta. "
+                "The candidate just provided an answer or code snippet to an interview question. "
+                "Ask ONE concise, sharp follow-up question (1-2 sentences maximum) probing their solution. "
+                "If they wrote code, question their time/space complexity or specific edge cases. "
+                "If they gave a verbal explanation, ask how they would handle scale, concurrency, or failure modes. "
+                "If they provided no answer, ask a helpful scaffolding question to test first-principles intuition. "
+                "Keep your tone direct and conversational. Output ONLY the follow-up question."
+            )
+            user_content = f"""Original Question: {q_title}
+Question Prompt: {q_prompt}
+Candidate Spoken Answer: {transcript or '[No verbal answer provided]'}
+Candidate Submitted Code:
+{code or '[No code submitted]'}
+
+Generate a sharp, realistic interviewer follow-up question for this exact situation."""
+            resp = client.models.generate_content(
+                model='gemini-3.5-flash-lite',
+                contents=user_content,
+                config=types.GenerateContentConfig(
+                    system_instruction=sys_inst,
+                    temperature=0.3,
+                )
+            )
+            if resp and resp.text:
+                followup_prompt = resp.text.strip().strip('"')
+                if has_code:
+                    probe_type = 'code_complexity_and_edge_cases'
+                elif has_speech:
+                    probe_type = 'architecture_and_tradeoffs'
+                else:
+                    probe_type = 'intuition_scaffolding'
+        except Exception as e:
+            logger.info(f"Gemini probe notice: {e}")
+
+    if not followup_prompt:
+        if has_code:
+            probe_type = 'code_complexity'
+            if 'for ' in code or 'while ' in code:
+                followup_prompt = "Looking at the loop structure in your implementation, what is the worst-case asymptotic time complexity, and how would you optimize this if memory was severely constrained?"
+            else:
+                followup_prompt = "How would your implementation behave if the input contains unexpected duplicates, negative values, or null pointers?"
+        elif has_speech:
+            probe_type = "architecture_tradeoffs"
+            followup_prompt = "You explained the high-level intuition. Could you walk me through the specific edge cases (such as high concurrency or network partitions) that could break this approach?"
+        else:
+            probe_type = "approach_scaffolding"
+            followup_prompt = "To help us get started, could you share your initial first-principles intuition on what data structure or pattern would best model this problem?"
+
+    try:
+        from api.models import FollowUpDialogue
+        FollowUpDialogue.objects.create(
+            session=session,
+            question_index=q_index,
+            candidate_initial_answer=transcript or code or "No answer",
+            probe_type=probe_type,
+            ai_followup_prompt=followup_prompt
+        )
+    except Exception as e:
+        logger.warning(f"Notice saving follow-up to PostgreSQL: {e}")
+
+    return Response({
+        'status': 'success',
+        'followup_prompt': followup_prompt,
+        'probe_type': probe_type,
+        'question_index': q_index
+    })
+
+
 def _match_catalog_question_id(title, prompt, expected_concepts=None):
     """Matches a question to an in-memory catalog entry, or returns default_general."""
     combined = f"{title or ''} {prompt or ''} {' '.join(expected_concepts or [])}".lower()
@@ -628,6 +737,26 @@ def submit_interview_session(request, session_id):
         transcript = ans.get('transcript', '') or ''
         code = ans.get('code', '') or ''
         ans_telemetry = ans.get('telemetry') or raw_telemetry
+        followup_resp = ans.get('followup_response', '')
+
+        # Check if candidate actually attempted the question
+        has_real_speech = bool(transcript and not transcript.startswith('[No') and len(transcript.strip().split()) >= 3)
+        has_real_code = bool(code and len(code.strip()) > 30 and not code.strip().startswith('// Problem:') and not code.strip().startswith('# Problem:'))
+
+        if not has_real_speech and not has_real_code:
+            q_breakdown_card = {
+                'question_index': q_idx,
+                'question_title': q_title,
+                'transcript': transcript or '[No verbal response provided]',
+                'code': code or '',
+                'score': 0,
+                'covered_concepts': [],
+                'missing_concepts': [{'concept': 'No answer or code submitted'}],
+                'feedback': 'This question was skipped or no answer/code was recorded. 0 technical points awarded.',
+                'flagged_moments': []
+            }
+            per_question_breakdown.append(q_breakdown_card)
+            continue
 
         # 1. Phonetic & Lexicon Normalizer
         normalized_transcript, corrections = _normalizer.normalize(transcript)
@@ -750,17 +879,23 @@ def submit_interview_session(request, session_id):
         grade = "D"
 
     if not all_strengths:
-        all_strengths = [
-            "Preserved computational invariants and systematic logic breakdown.",
-            "Clear articulation of data structures and problem boundaries upfront.",
-            "Maintained composure and forward engagement throughout evaluation."
-        ]
+        if avg_tech > 0:
+            all_strengths = [
+                "Preserved computational invariants and systematic logic breakdown.",
+                "Clear articulation of data structures and problem boundaries upfront.",
+                "Maintained composure and forward engagement throughout evaluation."
+            ]
+        else:
+            all_strengths = ["Candidate initialized the interview environment and established video/audio connectivity."]
 
     if not all_critical_gaps:
-        all_critical_gaps = [
-            "Quantify partition rebalancing latencies in failure recovery modes.",
-            "Proactively mention CPU cache locality and memory fragmentation bounds."
-        ]
+        if avg_tech > 0:
+            all_critical_gaps = [
+                "Quantify partition rebalancing latencies in failure recovery modes.",
+                "Proactively mention CPU cache locality and memory fragmentation bounds."
+            ]
+        else:
+            all_critical_gaps = ["No spoken technical answers or code solutions were provided across interview topics."]
 
     if not all_recommendations:
         all_recommendations = [
@@ -788,9 +923,9 @@ def submit_interview_session(request, session_id):
             "recommendation": "Keep camera at natural eye level and maintain steady webcam focus."
         },
         "technicalDepth": {
-            "rating": "Proficient" if avg_tech >= 80 else "Adequate",
-            "notes": f"Demonstrated consistent technical decomposition with {int(round(avg_tech))}% rubric coverage.",
-            "recommendation": "Articulate asymptotic memory fragmentation and cache locality trade-offs upfront."
+            "rating": ("Proficient" if avg_tech >= 80 else ("Adequate" if avg_tech > 0 else "Unattempted")),
+            "notes": (f"Demonstrated consistent technical decomposition with {int(round(avg_tech))}% rubric coverage." if avg_tech > 0 else "No technical explanations or code were provided for evaluation."),
+            "recommendation": ("Articulate asymptotic memory fragmentation and cache locality trade-offs upfront." if avg_tech > 0 else "State initial algorithmic intuitions and complexity constraints even when uncertain.")
         },
         "speechClarity": {
             "rating": "Clear & Articulate" if avg_speech >= 80 else "Monotone Inflection",
