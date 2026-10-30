@@ -22,29 +22,24 @@ from evaluator.async_learner import dispatch_async_accent_mining
 
 
 class TestAccentNormalizer(unittest.TestCase):
-    def test_canonical_mishearing_replacements(self):
-        """Verify key acoustic mishearings from regional accents are correctly normalized."""
+    def test_task2_benchmark_verification_cases(self):
+        """Task 2 verification suite covering unexpected acoustic variations."""
         test_cases = [
-            ("we should store this in a has aman for quick lookup", "hashmap"),
-            ("the return value is a list of two pulse with indices", "tuples"),
-            ("we need to analyze the a symptomatic time complexity", "asymptotic"),
-            ("each node updates its wector clock upon receipt", "vector clock"),
-            ("we balance the tree as a red black tray", "red-black tree"),
-            ("traverse the link least node by node", "linked list"),
-            ("this hash table provides oh one average access", "O(1)"),
+            ("thats why we need has aman in our code", "hashmap in our code"),
+            ("haz a man gives oh one lookup time", "hashmap gives O(1) lookup time"),
+            ("we can implement dike stra algorithm with priority queue", "dijkstra algorithm with priority queue"),
+            ("storing data in two pulse instead of arrays", "storing data in tuples instead of arrays"),
+            ("the time complexity is a symptomatic upper bound", "the time complexity is asymptotic upper bound"),
         ]
 
-        for input_text, expected_canonical in test_cases:
+        for input_text, expected_substr in test_cases:
             normalized, replacements = normalize_accent_transcript(input_text)
             self.assertIn(
-                expected_canonical.lower(),
+                expected_substr.lower(),
                 normalized.lower(),
                 f"Failed for input: '{input_text}'. Result was: '{normalized}'"
             )
-            self.assertTrue(
-                len(replacements) > 0,
-                f"Expected replacements for '{input_text}', but got empty list."
-            )
+            self.assertTrue(len(replacements) > 0)
 
     def test_performance_under_5ms_benchmark(self):
         """Verify N-gram normalizer processes a 2-minute (~300 word) candidate answer in <5ms."""

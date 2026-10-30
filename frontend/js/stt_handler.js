@@ -139,3 +139,4 @@ class InstantSTTHandler {
 
 // Attach globally
 window.InstantSTTHandler = InstantSTTHandler;
+
