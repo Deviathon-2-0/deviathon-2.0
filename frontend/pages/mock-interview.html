@@ -755,7 +755,9 @@
         <div class="relative flex-1 w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#120B04] border border-[#3D2E15] shadow-2xl flex items-center justify-center">
           
           <!-- 1. MAIN INTERVIEWER VIDEO (100% Real Video, No Static Images, No Glitch) -->
-          <video id="call-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center scale-[1.06] transition-transform duration-300"></video>
+          <video id="call-interviewer-video-listening" autoplay loop muted playsinline class="w-full h-full object-cover object-center scale-[1.06] transition-opacity duration-200"></video>
+          <video id="call-interviewer-video-talking" loop muted playsinline class="w-full h-full object-cover object-center scale-[1.06] absolute inset-0 transition-opacity duration-200 opacity-0 pointer-events-none"></video>
+          <video id="call-interviewer-video" autoplay loop muted playsinline class="hidden"></video>
           
           <!-- 2. CANDIDATE PICTURE-IN-PICTURE (Top-Right Floating 1-on-1 Persona Tile) -->
           <div id="call-candidate-tile" class="absolute top-4 right-4 w-36 sm:w-44 md:w-52 aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-white/20 shadow-2xl z-20 group bg-[#1A1208] backdrop-blur-sm">
@@ -942,7 +944,9 @@
           <!-- PiP Tiles inside IDE (Interviewer + Candidate Live Video) -->
           <div class="absolute top-12 right-4 z-30 flex flex-col gap-2 pointer-events-auto">
             <div class="w-44 aspect-video rounded-xl overflow-hidden bg-[#1A1208] border border-white/20 shadow-2xl relative">
-              <video id="pip-interviewer-video" autoplay loop muted playsinline class="w-full h-full object-cover object-center scale-[1.06] transition-transform duration-300"></video>
+              <video id="pip-interviewer-video-listening" autoplay loop muted playsinline class="w-full h-full object-cover object-center scale-[1.06] transition-opacity duration-200"></video>
+              <video id="pip-interviewer-video-talking" loop muted playsinline class="w-full h-full object-cover object-center scale-[1.06] absolute inset-0 transition-opacity duration-200 opacity-0 pointer-events-none"></video>
+              <video id="pip-interviewer-video" autoplay loop muted playsinline class="hidden"></video>
               <div class="absolute bottom-1 left-1.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[9px] text-white font-semibold flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 <span id="pip-interviewer-name">Kabir</span>
@@ -1024,7 +1028,7 @@
         introAudio: "/assets/interviewers/payal_intro.mp3"
       },
       {
-        id: "john",
+        id: "arthur",
         name: "Arthur",
         gender: "male",
         region: "UK (London)",
@@ -1035,13 +1039,13 @@
         pitch: 0.94,
         rate: 0.98,
         sampleIntro: "Good day. I am Arthur. We shall examine system concurrency, latency guarantees, and resilience under load.",
-        avatar: "/assets/interviewers/john.jpg",
-        videoListening: "/assets/interviewers/john_listening.mp4",
-        videoTalking: "/assets/interviewers/john_talking.mp4",
-        introAudio: "/assets/interviewers/john_intro.mp3"
+        avatar: "/assets/interviewers/arthur.jpg",
+        videoListening: "/assets/interviewers/arthur_listening.mp4",
+        videoTalking: "/assets/interviewers/arthur_talking.mp4",
+        introAudio: "/assets/interviewers/arthur_intro.mp3"
       },
       {
-        id: "sarah",
+        id: "david",
         name: "David",
         gender: "male",
         region: "North America",
@@ -1052,10 +1056,10 @@
         pitch: 0.92,
         rate: 1.04,
         sampleIntro: "Hey! I am David. Excited to dive into your implementation and discuss how you tackle bottlenecks at scale.",
-        avatar: "/assets/interviewers/sarah.jpg",
-        videoListening: "/assets/interviewers/sarah_listening.mp4",
-        videoTalking: "/assets/interviewers/sarah_talking.mp4",
-        introAudio: "/assets/interviewers/sarah_intro.mp3"
+        avatar: "/assets/interviewers/david.jpg",
+        videoListening: "/assets/interviewers/david_listening.mp4",
+        videoTalking: "/assets/interviewers/david_talking.mp4",
+        introAudio: "/assets/interviewers/david_intro.mp3"
       },
       {
         id: "charlotte",
@@ -1075,7 +1079,7 @@
         introAudio: "/assets/interviewers/charlotte_intro.mp3"
       },
       {
-        id: "kenji",
+        id: "yuki",
         name: "Yuki",
         gender: "female",
         region: "Japan (Tokyo)",
@@ -1086,10 +1090,10 @@
         pitch: 1.10,
         rate: 0.95,
         sampleIntro: "Konnichiwa! I am Yuki. Please walk through your architectural assumptions and step-by-step logic with clarity.",
-        avatar: "/assets/interviewers/kenji.jpg",
-        videoListening: "/assets/interviewers/kenji_listening.mp4",
-        videoTalking: "/assets/interviewers/kenji_talking.mp4",
-        introAudio: "/assets/interviewers/kenji_intro.mp3"
+        avatar: "/assets/interviewers/yuki.jpg",
+        videoListening: "/assets/interviewers/yuki_listening.mp4",
+        videoTalking: "/assets/interviewers/yuki_talking.mp4",
+        introAudio: "/assets/interviewers/yuki_intro.mp3"
       }
     ];
 
@@ -2760,29 +2764,66 @@
       }
     }
 
-        // Seamless Video Loop State Switcher (Zero Glitching, Never Static Image)
+            // Dual-Layer Zero-Lag Video State Switcher (Seamless Crossfade, Zero Black Frames)
     function setInterviewerVideoState(state) {
       const chosen = interviewers[selectedInterviewerIdx] || interviewers[0];
-      const targetSrc = (state === 'talking') ? chosen.videoTalking : chosen.videoListening;
-      if (!targetSrc) return;
+      const isTalking = (state === 'talking');
 
-      const vCall = document.getElementById('call-interviewer-video');
-      const vPip = document.getElementById('pip-interviewer-video');
+      const pairs = [
+        {
+          listen: document.getElementById('call-interviewer-video-listening'),
+          talk: document.getElementById('call-interviewer-video-talking')
+        },
+        {
+          listen: document.getElementById('pip-interviewer-video-listening'),
+          talk: document.getElementById('pip-interviewer-video-talking')
+        }
+      ];
 
-      [vCall, vPip].forEach(vid => {
-        if (vid) {
-          vid.muted = true;
-          vid.defaultMuted = true;
-          const cur = vid.getAttribute('src') || vid.src || '';
-          const cleanTarget = targetSrc.replace(/^(\.\.\/|\.\/)/, '');
-          if (!cur.endsWith(cleanTarget)) {
-            vid.src = targetSrc;
-            vid.load();
-            const p = vid.play();
-            if (p && typeof p.catch === 'function') {
-              p.catch(() => {});
-            }
+      pairs.forEach(pair => {
+        if (pair.listen && pair.talk) {
+          if (isTalking) {
+            // Mouth Movement / Speaking loop
+            const p = pair.talk.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+            pair.talk.classList.remove('opacity-0');
+            pair.talk.classList.add('opacity-100');
+          } else {
+            // Attentive Nodding / Listening loop
+            pair.talk.classList.remove('opacity-100');
+            pair.talk.classList.add('opacity-0');
+            const p = pair.listen.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
           }
+        }
+      });
+    }
+
+    function loadInterviewerVideos(chosen) {
+      const pairs = [
+        {
+          listen: document.getElementById('call-interviewer-video-listening'),
+          talk: document.getElementById('call-interviewer-video-talking')
+        },
+        {
+          listen: document.getElementById('pip-interviewer-video-listening'),
+          talk: document.getElementById('pip-interviewer-video-talking')
+        }
+      ];
+
+      pairs.forEach(pair => {
+        if (pair.listen && chosen.videoListening) {
+          pair.listen.muted = true;
+          pair.listen.defaultMuted = true;
+          pair.listen.src = chosen.videoListening;
+          pair.listen.load();
+          pair.listen.play().catch(() => {});
+        }
+        if (pair.talk && chosen.videoTalking) {
+          pair.talk.muted = true;
+          pair.talk.defaultMuted = true;
+          pair.talk.src = chosen.videoTalking;
+          pair.talk.load();
         }
       });
     }
@@ -3031,19 +3072,8 @@
           }
         }
 
-        // Initialize Interviewer HD Videos
-        const vCall = document.getElementById('call-interviewer-video');
-        const vPip = document.getElementById('pip-interviewer-video');
-        if (vCall && chosen.videoListening) {
-          vCall.src = chosen.videoListening;
-          vCall.load();
-          vCall.play().catch(() => {});
-        }
-        if (vPip && chosen.videoListening) {
-          vPip.src = chosen.videoListening;
-          vPip.load();
-          vPip.play().catch(() => {});
-        }
+        // Initialize Interviewer Dual HD Video Streams (Talking & Listening)
+        loadInterviewerVideos(chosen);
 
         const nameEl = document.getElementById('call-interviewer-name');
         if (nameEl) nameEl.textContent = chosen.name;

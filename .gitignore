@@ -44,6 +44,8 @@ __pycache__/
 !frontend/assets/images/boy_color_aligned.png
 !frontend/assets/interviewers/*.jpg
 !frontend/assets/interviewers/*.png
+!frontend/assets/interviewers/*.mp4
+!frontend/assets/interviewers/*.mp3
 
 # Unwanted reference drafts & test dumps
 stitch_imaira_ai_mock_interviews/
