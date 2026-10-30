@@ -781,16 +781,7 @@
             <span class="text-slate-300 text-[11px] font-normal" id="call-interviewer-accent">Indian English (North)</span>
           </div>
 
-          <!-- Bottom-Right Live Audio Waveform Visualizer -->
-          <div class="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center gap-1.5 z-20 shadow-lg">
-            <div class="flex items-center gap-0.5">
-              <span class="w-1 h-3.5 bg-amber-400 rounded-full animate-pulse"></span>
-              <span class="w-1 h-5 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.15s"></span>
-              <span class="w-1 h-4 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.3s"></span>
-              <span class="w-1 h-2 bg-amber-400 rounded-full animate-pulse" style="animation-delay: 0.45s"></span>
-            </div>
-            <span class="text-[10px] font-mono text-amber-200/90 font-bold ml-1">LIVE AUDIO</span>
-          </div>
+
 
           <!-- TRANSLUCENT FLOATING QUESTION OVERLAY (Hovering over the Video Box) -->
           <div id="call-question-overlay" class="absolute bottom-14 sm:bottom-14 left-4 right-4 max-w-xl mx-auto bg-black/85 backdrop-blur-2xl border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl z-20 transition-all max-h-[36vh] flex flex-col justify-between">
@@ -823,10 +814,7 @@
                   <span class="material-symbols-outlined text-sm">mic</span>
                   <span id="call-record-btn-text">Start Spoken Answer</span>
                 </button>
-                <div class="flex items-center gap-1 text-[11px] text-slate-300">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span class="hidden sm:inline">Voice Channel Active</span>
-                </div>
+
               </div>
 
               <!-- Submit Answer Button (Strict: Only Submitting Unlocks Next Question) -->
@@ -836,15 +824,9 @@
               </button>
             </div>
 
-            <!-- Real-time Live Candidate Speech Transcription Caption Box -->
-            <div id="call-transcript-box" class="mt-2.5 p-2.5 rounded-xl bg-black/60 border border-white/10 hidden">
-              <div class="flex items-center justify-between text-[10px] text-[#AA7000] font-bold mb-1">
-                <span>LIVE SPEECH RECOGNITION (TRANSCRIBING...)</span>
-                <span class="text-emerald-400 flex items-center gap-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Active Mic
-                </span>
-              </div>
-              <p id="call-transcript-text" class="text-xs text-slate-200 italic font-mono leading-relaxed">Speak your answer clearly into your microphone...</p>
+            <!-- Candidate Speech Subtitles (Minimalist & Clean) -->
+            <div id="call-transcript-box" class="mt-2.5 px-3 py-2 rounded-xl bg-black/60 border border-white/10 hidden">
+              <p id="call-transcript-text" class="text-xs text-slate-200 leading-relaxed font-sans italic">Listening to your spoken response...</p>
             </div>
 
           </div>
@@ -913,15 +895,9 @@
               </div>
             </div>
 
-            <!-- Live Spoken Transcript for Think-Out-Loud in Code Pane -->
-            <div id="code-transcript-wrap" class="p-3 rounded-xl bg-[#1B1207] border border-[#2E200E] text-xs font-mono hidden">
-              <div class="flex items-center justify-between text-[10px] text-[#AA7000] font-bold mb-1">
-                <span>THINK-OUT-LOUD LIVE TRANSCRIPT</span>
-                <span class="text-emerald-400 flex items-center gap-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live STT
-                </span>
-              </div>
-              <p id="code-transcript-text" class="text-slate-200 italic">Listening to your verbal explanation...</p>
+            <!-- Candidate Verbal Explanation Subtitles in Code Pane -->
+            <div id="code-transcript-wrap" class="px-3 py-2 rounded-xl bg-[#1B1207] border border-[#2E200E] text-xs hidden">
+              <p id="code-transcript-text" class="text-slate-200 italic font-sans leading-relaxed">Listening to your verbal explanation...</p>
             </div>
           </div>
 
