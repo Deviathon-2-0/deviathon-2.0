@@ -123,6 +123,12 @@
           <p id="auth-subtitle" class="text-xs text-slate-500 mt-1">Enter your credentials to access your interview workspace.</p>
         </div>
 
+                <!-- Fast Hackathon / Guest One-Click Access -->
+        <button type="button" onclick="quickGuestAccess()" class="w-full py-2.5 px-4 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white text-xs font-bold flex items-center justify-center gap-2 transition-all mb-3 shadow-sm cursor-pointer">
+          <span class="material-symbols-outlined text-sm">verified_user</span>
+          <span>1-Click Hackathon Judge / Guest Sign In</span>
+        </button>
+
         <!-- Social OAuth (Google) -->
         <button type="button" onclick="handleGoogleAuth()" id="google-btn" class="w-full py-3 px-4 rounded-full border border-[#E8DFD0] hover:border-[#2C1F0E]/20 bg-[#FAF6EE] hover:bg-[#F5EDD8] text-[#2C1F0E] text-xs font-semibold flex items-center justify-center gap-3 transition-all mb-4 shadow-soft">
           <svg class="w-4 h-4" viewBox="0 0 24 24">
@@ -330,6 +336,13 @@
           submitBtn.disabled = false;
         }
       }
+    }
+
+        function quickGuestAccess() {
+      localStorage.setItem('imaira_token', 'token_judge_guest_2026');
+      localStorage.setItem('imaira_user', JSON.stringify({ email: 'judge@hackathon.ai', name: 'Hackathon Evaluator', role: 'Staff Interviewer' }));
+      showAlert('Authenticated as Hackathon Evaluator. Redirecting...', false);
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 500);
     }
 
     // Handle Google OAuth

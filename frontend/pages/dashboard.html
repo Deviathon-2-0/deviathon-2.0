@@ -84,12 +84,12 @@
     <div class="p-4 border-t border-[#E8DFD0]">
       <div class="flex items-center justify-between px-1">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs">
-            AM
+          <div id="dash-sidebar-avatar" class="w-8 h-8 rounded-full bg-[#2C1F0E] text-white font-bold flex items-center justify-center text-xs overflow-hidden border border-[#E8DFD0]">
+            <span id="dash-sidebar-initials">AM</span>
           </div>
           <div>
-            <div class="text-xs font-bold text-[#2C1F0E]">Alex Morgan</div>
-            <div class="text-[11px] text-[#7F766C]">Staff Candidate</div>
+            <div id="dash-sidebar-name" class="text-xs font-bold text-[#2C1F0E]">Candidate</div>
+            <div id="dash-sidebar-role" class="text-[11px] text-[#7F766C]">Software Engineer</div>
           </div>
         </div>
         <a href="auth.html" title="Sign out" class="text-[#7F766C] hover:text-[#AA7000]">
@@ -115,12 +115,13 @@
         </button>
       </div>
 
-      <!-- Welcome Header (Clean & Uncluttered) -->
+      <!-- Executive Workspace Header (Apple Minimalist) -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2C1F0E]">
-            Welcome back, Alex.
+            Interview Workspace
           </h1>
+          <p class="text-xs text-[#7F766C] mt-1">Realistic mock interviews, resume auditing, and calibrated multi-signal evaluation.</p>
         </div>
       </div>
 
@@ -267,73 +268,14 @@
                 <th class="py-3.5 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#E8DFD0] text-[#2C1F0E]">
-              <!-- Row 1 -->
-              <tr class="hover:bg-[#FAF6EE]/60 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="font-bold text-[#2C1F0E] text-sm">Distributed Consensus &amp; Raft</div>
-                  <div class="text-[11px] text-[#7F766C] mt-0.5">Oct 28, 2026 • 28 mins • Staff Backend</div>
-                </td>
-                <td class="py-4 px-6">
-                  <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold">System Design</span>
-                </td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">92/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">88/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">95/100</td>
-                <td class="py-4 px-6 text-center">
-                  <span class="px-2.5 py-1 rounded-full bg-[#EFF4E8] text-[#4F6B2D] font-bold">91.6 (A)</span>
-                </td>
-                <td class="py-4 px-6 text-right">
-                  <a href="report.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white font-bold transition-all">
-                    <span>Report</span>
-                    <span class="material-symbols-outlined text-xs">chevron_right</span>
-                  </a>
-                </td>
-              </tr>
-
-              <!-- Row 2 -->
-              <tr class="hover:bg-[#FAF6EE]/60 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="font-bold text-[#2C1F0E] text-sm">Microservices Saga &amp; Dual-Write</div>
-                  <div class="text-[11px] text-[#7F766C] mt-0.5">Oct 25, 2026 • 32 mins • Lead Engineer</div>
-                </td>
-                <td class="py-4 px-6">
-                  <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold">Architecture</span>
-                </td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">86/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">84/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">90/100</td>
-                <td class="py-4 px-6 text-center">
-                  <span class="px-2.5 py-1 rounded-full bg-[#EFF4E8] text-[#4F6B2D] font-bold">86.7 (B+)</span>
-                </td>
-                <td class="py-4 px-6 text-right">
-                  <a href="report.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white font-bold transition-all">
-                    <span>Report</span>
-                    <span class="material-symbols-outlined text-xs">chevron_right</span>
-                  </a>
-                </td>
-              </tr>
-
-              <!-- Row 3 -->
-              <tr class="hover:bg-[#FAF6EE]/60 transition-colors">
-                <td class="py-4 px-6">
-                  <div class="font-bold text-[#2C1F0E] text-sm">Cross-Functional Disagreement on Deprecation</div>
-                  <div class="text-[11px] text-[#7F766C] mt-0.5">Oct 22, 2026 • 20 mins • Engineering Leadership</div>
-                </td>
-                <td class="py-4 px-6">
-                  <span class="px-2.5 py-1 rounded-full bg-[#F2EBD8] text-[#594300] font-semibold">Behavioural</span>
-                </td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">90/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">92/100</td>
-                <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">94/100</td>
-                <td class="py-4 px-6 text-center">
-                  <span class="px-2.5 py-1 rounded-full bg-[#EFF4E8] text-[#4F6B2D] font-bold">92.0 (A)</span>
-                </td>
-                <td class="py-4 px-6 text-right">
-                  <a href="report.html" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#251A0A] text-white font-bold transition-all">
-                    <span>Report</span>
-                    <span class="material-symbols-outlined text-xs">chevron_right</span>
-                  </a>
+            <tbody id="dashboard-sessions-tbody" class="divide-y divide-[#E8DFD0] text-[#2C1F0E]">
+              <!-- Dynamically populated from /api/sessions/ or fallback -->
+              <tr>
+                <td colspan="7" class="py-8 text-center text-xs text-[#7F766C]">
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined animate-spin text-sm text-[#AA7000]">sync</span>
+                    <span>Loading recent evaluation records...</span>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -361,6 +303,133 @@
         appSidebar.classList.add('-translate-x-full');
       });
     }
+  </script>
+  <script>
+    // Synchronize User Profile & PFP from LocalStorage
+    function syncDashboardUser() {
+      try {
+        const rawProf = localStorage.getItem('imaira_profile');
+        const rawUser = localStorage.getItem('imaira_user');
+        const pfp = localStorage.getItem('imaira_user_pfp');
+
+        const prof = rawProf ? JSON.parse(rawProf) : {};
+        const user = rawUser ? JSON.parse(rawUser) : {};
+
+        const name = prof.name || user.name || "Candidate";
+        const role = prof.targetRole || user.role || "Software Engineer";
+
+        const nameEl = document.getElementById('dash-sidebar-name');
+        const roleEl = document.getElementById('dash-sidebar-role');
+        const avatarEl = document.getElementById('dash-sidebar-avatar');
+
+        if (nameEl) nameEl.textContent = name;
+        if (roleEl) roleEl.textContent = role;
+
+        if (avatarEl) {
+          if (pfp) {
+            avatarEl.innerHTML = `<img src="${pfp}" alt="PFP" class="w-full h-full object-cover rounded-full" />`;
+          } else {
+            const inits = name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'AM';
+            avatarEl.innerHTML = `<span id="dash-sidebar-initials">${inits}</span>`;
+          }
+        }
+      } catch (e) {
+        console.log("Profile sync notice:", e);
+      }
+    }
+
+    // Fetch and populate recent sessions
+    async function loadDashboardSessions() {
+      const tbody = document.getElementById('dashboard-sessions-tbody');
+      if (!tbody) return;
+
+      let sessions = [];
+      try {
+        const endpoints = ['/api/sessions/', 'http://localhost:8000/api/sessions/'];
+        for (const ep of endpoints) {
+          try {
+            const res = await fetch(ep);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && Array.isArray(data.sessions) && data.sessions.length > 0) {
+                sessions = data.sessions;
+                break;
+              }
+            }
+          } catch(err) {}
+        }
+      } catch (e) {}
+
+      // Fallback to sample sessions if database has no records yet
+      if (!sessions || sessions.length === 0) {
+        sessions = [
+          {
+            id: "11111111-2222-3333-4444-555555555551",
+            role: "Google SDE-2 • Distributed Systems",
+            track: "Tech",
+            score_technical_depth: 92.0,
+            score_structural_logic: 88.0,
+            score_speech_clarity: 95.0,
+            overall_score: 91.6,
+            created_at: "Oct 28, 2026"
+          },
+          {
+            id: "22222222-3333-4444-5555-666666666662",
+            role: "AWS Systems Architect • Microservices",
+            track: "System Design",
+            score_technical_depth: 86.0,
+            score_structural_logic: 84.0,
+            score_speech_clarity: 90.0,
+            overall_score: 86.7,
+            created_at: "Oct 25, 2026"
+          },
+          {
+            id: "33333333-4444-5555-6666-777777777773",
+            role: "Meta Engineering Lead • STAR Behavioral",
+            track: "Behavioral",
+            score_technical_depth: 90.0,
+            score_structural_logic: 92.0,
+            score_speech_clarity: 94.0,
+            overall_score: 92.0,
+            created_at: "Oct 22, 2026"
+          }
+        ];
+      }
+
+      tbody.innerHTML = '';
+      sessions.slice(0, 5).forEach(s => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-[#FAF6EE]/60 transition-colors cursor-pointer group";
+        const gradeLetter = s.overall_score >= 90 ? 'S' : (s.overall_score >= 80 ? 'A' : (s.overall_score >= 70 ? 'B' : (s.overall_score >= 55 ? 'C' : 'D')));
+        const pillBg = s.overall_score >= 80 ? 'bg-[#EFF4E8] text-[#4F6B2D]' : (s.overall_score >= 55 ? 'bg-[#FBF3E0] text-[#AA7000]' : 'bg-rose-50 text-rose-700');
+
+        tr.innerHTML = `
+          <td class="py-4 px-6">
+            <div class="font-bold text-[#2C1F0E] text-sm group-hover:text-[#AA7000] transition-colors">${s.role} ${s.company ? '• ' + s.company : ''}</div>
+            <div class="text-[11px] text-[#7F766C] mt-0.5">${s.created_at} • ${s.seniority_level || 'SDE 2'} • ID #${s.id.slice(0, 8)}</div>
+          </td>
+          <td class="py-4 px-6">
+            <span class="px-2.5 py-1 rounded-full bg-[#FBF3E0] text-[#AA7000] font-semibold text-[11px]">${s.track || 'Tech'}</span>
+          </td>
+          <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">${Math.round(s.score_technical_depth || 0)}/100</td>
+          <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">${Math.round(s.score_structural_logic || 0)}/100</td>
+          <td class="py-4 px-6 text-center font-bold text-[#2C1F0E]">${Math.round(s.score_speech_clarity || 0)}/100</td>
+          <td class="py-4 px-6 text-center">
+            <span class="px-2.5 py-1 rounded-full ${pillBg} font-bold text-[11px]">${(s.overall_score || 0).toFixed(1)} (${gradeLetter})</span>
+          </td>
+          <td class="py-4 px-6 text-right">
+            <a href="report.html?sessionId=${encodeURIComponent(s.id)}" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2C1F0E] hover:bg-[#AA7000] text-white font-bold transition-all text-xs shadow-sm">
+              <span>Report</span>
+              <span class="material-symbols-outlined text-xs">chevron_right</span>
+            </a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    syncDashboardUser();
+    loadDashboardSessions();
   </script>
 </body>
 </html>
