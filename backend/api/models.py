@@ -115,3 +115,30 @@ class PrepPlanRecord(models.Model):
 
     def __str__(self):
         return f"Prep Plan: {self.target_role} ({self.duration_days} Days)"
+class InterviewQuestion(models.Model):
+    source_id = models.CharField(max_length=150, unique=True)
+
+    technology = models.CharField(max_length=100, db_index=True)
+    technology_name = models.CharField(max_length=150)
+
+    difficulty = models.IntegerField(db_index=True)
+    difficulty_label = models.CharField(max_length=50)
+
+    question_type = models.CharField(max_length=50, db_index=True)
+
+    prompt = models.TextField()
+    answer = models.JSONField(default=dict)
+    explanation = models.TextField(blank=True, default="")
+
+    tags = models.JSONField(default=list, blank=True)
+    source_metadata = models.JSONField(default=dict, blank=True)
+
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['technology', 'difficulty']
+
+    def __str__(self):
+        return f"{self.technology_name}: {self.source_id}"
