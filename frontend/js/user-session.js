@@ -15,7 +15,7 @@ const IMAIRA_MOCK_USERS = [
     name: "Ravi Kisan",
     email: "ravi.kisan@gmail.com",
     password: "Ravi@Google2026",
-    role: "Senior Distributed Systems Architect",
+    role: "Software Engineer",
     company: "Google",
     targetTrack: "Distributed Systems & High-Throughput APIs",
     bio: "Principal backend & systems architect specializing in Raft consensus, zero-loss Kafka streaming, and sub-10ms gRPC microservices.",
@@ -202,7 +202,6 @@ class UserSessionManager {
         </div>
         <div class="hidden sm:block text-left pr-1">
           <div id="imaira-badge-name" class="text-xs font-bold text-[#2C1F0E] leading-tight group-hover:text-[#AA7000] transition-colors">${user.name}</div>
-          <div id="imaira-badge-company" class="text-[10px] text-[#7F766C] font-semibold">${user.role || 'Candidate'}</div>
         </div>
         <span class="material-symbols-outlined text-sm text-[#7F766C] group-hover:text-[#2C1F0E] transition-transform" id="imaira-badge-caret">expand_more</span>
       </button>
@@ -219,8 +218,7 @@ class UserSessionManager {
             <div class="flex items-center justify-between">
               <h3 id="imaira-modal-name" class="text-sm font-extrabold text-[#2C1F0E] truncate">${user.name}</h3>
             </div>
-            <p id="imaira-modal-role" class="text-xs text-[#7F766C] font-medium truncate">${user.role}</p>
-            <p id="imaira-modal-email" class="text-[11px] text-[#8C7B6B] truncate">${user.email}</p>
+            <p id="imaira-modal-email" class="text-xs text-[#8C7B6B] truncate">${user.email}</p>
           </div>
         </div>
 
@@ -238,7 +236,7 @@ class UserSessionManager {
                   </div>
                   <div class="truncate">
                     <div class="text-xs font-bold text-[#2C1F0E] leading-tight">${u.name}</div>
-                    <div class="text-[10px] text-[#7F766C]">${u.role}</div>
+                    <div class="text-[10px] text-[#8C7B6B]">${u.email}</div>
                   </div>
                 </div>
                 ${u.id === user.id ? '<span class="material-symbols-outlined text-xs text-[#AA7000]">check_circle</span>' : ''}
@@ -333,7 +331,7 @@ class UserSessionManager {
       }
     }
     if (badgeName) badgeName.textContent = user.name;
-    if (badgeCompany) badgeCompany.textContent = user.role || 'Candidate';
+    // badge company removed
 
     // 2. Update modal details
     const modalName = document.getElementById('imaira-modal-name');
@@ -343,7 +341,7 @@ class UserSessionManager {
     const modalInitials = document.getElementById('imaira-modal-initials');
 
     if (modalName) modalName.textContent = user.name;
-    if (modalRole) modalRole.textContent = user.role;
+    // modal role removed
     if (modalEmail) modalEmail.textContent = user.email;
     if (modalAvatar) {
       if (user.avatar) {

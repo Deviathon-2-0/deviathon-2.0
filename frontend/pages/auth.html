@@ -382,7 +382,7 @@
         // Fallback for seamless UX if backend server isn't running
         if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
           localStorage.setItem('imaira_token', 'token_demo_offline_2026');
-          localStorage.setItem('imaira_user', JSON.stringify({ email, name: name || 'Alex Morgan', role: 'Staff Backend Architect' }));
+          localStorage.setItem('imaira_user', JSON.stringify({ email, name: name || 'Alex Morgan', role: 'Software Engineer' }));
           showAlert("Connected in sandbox mode. Redirecting...", false);
           setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
         } else {
