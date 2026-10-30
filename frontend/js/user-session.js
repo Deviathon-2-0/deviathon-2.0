@@ -88,31 +88,56 @@ class UserSessionManager {
   }
 
   getActiveUser() {
+    let profile = null;
     try {
-      const data = localStorage.getItem(this.storageKey);
-      if (data) {
-        const user = JSON.parse(data);
-        if (!user.role && user.targetRole) {
-          user.role = user.targetRole;
-        }
-        const customPfp = localStorage.getItem('imaira_user_pfp');
-        if (customPfp) {
-          user.avatar = customPfp;
-        }
-        return user;
-      }
+      const pRaw = localStorage.getItem(this.storageKey);
+      if (pRaw) profile = JSON.parse(pRaw);
     } catch (e) {}
-    const defaultUser = { ...this.mockUsers[0] };
+
+    let settings = null;
+    try {
+      const sRaw = localStorage.getItem('imaira_settings');
+      if (sRaw) settings = JSON.parse(sRaw);
+    } catch (e) {}
+
+    const base = profile || this.mockUsers[0];
+    const user = { ...base, ...(settings || {}) };
+
+    if (!user.role && user.targetRole) {
+      user.role = user.targetRole;
+    }
+    if (user.role && !user.targetRole) {
+      user.targetRole = user.role;
+    }
+
     const customPfp = localStorage.getItem('imaira_user_pfp');
     if (customPfp) {
-      defaultUser.avatar = customPfp;
+      user.avatar = customPfp;
     }
-    return defaultUser;
+
+    if (user.name) {
+      const parts = user.name.trim().split(/\s+/);
+      user.initials = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+    }
+
+    return user;
   }
 
   setActiveUserById(userId) {
     const user = this.mockUsers.find(u => u.id === userId) || this.mockUsers[0];
     localStorage.setItem(this.storageKey, JSON.stringify(user));
+    const settings = {
+      name: user.name,
+      role: user.role,
+      targetRole: user.role,
+      email: user.email,
+      company: user.company,
+      bio: user.bio,
+      headline: user.targetTrack || (user.role + " • High-Scale Systems"),
+      level: "Senior / Staff",
+      avatar: user.avatar
+    };
+    localStorage.setItem('imaira_settings', JSON.stringify(settings));
     window.dispatchEvent(new CustomEvent('imaira:profile-updated', { detail: user }));
     this.syncUI();
     return user;
@@ -129,13 +154,13 @@ class UserSessionManager {
       updated.targetRole = updates.role;
     }
 
-    // Auto calculate initials if name changed
     if (updates.name) {
       const parts = updates.name.trim().split(/\s+/);
       updated.initials = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
     }
 
     localStorage.setItem(this.storageKey, JSON.stringify(updated));
+    localStorage.setItem('imaira_settings', JSON.stringify(updated));
     window.dispatchEvent(new CustomEvent('imaira:profile-updated', { detail: updated }));
     this.syncUI();
     return updated;

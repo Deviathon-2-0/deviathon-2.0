@@ -80,7 +80,7 @@
   <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
     
     <!-- Top Action Area (Profile Pill Moved to Side, No Top Bar) -->
-    <div class="w-full px-6 sm:px-10 pt-6 pb-2 flex items-center justify-between">
+    <div class="w-full px-6 sm:px-10 pt-4 pb-0 flex items-center justify-between">
       <!-- Mobile Sidebar Toggle -->
       <button id="mobile-sidebar-toggle" class="md:hidden flex items-center gap-2 text-xs font-bold text-[#2C1F0E] bg-white border border-[#E8DFD0] px-3.5 py-2 rounded-full shadow-sm">
         <span class="material-symbols-outlined text-lg">menu</span>
@@ -91,17 +91,11 @@
     </div>
 
     <!-- Dashboard Content Body (Centered & Well Spaced) -->
-    <main class="flex-1 p-6 sm:p-10 pt-2 space-y-8 max-w-5xl mx-auto w-full flex flex-col justify-center">
+    <main class="flex-1 p-6 sm:p-10 pt-4 space-y-8 max-w-5xl mx-auto w-full flex flex-col justify-center">
 
       <!-- PRIMARY HERO CARD: Clean, Simple & Balanced -->
       <div class="bg-gradient-to-r from-[#FBF3E0] via-white to-[#FBF3E0] border border-[#E8C97A] rounded-3xl p-7 sm:p-9 shadow-card flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
         <div class="relative z-10 max-w-xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-[#E8C97A] text-[11px] font-bold text-[#AA7000] mb-3 shadow-xs">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Target Track: <strong id="dash-hero-role" class="text-[#2C1F0E]">Senior Distributed Systems Architect</strong></span>
-            <span class="text-[#E8DFD0]">•</span>
-            <span>Level: <strong id="dash-hero-level" class="text-[#AA7000]">Senior / Staff</strong></span>
-          </div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-[#2C1F0E] tracking-tight mb-2">
             Start Technical Mock Interview
           </h2>
@@ -272,26 +266,8 @@
     // Synchronize User Profile, Target Role, and Settings Across Dashboard
     function syncDashboardUser() {
       try {
-        const user = window.userSession ? window.userSession.getActiveUser() : null;
-        let settings = {};
-        try {
-          const raw = localStorage.getItem('imaira_settings') || localStorage.getItem('imaira_profile');
-          if (raw) settings = JSON.parse(raw);
-        } catch (e) {}
-
-        const name = (user && user.name) || settings.name || "Candidate";
-        const role = (user && user.role) || settings.targetRole || settings.role || "Senior Distributed Systems Architect";
-        const level = (user && user.level) || settings.level || "Senior / Staff";
-        const headline = (user && user.headline) || settings.headline || "";
-
-        const heroRole = document.getElementById('dash-hero-role');
-        const heroLevel = document.getElementById('dash-hero-level');
-        const heroDesc = document.getElementById('dash-hero-desc');
-
-        if (heroRole) heroRole.textContent = role;
-        if (heroLevel) heroLevel.textContent = level;
-        if (heroDesc && headline) {
-          heroDesc.textContent = `Targeting ${role} (${level}): ${headline}`;
+        if (window.userSession) {
+          window.userSession.syncUI();
         }
       } catch (e) {
         console.log("Dashboard profile sync notice:", e);
