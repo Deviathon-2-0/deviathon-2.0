@@ -1,4 +1,4 @@
-# IMAIRA+ Backend Service (Django REST Framework + Gemini 2.5)
+# IMAIRA+ Backend Service (Django REST Framework + Gemini 3.4)
 
 Production-grade, headless REST API server for the **IMAIRA+** Accent-Agnostic Mock Interview & Candidate Calibration Platform.
 
@@ -9,7 +9,7 @@ Designed to operate completely standalone without requiring a static UI build or
 ## 🛠️ Tech Stack & Architecture
 - **Framework**: Django 5.2.x + Django REST Framework 3.17.x
 - **Cross-Origin**: `django-cors-headers` (configured for decoupled SPA/Vite, mobile, and CLI clients)
-- **AI Core**: Google Gemini 2.5 (`gemini-2.5-flash` / `gemini-2.5-flash-preview-tts` for authentic interviewer accents)
+- **AI Core**: Google Gemini 3.4 (`gemini-3.4` / `gemini-3-flash-preview` for acoustic mining and evaluation synthesis)
 - **Speech Engines**:
   - **TTS**: Server-side PCM-to-WAV generation for 9 authentic interviewer accent profiles (`en-IN`, `en-GB`, `en-US`, `ja-JP`)
   - **STT**: Verbatim transcription with phoneme acoustic normalization & technical glossary validation
