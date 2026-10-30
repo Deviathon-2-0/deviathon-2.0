@@ -24,6 +24,16 @@ from api.models import (
 from api.services.tts_engine import synthesize_interviewer_speech, INTERVIEWER_PROFILES
 from api.services.stt_engine import transcribe_candidate_speech
 from api.services.compiler_service import execute_code_submission
+from evaluator.normalizer import PhoneticNormalizer
+from evaluator.deterministic_scorer import DeterministicScorer
+from evaluator.timeline_engine import TimelineEngine
+from evaluator.gemini_service import GeminiEvaluationService
+
+_normalizer = PhoneticNormalizer()
+_deterministic_scorer = DeterministicScorer()
+_timeline_engine = TimelineEngine()
+_gemini_eval_service = GeminiEvaluationService()
+
 from api.services.gemini_service import (
     generate_interview_questions,
     evaluate_candidate_performance,
@@ -1001,3 +1011,63 @@ def user_profile_endpoint(request):
         'preferred_languages': profile.preferred_languages,
         'dialect_preference': profile.dialect_preference
     })
+
+
+@api_view(['POST'])
+def evaluate_session_pipeline(request):
+    """
+    Hybrid Two-Tier Evaluation Pipeline (Deterministic Tier 1 + Gemini Fallback Tier 2).
+    POST /api/sessions/evaluate/
+    Payload:
+    {
+      "question_id": "q_hashmap_internal",
+      "transcript": "thats why we need has aman with oh one time complexity",
+      "telemetry": [
+        {"timestamp": 0.5, "eye_contact": true, "pitch_hz": 120, "neck_ratio": 1.0}
+      ],
+      "role": "Software Engineer",
+      "company": "Google"
+    }
+    """
+    data = request.data or {}
+    raw_transcript = data.get('transcript', '') or data.get('answer', '') or ''
+    question_id = data.get('question_id', 'default_general')
+    telemetry = data.get('telemetry', [])
+
+    # 1. Phonetic & Lexicon Normalizer (RapidFuzz + Soundex)
+    normalized_transcript, corrections = _normalizer.normalize(raw_transcript)
+
+    # 2. Deterministic Rubric Evaluator (Tier 1)
+    deterministic_result = _deterministic_scorer.evaluate(
+        question_id=question_id,
+        normalized_transcript=normalized_transcript,
+        telemetry=telemetry
+    )
+
+    # 3. Temporal Slice Analysis (Chronological Key Moments & Blunders)
+    flagged_moments = _timeline_engine.analyze_timeline(
+        transcript=normalized_transcript,
+        telemetry=telemetry,
+        deterministic_results=deterministic_result
+    )
+
+    # 4. Tier 2: Gemini Synthesis & Resilient Fallback
+    session_data = {
+        "question_id": question_id,
+        "transcript": raw_transcript,
+        "normalized_transcript": normalized_transcript,
+        "role": data.get('role', 'Software Engineer'),
+        "company": data.get('company', 'Google'),
+        "corrections": corrections
+    }
+
+    final_scorecard = _gemini_eval_service.synthesize_or_fallback(
+        session_data=session_data,
+        deterministic_results=deterministic_result,
+        timeline_moments=flagged_moments
+    )
+
+    final_scorecard["phonetic_corrections_applied"] = corrections
+    final_scorecard["normalized_transcript"] = normalized_transcript
+
+    return Response(final_scorecard, status=status.HTTP_200_OK)
